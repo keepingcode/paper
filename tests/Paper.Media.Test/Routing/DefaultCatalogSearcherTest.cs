@@ -10,7 +10,7 @@ namespace Paper.Media.Routing
   public class DefaultCatalogSearcherTest
   {
     [Fact]
-    public void SearchCatalog_Root_Test()
+    public void SearchCatalog_NaRaiz_DeveRetornarOCatalogoLocal()
     {
       // Given
       var searcher = new DefaultCatalogSearcher();
@@ -23,7 +23,7 @@ namespace Paper.Media.Routing
     }
 
     [Fact]
-    public void SearchCatalog_Found_Test()
+    public void SearchCatalog_NumCaminhoConhecido_DeveRetornarOCatalogo()
     {
       // Given
       var mock = new Mock<ICatalog>();
@@ -38,7 +38,7 @@ namespace Paper.Media.Routing
     }
 
     [Fact]
-    public void SearchCatalog_NotFound_Test()
+    public void SearchCatalog_NumCaminhoDesconhecido_DeveRetornarNulo()
     {
       // Given
       var mock = new Mock<ICatalog>();

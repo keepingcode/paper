@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Toolset.Collections;
 
-namespace Media.Utilities.Types
+namespace Paper.Media.Utilities.Types
 {
   /// <summary>
   /// Cache de dados para o contexto de renderização do Paper.

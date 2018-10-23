@@ -24,7 +24,7 @@ namespace Paper.Media.Routing
   public class DefaultObjectFactoryTest
   {
     [Fact]
-    public void CreateInstance_ExactMatch_Test()
+    public void CreateInstance_QuandoConstrutorBateExatamente_UsarAInstanciaExata()
     {
       // Given
       var factory = new DefaultObjectFactory();
@@ -42,7 +42,7 @@ namespace Paper.Media.Routing
     }
 
     [Fact]
-    public void CreateInstance_InheritanceMatch_Test()
+    public void CreateInstance_QuandoConstrutorBatePorHeranca_UsarAInstanciaHerdada()
     {
       // Given
       var factory = new DefaultObjectFactory();
@@ -60,7 +60,7 @@ namespace Paper.Media.Routing
     }
 
     [Fact]
-    public void CreateInstance_NotFound_Test()
+    public void CreateInstance_QuandoConstrutorNaoBate_UsarNulo()
     {
       // Given
       var factory = new DefaultObjectFactory();

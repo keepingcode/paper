@@ -7,7 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Paper.Media.Design.Papers;
-using Media.Utilities.Types;
+using Paper.Media.Utilities.Types;
 
 namespace Paper.Media.Rendering_Obsolete.Papers
 {

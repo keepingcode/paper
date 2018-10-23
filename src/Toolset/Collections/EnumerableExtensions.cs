@@ -24,7 +24,7 @@ namespace Toolset.Collections
     }
 
     /// <summary>
-    /// Tenta converter o item para o tipo indicado.
+    /// Tenta converter os itens do tipo enumerado para o tipo indicado.
     /// Uma exceção é lançada se o tipo não for conversível destino.
     /// </summary>
     /// <typeparam name="T">O tipo destino da conversão.</typeparam>

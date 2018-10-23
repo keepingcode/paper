@@ -10,7 +10,7 @@ namespace Toolset.Data
 
     private Time(DateTime time)
     {
-      this.Value = DateTime.MinValue + time.TimeOfDay;
+      this.Value = time;
     }
 
     private Time(TimeSpan time)

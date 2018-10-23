@@ -11,7 +11,7 @@ using Paper.Media.Design.Mappings;
 using Toolset;
 using Toolset.Reflection;
 
-namespace Media.Utilities.Types
+namespace Paper.Media.Utilities.Types
 {
   /// <summary>
   /// Utilitário de inspeção de propriedades de um objeto.

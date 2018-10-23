@@ -12,7 +12,7 @@ namespace Paper.Media.Routing
   public class DefaultArgsTest
   {
     [Fact]
-    public void ParseArgs_ByName_Test()
+    public void Construtor_DeveIndexarArgumentosPorNome()
     {
       // Given
       var templateUri = "/Items/{id}/Skus/{sku}?ean={code}&on={active}";
@@ -33,7 +33,7 @@ namespace Paper.Media.Routing
     }
 
     [Fact]
-    public void ParseArgs_ByIndex_Test()
+    public void Construtor_DeveIndexarArgumentosNaOrdemDeclaradaNoTemplate()
     {
       // Given
       var templateUri = "/Items/{id}/Skus/{sku}?ean={code}&on={active}";

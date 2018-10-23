@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using Toolset.Collections;
+using Toolset.Reflection;
 
 namespace Toolset.Data
 {
@@ -14,7 +15,7 @@ namespace Toolset.Data
 
     public VarAny(object rawValue)
     {
-      this.RawValue = rawValue;
+      ((IVar)this).RawValue = rawValue;
     }
 
     public bool HasWildcards => ((IVar)this).HasWildcards;

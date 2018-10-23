@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Media.Utilities.Types;
+using Paper.Media.Utilities.Types;
 using Paper.Media.Design;
 using Paper.Media.Routing;
 using Toolset;

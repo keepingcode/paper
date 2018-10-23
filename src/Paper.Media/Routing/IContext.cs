@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Paper.Media.Design;
 
 namespace Paper.Media.Routing
 {
@@ -9,14 +10,18 @@ namespace Paper.Media.Routing
   /// </summary>
   public interface IContext
   {
+    ///// <summary>
+    ///// Instância do Paper em renderização.
+    ///// O Paper contém as especificações para renderização do <see cref="Entity"/>
+    ///// que reprsentação a interface de usuário.
+    ///// </summary>
+    //IPaper Paper { get; }
+
     /// <summary>
-    /// Argumentos extraídos da URI de requisição pela aplicação do template de URI.
+    /// Argumentos do Paper extraídos da URI de requisição.
     /// </summary>
     IArgs RequestArgs { get; }
 
-    /// <summary>
-    /// URI de requisição.
-    /// </summary>
     RequestUri RequestUri { get; }
 
     /// <summary>
