@@ -24,7 +24,6 @@ namespace Paper.Host.Server
 
     public void ConfigureServices(IServiceCollection services)
     {
-      //services.AddPaperWebAppServices();
       services.AddPaperServices();
     }
 
@@ -33,11 +32,8 @@ namespace Paper.Host.Server
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
 
-      app.UseDefaultFiles();
-      app.UseStaticFiles();
+      app.UsePaper();
       app.UseDirectoryBrowser();
-      //app.UsePaperWebAppMiddlewares();
-      app.UsePaperMiddlewares();
     }
   }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Toolset.Collections;
 using System.Reflection;
-using Paper.Media.Rendering_Obsolete;
 using Paper.Media.Routing;
 
 namespace Paper.Media.Design.Mappings
@@ -22,11 +21,6 @@ namespace Paper.Media.Design.Mappings
     public FieldRelAttribute(string rel, params string[] otherRels)
     {
       Rels = rel.AsSingle().Union(otherRels).ToArray();
-    }
-
-    internal override void RenderField(Field field, PropertyInfo property, object host, PaperContext ctx)
-    {
-      field.AddRel(Rels);
     }
 
     internal override void RenderField(Field field, PropertyInfo property, object host)

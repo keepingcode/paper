@@ -12,13 +12,26 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using static System.Environment;
-using Paper.Media.Rendering_Obsolete;
+using System.Runtime.InteropServices;
+using Paper.Media.Routing;
 
 namespace Paper.Core
 {
   public static class AspNetCoreExtensions
   {
     #region IWebHostBuilder
+
+    public static IWebHostBuilder UseInkeeper(this IWebHostBuilder builder)
+    {
+      if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+      {
+        builder.UseHttpSys(options =>
+        {
+          options.UrlPrefixes.Add("http://localhost:90");
+        });
+      }
+      return builder;
+    }
 
     public static IWebHostBuilder UsePaperSettings(this IWebHostBuilder builder)
     {
@@ -53,25 +66,47 @@ namespace Paper.Core
 
     public static IServiceCollection AddPaperServices(this IServiceCollection services)
     {
-      var catalog = new PaperAggregateCatalog();
-      catalog.AddExposedTypes();
-      catalog.PrintInfo();
+      IPaperRouter router = new PaperRouter();
+      services.AddSingleton(router);
 
-      services.AddSingleton<IPaperCatalog>(catalog);
+      //var serviceProvider = services.BuildServiceProvider();
+      //var settings = serviceProvider.GetService<IPaperSettings>();
+      //if (settings?.RemotePaperServerUris?.Any() == true)
+      //{
+      //  //services.AddHostedService<TimedProxyNotificationService>();
+      //}
 
-      var serviceProvider = services.BuildServiceProvider();
-      var settings = serviceProvider.GetService<IPaperSettings>();
-      if (settings?.RemotePaperServerUris?.Any() == true)
-      {
-        //services.AddHostedService<TimedProxyNotificationService>();
-      }
+      PrintInfo(router);
 
       return services;
+    }
+
+    private static void PrintInfo(IPaperRouter router)
+    {
+      foreach (var route in router.Catalog.Routes)
+      {
+        var blueprint = router.Catalog.GetPaperBlueprint(route);
+        Console.WriteLine($"{blueprint.UriTemplate} => {blueprint.PaperType.FullName}");
+      }
     }
 
     #endregion
 
     #region IApplicationBuilder
+
+    public static IApplicationBuilder UsePaper(this IApplicationBuilder app)
+    {
+      app = UsePaperMiddlewares(app);
+      return app;
+    }
+
+    public static IApplicationBuilder UsePaperStaticFiles(this IApplicationBuilder app)
+    {
+      app.UsePaperMiddlewares();
+      app.UseDefaultFiles();
+      app.UseStaticFiles();
+      return app;
+    }
 
     public static IApplicationBuilder UsePaperMiddlewares(this IApplicationBuilder app)
     {

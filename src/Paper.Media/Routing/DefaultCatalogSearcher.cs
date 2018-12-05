@@ -19,7 +19,7 @@ namespace Paper.Media.Routing
     public DefaultCatalogSearcher()
     {
       catalogs = new HashMap<ICatalog>();
-      catalogs[""] = new LocalCatalog();
+      catalogs[""] = new ExposedCatalog();
     }
 
     /// <summary>

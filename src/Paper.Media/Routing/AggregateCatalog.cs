@@ -27,6 +27,11 @@ namespace Paper.Media.Routing
     }
 
     /// <summary>
+    /// Coleção das rotas mapeadas pelo catalogo.
+    /// </summary>
+    public string[] Routes => catalogs.SelectMany(x => x.Routes).ToArray();
+
+    /// <summary>
     /// Adiciona uma catálogo do Paper.
     /// </summary>
     /// <param name="catalog">Catalogo do Paper.</param>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Toolset.Reflection;
@@ -29,7 +30,7 @@ namespace Toolset.Types
       this.typeRestriction = typeRestriction;
     }
 
-    public VarKind Kind { get; private set; }
+    public VarKinds Kind { get; private set; }
 
     public object RawValue
     {
@@ -38,39 +39,50 @@ namespace Toolset.Types
       {
         if (value == null)
         {
-          Kind = VarKind.Null;
+          Kind = VarKinds.Null;
           _rawValue = null;
         }
         else if (value is string)
         {
-          Kind = VarKind.String;
+          Kind = VarKinds.String;
           _rawValue = value;
         }
-        else if (value is Range)
+        else if (value is Range range)
         {
-          Kind = VarKind.Range;
-          _rawValue = Range = (Range)value;
+          Kind = VarKinds.Range;
+          var min = Change.To(range.Min, typeRestriction);
+          var max = Change.To(range.Max, typeRestriction);
+          _rawValue = new Range(min, max);
         }
         else if (value.GetType().IsGenericType && value.GetType().GetGenericTypeDefinition() == typeof(Range<>))
         {
-          Kind = VarKind.Range;
-          var min = value._Get("min");
-          var max = value._Get("max");
-          _rawValue = Range = new Range(min, max);
+          Kind = VarKinds.Range;
+          var min = Change.To(value._Get("min"), typeRestriction);
+          var max = Change.To(value._Get("max"), typeRestriction);
+          _rawValue = new Range(min, max);
         }
         else if (value.GetType().IsValueType)
         {
-          Kind = VarKind.Primitive;
-          _rawValue = value;
+          Kind = VarKinds.Primitive;
+          _rawValue = Change.To(value, typeRestriction);
         }
         else if (value is IList list)
         {
-          Kind = VarKind.List;
-          _rawValue = List = list;
+          Type type = list.GetType();
+          Type elementType = type.GetElementType() ?? type.GetGenericArguments().FirstOrDefault() ?? typeof(object);
+          if (elementType != typeRestriction)
+          {
+            var sourceArray = list.Cast<object>().Select(x => Change.To(x, typeRestriction)).ToArray();
+            var targetArray = Array.CreateInstance(typeRestriction, sourceArray.Length);
+            sourceArray.CopyTo(targetArray, 0);
+            list = targetArray;
+          }
+          Kind = VarKinds.List;
+          _rawValue = list;
         }
         else
         {
-          Kind = VarKind.Graph;
+          Kind = VarKinds.Graph;
           _rawValue = value;
         }
       }
@@ -80,7 +92,7 @@ namespace Toolset.Types
 
     public object Value
     {
-      get => !(RawValue is IList || RawValue is Range) ? RawValue : null;
+      get => Kind.HasFlag(VarKinds.Value) ? RawValue : null;
       set => RawValue = value;
     }
 

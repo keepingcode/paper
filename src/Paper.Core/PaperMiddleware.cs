@@ -4,8 +4,6 @@ using System;
 using System.Threading.Tasks;
 using Paper.Media;
 using Toolset;
-using Paper.Media.Rendering_Obsolete;
-using Paper.Media.Rendering_Obsolete.Papers;
 
 namespace Paper.Core
 {

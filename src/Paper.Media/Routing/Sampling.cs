@@ -9,12 +9,12 @@ namespace Paper.Media.Routing
   {
     public static void Main()
     {
-      IProvider provider = Provider.Current;
+      IProvider provider = PaperProvider.Current;
 
       //
       // Catalog
       //
-      ICatalogSearcher catalogs = provider.GetCatalogCollection();
+      ICatalogSearcher catalogs = provider.GetCatalogSearcher();
       ICatalog tradeCatalog = catalogs.SearchCatalog("/Trade/Api/2");
 
       //
@@ -40,7 +40,8 @@ namespace Paper.Media.Routing
         Cache = cache
       };
 
-      IPaper paper = blueprint.Paper;
+      Type paperType = blueprint.PaperType;
+      IPaper paper = (IPaper)factory.CreateInstance(paperType);
       Entity entity = renderer.RenderEntity(paper, context);
 
       //

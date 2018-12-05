@@ -17,7 +17,7 @@ namespace Paper.Media.Routing
     /// O utilitário permite acesso ao catálogos dos sites conectados ao Paper.
     /// </summary>
     /// <returns>Instância do utilitário de pesquisa de catálogos.</returns>
-    ICatalogSearcher GetCatalogCollection();
+    ICatalogSearcher GetCatalogSearcher();
 
     /// <summary>
     /// Instância do rederizador de rotas do Paper.

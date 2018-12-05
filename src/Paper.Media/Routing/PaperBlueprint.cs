@@ -10,16 +10,17 @@ namespace Paper.Media.Routing
   /// </summary>
   public class PaperBlueprint
   {
-    public PaperBlueprint(IPaper paper, string uriTemplate)
+    //public PaperBlueprint(IPaper paper, string uriTemplate)
+    public PaperBlueprint(Type paperType, string uriTemplate)
     {
-      this.Paper = paper;
+      this.PaperType = paperType;
       this.UriTemplate = UriTemplate;
     }
 
     /// <summary>
     /// Instância da especificação do Paper.
     /// </summary>
-    public IPaper Paper { get; }
+    public Type PaperType { get; }
 
     /// <summary>
     /// Template de URI para extração dos parâmetros do Paper.

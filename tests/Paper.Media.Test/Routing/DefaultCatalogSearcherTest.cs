@@ -17,7 +17,7 @@ namespace Paper.Media.Routing
       // When
       var catalog = searcher.SearchCatalog("/");
       // Then
-      var expected = typeof(LocalCatalog);
+      var expected = typeof(ExposedCatalog);
       var obtained = catalog?.GetType();
       Assert.Equal(expected, obtained);
     }

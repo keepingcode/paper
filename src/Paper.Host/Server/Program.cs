@@ -18,19 +18,10 @@ namespace Paper.Host.Server
     {
       try
       {
-        var builder =
-          WebHost.CreateDefaultBuilder(args)
-            //.UsePaperWebAppSettings()
-            .UsePaperSettings()
-            .UseStartup<Startup>();
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-          builder.UseHttpSys(options =>
-          {
-            options.UrlPrefixes.Add("http://localhost:90");
-          });
-        }
+        var builder = WebHost.CreateDefaultBuilder(args)
+          .UseInkeeper()
+          .UsePaperSettings()
+          .UseStartup<Startup>();
 
         builder.Build().Run();
       }

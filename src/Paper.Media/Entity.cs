@@ -8,6 +8,10 @@ namespace Paper.Media
   [DataContract(Namespace = Namespaces.Default, Name = "Entity")]
   public class Entity : IEntity, IMediaObject
   {
+    private NameCollection _class;
+    private NameCollection _rel;
+    private PropertyCollection _properties;
+
     /// <summary>
     /// Tipo da entidade.
     /// 
@@ -20,7 +24,11 @@ namespace Paper.Media
     /// Sempre defina o tipo primário antes dos tipos alternativos.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 10)]
-    public virtual NameCollection Class { get; set; }
+    public virtual NameCollection Class
+    {
+      get => _class ?? (_class = new NameCollection());
+      set => _class = value;
+    }
 
     /// <summary>
     /// Texto descritivo sobre a entidade. Opcional.
@@ -32,13 +40,21 @@ namespace Paper.Media
     /// Determina o relacionamento da subentidade com a sua entidade principal.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 30)]
-    public virtual NameCollection Rel { get; set; }
+    public virtual NameCollection Rel
+    {
+      get => _rel ?? (_rel = new NameCollection());
+      set => _rel = value;
+    }
 
     /// <summary>
     /// Coleção das propriedades da entidade. Opcional.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 40)]
-    public virtual PropertyCollection Properties { get; set; }
+    public virtual PropertyCollection Properties
+    {
+      get => _properties ?? (_properties = new PropertyCollection());
+      set => _properties = value;
+    }
 
     /// <summary>
     /// Coleção das demais entidades relacionadas à entidade. Opcional.

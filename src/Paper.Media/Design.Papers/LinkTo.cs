@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Paper.Media;
-using Paper.Media.Rendering_Obsolete;
 using Paper.Media.Routing;
 
 namespace Paper.Media.Design.Papers
@@ -36,11 +35,6 @@ namespace Paper.Media.Design.Papers
       this.Href = href;
       this.Title = title;
       this.Rel = rel;
-    }
-
-    public Link RenderLink(PaperContext ctx)
-    {
-      return this;
     }
 
     public Link RenderLink(IContext ctx)

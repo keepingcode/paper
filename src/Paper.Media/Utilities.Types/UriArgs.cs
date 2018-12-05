@@ -137,7 +137,7 @@ namespace Paper.Media.Utilities.Types
               yield return $"{key}={MakeString(arg.Value)}";
               break;
             }
-          case VarKind.Range:
+          case VarKinds.Range:
             {
               if (arg.Range.Min != null)
               {
@@ -151,7 +151,7 @@ namespace Paper.Media.Utilities.Types
               }
               break;
             }
-          case VarKind.List:
+          case VarKinds.List:
             {
               foreach (var item in arg.List)
               {

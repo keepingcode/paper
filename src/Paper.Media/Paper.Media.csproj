@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Rendering_Obsolete.Papers\**" />
+    <Compile Remove="Rendering_Obsolete\**" />
+    <EmbeddedResource Remove="Rendering_Obsolete.Papers\**" />
+    <EmbeddedResource Remove="Rendering_Obsolete\**" />
+    <None Remove="Rendering_Obsolete.Papers\**" />
+    <None Remove="Rendering_Obsolete\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.CodeDom" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.2" />
   </ItemGroup>

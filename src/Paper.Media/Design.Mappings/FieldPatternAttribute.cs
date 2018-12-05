@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Paper.Media.Rendering_Obsolete;
 using Paper.Media.Routing;
 using Toolset.Collections;
 
@@ -17,11 +16,6 @@ namespace Paper.Media.Design.Mappings
     public FieldPatternAttribute(string text)
     {
       Value = text;
-    }
-
-    internal override void RenderField(Field field, PropertyInfo property, object host, PaperContext ctx)
-    {
-      field.AddPattern(Value);
     }
 
     internal override void RenderField(Field field, PropertyInfo property, object host)

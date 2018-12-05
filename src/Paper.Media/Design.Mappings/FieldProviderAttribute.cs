@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Toolset.Collections;
 using System.Reflection;
-using Paper.Media.Rendering_Obsolete;
 using Paper.Media.Routing;
 
 namespace Paper.Media.Design.Mappings
@@ -26,19 +25,6 @@ namespace Paper.Media.Design.Mappings
     {
       ProviderType = providerType;
       Keys = keys;
-    }
-
-    internal override void RenderField(Field field, PropertyInfo property, object host, PaperContext ctx)
-    {
-      if (ProviderType != null)
-      {
-        // TODO: implementar...
-        throw new NotImplementedException();
-      }
-      else if (Href != null)
-      {
-        field.AddProvider(Href, Keys);
-      }
     }
 
     internal override void RenderField(Field field, PropertyInfo property, object host)

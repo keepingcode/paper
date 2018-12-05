@@ -14,6 +14,11 @@ namespace Paper.Media.Routing
   public interface ICatalog
   {
     /// <summary>
+    /// Coleção das rotas mapeadas pelo catalogo.
+    /// </summary>
+    string[] Routes { get; }
+
+    /// <summary>
     /// Obtém o Paper mapeado para a rota.
     /// </summary>
     /// <param name="route">

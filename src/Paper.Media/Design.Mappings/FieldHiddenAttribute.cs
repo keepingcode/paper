@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Toolset.Collections;
 using System.Reflection;
-using Paper.Media.Rendering_Obsolete;
 using Paper.Media.Routing;
 
 namespace Paper.Media.Design.Mappings
@@ -17,11 +16,6 @@ namespace Paper.Media.Design.Mappings
     public FieldHiddenAttribute(bool allow = true)
     {
       Hidden = allow;
-    }
-
-    internal override void RenderField(Field field, PropertyInfo property, object host, PaperContext ctx)
-    {
-      field.AddHidden(Hidden);
     }
 
     internal override void RenderField(Field field, PropertyInfo property, object host)
