@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using Paper.Media.Routing;
+using Paper.Media.Rendering;
 
 namespace Paper.Core
 {
   /// <summary>
   /// Implementação do injetor de dependências.
   /// </summary>
-  class Injector : IObjectFactory
+  class Injector : IInjector
   {
     private readonly IServiceProvider serviceProvider;
 

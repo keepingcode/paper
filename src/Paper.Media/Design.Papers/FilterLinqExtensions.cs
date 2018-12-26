@@ -194,7 +194,7 @@ namespace Paper.Media.Design.Papers
 
         // Raramente um valor de um tipo Any pode ser outro tipo Any.
         // Neste caso vamos seguir com o valor do tipo Any mais profundo encontrado.
-        while (any.Value is Var)
+        while (any.Value is IVar)
         {
           value = any.Value;
         }

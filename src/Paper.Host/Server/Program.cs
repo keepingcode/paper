@@ -2,7 +2,6 @@
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,12 +17,12 @@ namespace Paper.Host.Server
     {
       try
       {
-        var builder = WebHost.CreateDefaultBuilder(args)
-          .UseInkeeper()
+        WebHost.CreateDefaultBuilder(args)
+          //.UsePaperWebAppSettings()
           .UsePaperSettings()
-          .UseStartup<Startup>();
-
-        builder.Build().Run();
+          .UseStartup<Startup>()
+          .Build()
+          .Run();
       }
       catch (Exception ex)
       {

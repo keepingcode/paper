@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Toolset.Collections;
-using Toolset.Reflection;
 
 namespace Toolset.Data
 {
@@ -21,41 +19,6 @@ namespace Toolset.Data
       get => _rawValue;
       set
       {
-        var typeValidationRequired = false;
-
-        if (typeof(T) == typeof(object))
-        {
-          typeValidationRequired = true;
-        }
-        else if (!(value == null
-                || value is T
-                || value is IList<T>
-                || value is IDictionary<string, T>
-                || value is RangeEx<T>))
-        {
-          typeValidationRequired = true;
-        }
-
-        if (typeValidationRequired)
-        {
-          if (value is string text)
-          {
-            value = Change.To<T>(value);
-          }
-          else if (value is IEnumerable list)
-          {
-            value = list.ChangeTo<T>().ToArray();
-          }
-          else if (value._Has("min") || value._Has("max"))
-          {
-            value = new RangeEx<object>(value._Get("min"), value._Get("max"));
-          }
-          else
-          {
-            throw new NotSupportedException($"Tipo não suportado: {value.GetType().FullName}");
-          }
-        }
-
         var kind = GetKind(_rawValue);
         if (kind != null)
           _rawValue = value;

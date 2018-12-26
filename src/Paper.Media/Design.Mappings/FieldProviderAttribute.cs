@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Toolset.Collections;
 using System.Reflection;
-using Paper.Media.Routing;
+using Paper.Media.Rendering;
 
 namespace Paper.Media.Design.Mappings
 {
@@ -27,7 +27,7 @@ namespace Paper.Media.Design.Mappings
       Keys = keys;
     }
 
-    internal override void RenderField(Field field, PropertyInfo property, object host)
+    internal override void RenderField(Field field, PropertyInfo property, object host, PaperContext ctx)
     {
       if (ProviderType != null)
       {

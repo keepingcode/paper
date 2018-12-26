@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Toolset.Collections;
 
-namespace Paper.Media.Utilities.Types
+namespace Media.Utilities.Types
 {
   /// <summary>
   /// Cache de dados para o contexto de renderização do Paper.
   /// </summary>
   /// <seealso cref="System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String, System.Object}}" />
-  [Obsolete("ICache já implementa uma solução com esta mas melhor desacoplada.")]
   public class EntryCollection : IEnumerable<KeyValuePair<string, object>>
   {
     private readonly HashMap map;

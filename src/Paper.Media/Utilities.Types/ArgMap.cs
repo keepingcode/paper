@@ -9,7 +9,7 @@ using Toolset.Collections;
 using Toolset.Data;
 using Toolset.Reflection;
 
-namespace Paper.Media.Utilities.Types
+namespace Media.Utilities.Types
 {
   public class ArgMap : IEnumerable<KeyValuePair<string, object>>
   {
@@ -39,24 +39,15 @@ namespace Paper.Media.Utilities.Types
       foreach (var token in key.Split('.'))
       {
         if (value == null)
-        {
-          value = null;
           break;
-        }
 
         while (value is IVar)
-        {
           value = ((IVar)value).Value;
-        }
 
         if (value is ArgMap)
-        {
           value = ((ArgMap)value).items[token];
-        }
         else
-        {
           value = value?._Get(token);
-        }
       }
       return value;
     }

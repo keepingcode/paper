@@ -176,9 +176,9 @@ namespace Toolset.Reflection
       }
 
       // Tratamento especial para o tipo Any do Toolset.
-      if (typeof(Var).IsAssignableFrom(property.PropertyType))
+      if (typeof(IVar).IsAssignableFrom(property.PropertyType))
       {
-        if (!(value is Var))
+        if (!(value is IVar))
         {
           value = Activator.CreateInstance(property.PropertyType, value);
         }

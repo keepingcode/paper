@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Toolset.Reflection;
 
-namespace Paper.Media.Utilities.Types
+namespace Media.Utilities.Types
 {
   /// <summary>
   /// Utilitário de processamento de template de URI

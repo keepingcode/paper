@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Paper.Core.Proxies;
 
-namespace Paper.Host.Server.Proxies
+namespace Paper.WebApp.Server.Proxies
 {
   interface IProxyRegistry
   {

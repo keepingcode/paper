@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Paper.Media;
-using Paper.Media.Routing;
+using Paper.Media.Rendering;
 
 namespace Paper.Media.Design.Papers
 {
@@ -37,7 +37,7 @@ namespace Paper.Media.Design.Papers
       this.Rel = rel;
     }
 
-    public Link RenderLink(IContext ctx)
+    public Link RenderLink(PaperContext ctx)
     {
       return this;
     }

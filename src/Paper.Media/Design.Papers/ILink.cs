@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Paper.Media;
-using Paper.Media.Routing;
+using Paper.Media.Rendering;
 
 namespace Paper.Media.Design.Papers
 {
@@ -11,6 +11,6 @@ namespace Paper.Media.Design.Papers
   /// </summary>
   public interface ILink
   {
-    Link RenderLink(IContext context);
+    Link RenderLink(PaperContext ctx);
   }
 }

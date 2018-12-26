@@ -46,9 +46,9 @@ namespace Paper.Media.Design.Papers
 
     private static object ResolveValue(object value)
     {
-      while (value is IVar var)
+      while (value is IVar)
       {
-        value = var.Value;
+        value = ((IVar)value).Value;
       }
       return value;
     }

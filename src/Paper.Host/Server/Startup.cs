@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -24,6 +23,7 @@ namespace Paper.Host.Server
 
     public void ConfigureServices(IServiceCollection services)
     {
+      //services.AddPaperWebAppServices();
       services.AddPaperServices();
     }
 
@@ -32,8 +32,11 @@ namespace Paper.Host.Server
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
 
-      app.UsePaper();
+      app.UseDefaultFiles();
+      app.UseStaticFiles();
       app.UseDirectoryBrowser();
+      //app.UsePaperWebAppMiddlewares();
+      app.UsePaperMiddlewares();
     }
   }
 }

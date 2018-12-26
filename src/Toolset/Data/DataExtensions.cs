@@ -49,7 +49,7 @@ namespace Toolset.Data
       {
         var typeName = connection.GetType().FullName.Replace("Connection", "DataAdapter");
 
-        var type = Reflection.Types.FindType(typeName);
+        var type = Types.FindType(typeName);
         if (type == null)
           throw new NotSupportedException("O adaptador para consulta a base de dados não existe: " + typeName);
 
@@ -68,7 +68,7 @@ namespace Toolset.Data
       {
         var typeName = command.GetType().FullName.Replace("Command", "DataAdapter");
 
-        var type = Reflection.Types.FindType(typeName);
+        var type = Types.FindType(typeName);
         if (type == null)
           throw new NotSupportedException("O adaptador para consulta a base de dados não existe: " + typeName);
 

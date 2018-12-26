@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Paper.Media.Routing;
-using Paper.Media.Utilities.Types;
+using Media.Utilities.Types;
+using Paper.Media.Rendering;
 using Toolset;
 using Toolset.Collections;
 using Toolset.Reflection;
@@ -25,9 +25,9 @@ namespace Paper.Media.Design.Papers
       this.builder = builder;
     }
 
-    public Link RenderLink(IContext ctx)
+    public Link RenderLink(PaperContext ctx)
     {
-      var paper = ctx.Factory.CreateInstance<T>();
+      var paper = ctx.Injector.CreateInstance<T>();
 
       setup?.Invoke(paper);
 
@@ -49,10 +49,10 @@ namespace Paper.Media.Design.Papers
       return link;
     }
 
-    private string CreateHref(IContext ctx, T paper)
+    private string CreateHref(PaperContext ctx, T paper)
     {
-      var paperBlueprint = ctx.Catalog.GetPaperBlueprint<T>();
-      var paperTemplate = new UriTemplate(paperBlueprint.UriTemplate);
+      var paperInfo = PaperSpec.GetSpec<T>();
+      var paperTemplate = new UriTemplate(paperInfo.Route);
 
       paperTemplate.SetArgsFromGraph(paper);
 
@@ -60,9 +60,9 @@ namespace Paper.Media.Design.Papers
       var targetUri = new Route(uri);
 
       targetUri = targetUri.SetArg(
-        "f", ctx.RequestUri.Query["f"],
-        "in", ctx.RequestUri.Query["in"],
-        "out", ctx.RequestUri.Query["out"]
+        "f", ctx.PathArgs["f"],
+        "in", ctx.PathArgs["in"],
+        "out", ctx.PathArgs["out"]
       );
 
       var filter = paper._Get<IFilter>("Filter");
