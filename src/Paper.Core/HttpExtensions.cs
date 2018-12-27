@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Paper.Media.Rendering;
 using Toolset.Collections;
 
 namespace Paper.Core
@@ -26,7 +27,7 @@ namespace Paper.Core
         request.QueryString.ToUriComponent()
       );
 
-      return uri;
+      return PaperContext.SanitizeRequestUri(uri);
     }
 
     public static IDictionary<object, object> GetCache(this HttpContext httpContext)

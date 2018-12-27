@@ -18,11 +18,13 @@ namespace Paper.Media.Rendering
 
     public PaperContext(IInjector injector, object paper, IPaperCatalog catalog, string requestUri)
     {
+      requestUri = SanitizeRequestUri(requestUri);
+
       var paperSpec = PaperSpec.GetSpec(paper as Type ?? paper.GetType());
       var template = paperSpec.UriTemplate;
       var prefix = ApiPrefix ?? "";
 
-      if (!prefix.StartsWith("/"))
+       if (!prefix.StartsWith("/"))
         prefix = "/" + prefix;
       while (prefix.EndsWith("/"))
         prefix = prefix.Substring(0, prefix.Length - 1);
@@ -63,5 +65,27 @@ namespace Paper.Media.Rendering
     public ArgMap PathArgs { get; }
 
     public EntryCollection Cache => _cache ?? (_cache = new EntryCollection());
+
+    public static string SanitizeRequestUri(string requestUri)
+    {
+      if (requestUri.Count(c => c == '?') >= 2)
+      {
+        // Corrige multiplos parametros separados por interrogacao.
+        // Um "&" é inserido no lugar.
+        // Como em:
+        //   host.com/talz?f=json?id=10
+        // Se torna:
+        //   host.com/talz?f=json&id=10
+        var parts = requestUri.Split('?');
+
+        var a = parts.First();
+        var b = parts.Skip(1).First();
+        var c = string.Join("&", parts.Skip(2));
+
+        requestUri = $"{a}?{b}&{c}";
+      }
+
+      return requestUri;
+    }
   }
 }

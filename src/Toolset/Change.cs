@@ -16,7 +16,7 @@ namespace Toolset
 
       if (value == null)
         return null;
-      
+
       // Melhoria para tipos Nullable<T>
       //
       //  var type = targetType;
@@ -29,7 +29,7 @@ namespace Toolset
       //
       //  if (isNullable)
       //    value = Activator.CreateInstance(targetType, value);
-      
+
       if (targetType.IsAssignableFrom(sourceType))
         return value;
 
@@ -66,7 +66,7 @@ namespace Toolset
            && targetType.IsAssignableFrom(method.ReturnType)
         select method
       ).FirstOrDefault();
-      
+
       if (casting != null)
       {
         var castValue = casting.Invoke(null, new[] { value });
@@ -75,7 +75,25 @@ namespace Toolset
 
       targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
-      var convertedValue = Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+      object convertedValue;
+
+      if (targetType.IsEnum)
+      {
+        var text = value.ToString();
+        if (Regex.IsMatch(text, "[0-9]+"))
+        {
+          int number = int.Parse(text);
+          convertedValue = Enum.ToObject(targetType, number);
+        }
+        else
+        {
+          convertedValue = Enum.Parse(targetType, text);
+        }
+      }
+      else
+      {
+        convertedValue = Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+      }
 
       return convertedValue;
     }

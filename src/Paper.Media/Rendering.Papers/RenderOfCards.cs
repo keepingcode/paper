@@ -66,7 +66,7 @@ namespace Paper.Media.Rendering.Papers
               var isSelf = (link.Rel?.Contains(RelNames.Self) == true);
               if (!isSelf)
               {
-                link.AddRel(RelNames.RowLink);
+                link.AddRel(RelNames.Self);
               }
               rowEntity.AddLink(link);
             }

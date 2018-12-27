@@ -22,6 +22,8 @@ namespace Paper.Media.Utilities
       return value is string
           || value is Uri
           || value is CaseVariantString
+          || value is Guid
+          || value.GetType().IsEnum
           || value.GetType().FullName == "Microsoft.AspNetCore.Http.PathString";
     }
   }

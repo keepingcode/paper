@@ -51,6 +51,7 @@ namespace Paper.Media.Rendering.Papers
       //
       // Fase 2: Repassando parametros
       //
+      RenderOfBlueprint.SetArgs(paper, ctx.PathArgs);
       RenderOfBasics.SetArgs(paper, ctx.PathArgs);
       RenderOfPage.SetArgs(paper, ctx);
       RenderOfSort.SetArgs(paper, ctx);
@@ -68,6 +69,7 @@ namespace Paper.Media.Rendering.Papers
       //
       // Fase 4: Renderizando entidade
       //
+      RenderOfBlueprint.Render(paper, entity, ctx);
       RenderOfBasics.Render(paper, entity, ctx);
       RenderOfData.Render(paper, entity, ctx);
       RenderOfRows.Render(paper, entity, ctx);

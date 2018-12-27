@@ -30,10 +30,13 @@ namespace Paper.Core
       if (acceptHeader.Contains("text/json"))
         return "text/json";
 
-      if (acceptHeader.Contains("application/xml") || acceptHeader.Contains("*/xml"))
-        return "application/xml";
-      if (acceptHeader.Contains("text/xml"))
-        return "text/xml";
+      //
+      // POR ORA XML NAO EH SUPORTADO
+      //
+      // if (acceptHeader.Contains("application/xml") || acceptHeader.Contains("*/xml"))
+      //   return "application/xml";
+      // if (acceptHeader.Contains("text/xml"))
+      //   return "text/xml";
 
       return "application/vnd.siren+json";
     }

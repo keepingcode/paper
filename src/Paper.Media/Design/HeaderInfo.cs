@@ -20,6 +20,16 @@ namespace Paper.Media.Design
       this.properties = properties;
     }
 
+    public HeaderInfo(string name, string title, string dataType, bool? hidden = null, SortOrder? order = null)
+    {
+      this.properties = new PropertyCollection();
+      this.Name = name;
+      this.Title = title;
+      this.DataType = dataType;
+      this.Hidden = hidden;
+      this.Order = order;
+    }
+
     private T Get<T>(string property)
     {
       var value = properties[property]?.Value;
