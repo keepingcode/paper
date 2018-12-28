@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Paper.Host.Server.Demo.Domain;
+using Paper.Host.Server.Demo.Papers.Links;
 using Paper.Host.Server.Demo.Papers.Model;
 using Paper.Host.Server.Demo.Store;
 using Paper.Media.Design;
@@ -19,54 +20,19 @@ namespace Paper.Host.Server.Demo.Papers
 
     public string GetTitle() => $"Ticket #{Id}";
 
+    public IEnumerable<ILink> GetLinks()
+      => new MainMenu();
+
     public TicketModel GetData()
     {
-      var store = DataStore.Current;
-      var ticket = store.Get<Ticket>(Id);
-      if (ticket == null)
-        return null;
-
-      var model = new TicketModel()._CopyFrom(ticket);
-      model.Autor = store.Get<Usuario>(ticket.AutorId)?.Nome;
-      model.Responsavel = store.Get<Usuario>(ticket.ResponsavelId)?.Nome;
-      return model;
+      var ticket = DataStore.Current.FindOne<Ticket>(Id);
+      return (ticket != null) ? new TicketModel(ticket) : null;
     }
 
     public IEnumerable<HeaderInfo> GetDataHeaders(TicketModel data)
       => null;
 
     public IEnumerable<ILink> GetDataLinks(TicketModel data)
-      => new ILink[]
-      {
-        new LinkTo<MenuPaper>(),
-        new LinkTo<TicketsPaper>(
-          null,
-          builder => builder.Title= "Todos os Tickets"
-        ),
-        new LinkTo<UsuarioPaper>(
-          paper => paper.Id = data.AutorId,
-          builder =>
-          {
-            builder.Title = "Autor do Ticket";
-            builder.Rel = new Media.NameCollection
-            {
-              nameof(data.Autor),
-              nameof(data.AutorId)
-            };
-          }
-        ),
-        new LinkTo<UsuarioPaper>(
-          paper => paper.Id = data.ResponsavelId,
-          builder =>
-          {
-            builder.Title = "Responsável do Ticket";
-            builder.Rel = new Media.NameCollection
-            {
-              nameof(data.Responsavel),
-              nameof(data.ResponsavelId)
-            };
-          }
-        )
-      };
+      => new TicketMenu(data);
   }
 }

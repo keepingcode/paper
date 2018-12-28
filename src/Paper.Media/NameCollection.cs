@@ -60,6 +60,11 @@ namespace Paper.Media
       return new NameCollection(items);
     }
 
+    public static implicit operator NameCollection(string[] items)
+    {
+      return new NameCollection(items);
+    }
+
     private static IEnumerable<string> ParseNames2(IEnumerable<string> tokens)
     {
       var names =

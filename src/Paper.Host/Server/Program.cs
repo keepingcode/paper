@@ -18,6 +18,7 @@ namespace Paper.Host.Server
       try
       {
         WebHost.CreateDefaultBuilder(args)
+          .UseUrls("http://localhost:8080/", "http://192.168.15.8:8080/")
           //.UsePaperWebAppSettings()
           .UsePaperSettings()
           .UseStartup<Startup>()

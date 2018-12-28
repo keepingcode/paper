@@ -13,28 +13,11 @@ namespace Paper.Media.Design.Papers
   /// <seealso cref="Media.Design.Extensions.Papers.ILink" />
   public class LinkTo : Link, ILink
   {
-    public LinkTo()
-    {
-    }
-
-    public LinkTo(string href)
-    {
-      this.Href = href;
-      this.Rel = RelNames.Link;
-    }
-
-    public LinkTo(string href, string title)
+    public LinkTo(string href = null, string title = null, NameCollection rel = null)
     {
       this.Href = href;
       this.Title = title;
-      this.Rel = RelNames.Link;
-    }
-
-    public LinkTo(string href, string title, string rel)
-    {
-      this.Href = href;
-      this.Title = title;
-      this.Rel = rel;
+      this.Rel = rel ?? RelNames.Link;
     }
 
     public Link RenderLink(PaperContext ctx)

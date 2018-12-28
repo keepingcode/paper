@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Paper.Host.Server.Demo.Papers.Links;
 using Paper.Host.Server.Demo.Papers.Model;
 using Paper.Host.Server.Demo.Store;
 using Paper.Media.Design;
@@ -12,27 +13,38 @@ using Toolset;
 namespace Paper.Host.Server.Demo.Papers
 {
   [Expose, Paper("/Menu")]
-  public class MenuPaper : IPaperCards<Card<MenuModel>>
+  public class MenuPaper : IPaperCards<Card<ILink>>
   {
+    private static readonly Card<ILink>[] Menu =
+    {
+      new Card<ILink>
+      {
+        Title = "Tickets",
+        Icon = "forum",
+        Data = new LinkTo<TicketsPaper>(),
+        Description = "Gerencie seus tickets"
+      },
+      new Card<ILink>
+      {
+        Title = "Usuários",
+        Icon = "people",
+        Data = new LinkTo<UsuariosPaper>(),
+        Description = "Crie e edite usuários"
+      }
+    };
+
     public string GetTitle() => "Menu";
 
-    public IEnumerable<Card<MenuModel>> GetCards()
-    {
-      return
-        from item in DataStore.Current.All<MenuModel>()
-        select new Card<MenuModel>
-        {
-          Data = item,
-          Title = item.Nome,
-          Description = item.Descricao,
-          Icon = item.Icon
-        };
-    }
+    public IEnumerable<ILink> GetLinks() 
+      => new MainMenu();
 
-    public IEnumerable<HeaderInfo> GetCardHeaders(Card<MenuModel> card)
+    public IEnumerable<Card<ILink>> GetCards()
+      => Menu;
+
+    public IEnumerable<HeaderInfo> GetCardHeaders(Card<ILink> card)
       => null;
 
-    public IEnumerable<ILink> GetCardLinks(Card<MenuModel> card)
-      => new[] { new LinkTo(card.Data.Link) };
+    public IEnumerable<ILink> GetCardLinks(Card<ILink> card)
+      => new[] { card.Data };
   }
 }

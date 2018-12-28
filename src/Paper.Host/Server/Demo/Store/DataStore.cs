@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Paper.Host.Server.Demo.Domain;
@@ -10,107 +11,19 @@ namespace Paper.Host.Server.Demo.Store
 {
   public class DataStore
   {
-    public static DataStore Current { get; }
+    private string[] SmallStore;
+    private string[] LargeStore;
+
+    public static DataStore Current { get; } = new DataStore();
 
     private readonly List<Node> cache = new List<Node>();
 
     private readonly object synclock = new object();
 
-    static DataStore()
-    {
-      var current = new DataStore();
-      FillUp(current);
-      Current = current;
-    }
-
     private DataStore()
     {
-    }
-
-    private static void FillUp(DataStore current)
-    {
-      var menu = new MenuModel[]
-      {
-        new MenuModel
-        {
-          Id = 1,
-          Nome = "Tickets",
-          Descricao = "Gerencie seus tickets",
-          Icon = "forum",
-          Link = "/Tickets"
-        },
-        new MenuModel
-        {
-          Id = 2,
-          Nome = "Usuários",
-          Descricao = "Crie e edite usuários",
-          Icon = "people",
-          Link = "/Usuarios"
-        }
-      };
-      menu.ForEach(x => current.Save(x, x.Id));
-
-      var usuarios = new Usuario[]
-      {
-        new Usuario
-        {
-          Id = 1,
-          Login = "admin",
-          Nome = "Administrador",
-        },
-        new Usuario
-        {
-          Id = 2,
-          Login = "guest",
-          Nome = "Convidado",
-        }
-      };
-      usuarios.ForEach(x => current.Save(x, x.Id));
-
-      var tickets = new Ticket[]
-      {
-        new Ticket
-        {
-          Id = 1,
-          Titulo = "Lorem ipsum dolor sit amet",
-          Descricao = "Consectetur adipiscing elit. Donec et dapibus purus. Donec velit diam, eleifend auctor quam accumsan, dignissim consequat nisi. Nulla eros urna, auctor eget purus eget, ornare aliquet quam. Ut velit felis, aliquet vitae consectetur eu, luctus mattis orci. Nam ut justo velit. Cras auctor turpis a nibh pellentesque rhoncus. Nunc accumsan fermentum tortor, quis dictum dui vestibulum id. Morbi finibus elit vitae enim tempus, sit amet porta enim rhoncus. Pellentesque id sapien ultricies, sagittis libero vitae, hendrerit urna. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque convallis, nunc sed luctus aliquet, augue ligula tristique mauris, ac rhoncus lorem erat eu justo. Fusce iaculis nunc ac lectus posuere, ac efficitur quam dapibus. Phasellus vel convallis leo, ut facilisis metus. Nullam feugiat nisl et velit vehicula, eget iaculis neque commodo. Pellentesque consectetur, purus nec condimentum tempor, eros est varius erat, sed vehicula diam quam ut neque.",
-          CriadoEm = new DateTime(2018, 11, 16),
-          AutorId = 1,
-          ResponsavelId = 2,
-          Status = Status.Aberto
-        },
-        new Ticket
-        {
-          Id = 2,
-          Titulo = "Aenean eget facilisis tortor",
-          Descricao = "Praesent sed ex ipsum. Mauris eget sem sit amet augue blandit dapibus. Aenean volutpat justo vulputate risus faucibus, ultricies facilisis velit venenatis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi at sem non tellus vulputate commodo a quis justo. Quisque arcu mauris, egestas ac quam nec, efficitur finibus ligula. Curabitur ut sapien mi. Morbi facilisis vestibulum enim volutpat pellentesque. Suspendisse metus nunc, rutrum id porttitor a, accumsan quis ipsum. Donec congue condimentum metus, nec finibus nisl bibendum et.",
-          CriadoEm = new DateTime(2018, 11, 16),
-          AutorId = 2,
-          ResponsavelId = 1,
-          Status = Status.EmAndamento
-        },
-        new Ticket
-        {
-          Id = 3,
-          Titulo = "Proin tristique est sed mauris rhoncus",
-          Descricao = "Vitae commodo augue pulvinar. Aenean aliquam lectus interdum ex finibus efficitur. In at enim nunc. Nunc eu scelerisque magna. Cras iaculis nisi vitae nibh laoreet, vitae volutpat tortor suscipit. Donec quis elit eu augue tincidunt lacinia quis finibus quam. Vivamus accumsan est eget dignissim hendrerit. Maecenas vehicula vel enim et ornare. Ut commodo mollis metus at vehicula.",
-          CriadoEm = new DateTime(2018, 11, 16),
-          AutorId = 2,
-          ResponsavelId = 1,
-          Status = Status.Cancelado
-        },
-        new Ticket
-        {
-          Id = 4,
-          Titulo = "Nulla facilisi",
-          Descricao = "Maecenas non leo eget nisi dapibus dignissim. Nam sit amet varius nisl. Vestibulum sed tincidunt dui, eget fringilla urna. Morbi ligula sem, venenatis non dignissim nec, suscipit nec ex. In hac habitasse platea dictumst. Duis sit amet tellus quis sem finibus lacinia. Nam consectetur eros imperdiet semper sollicitudin. Maecenas hendrerit, sem vitae ullamcorper interdum, lorem elit ultricies dolor, in posuere neque ipsum quis leo. Aenean dictum quis felis quis tincidunt.",
-          CriadoEm = new DateTime(2018, 11, 16),
-          AutorId = 2,
-          ResponsavelId = 1,
-          Status = Status.Resolvido
-        }
-      };
-      tickets.ForEach(x => current.Save(x, x.Id));
+      LoadEmbeddedStore();
+      FillUp();
     }
 
     public IEnumerable<T> All<T>()
@@ -125,7 +38,20 @@ namespace Paper.Host.Server.Demo.Store
       }
     }
 
-    public T Get<T>(object id)
+    public IEnumerable<T> Find<T>(Func<T, bool> filter)
+      where T : class
+    {
+      lock (synclock)
+      {
+        return
+          from node in cache
+          where node.Item is T
+          where filter.Invoke((T)node.Item)
+          select (T)node.Item;
+      }
+    }
+
+    public T FindOne<T>(object id)
       where T : class
     {
       lock (synclock)
@@ -137,19 +63,6 @@ namespace Paper.Host.Server.Demo.Store
           select (T)node.Item
         ).FirstOrDefault();
         return item;
-      }
-    }
-
-    public IEnumerable<T> Find<T>(Func<T, bool> filter)
-      where T : class
-    {
-      lock (synclock)
-      {
-        return
-          from node in cache
-          where node.Item is T
-          where filter.Invoke((T)node.Item)
-          select (T)node.Item;
       }
     }
 
@@ -189,6 +102,134 @@ namespace Paper.Host.Server.Demo.Store
       lock (synclock)
       {
         cache.RemoveAll(node => node.Item is T || ids.Contains(node.Id));
+      }
+    }
+
+    private void LoadEmbeddedStore()
+    {
+      this.SmallStore = LoadEmbeddedLines("data-store.small.txt").ToArray();
+      this.LargeStore = LoadEmbeddedLines("data-store.large.txt").ToArray();
+    }
+
+    private IEnumerable<string> LoadEmbeddedLines(string filename)
+    {
+      var assembly = GetType().Assembly;
+      var manifest = assembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith(filename));
+      using (var stream = assembly.GetManifestResourceStream(manifest))
+      using (var reader = new StreamReader(stream))
+      {
+        string line;
+        while ((line = reader.ReadLine()) != null)
+        {
+          if (!string.IsNullOrWhiteSpace(line))
+          {
+            yield return line;
+          }
+        }
+      }
+    }
+
+    private void FillUp()
+    {
+      int key;
+      var rnd = new Random(0);
+
+      //
+      // Usuários
+      //
+      new[]
+      {
+        new Usuario
+        {
+          Id = 1,
+          Login = "admin",
+          Nome = "Administrador",
+        },
+        new Usuario
+        {
+          Id = 2,
+          Login = "fulano",
+          Nome = "Fulano de Tal",
+        },
+        new Usuario
+        {
+          Id = 3,
+          Login = "betrano",
+          Nome = "Beltrano das Neves",
+        },
+        new Usuario
+        {
+          Id = 4,
+          Login = "sicrano",
+          Nome = "Sicrano Rico",
+        }
+      }.ForEach(usuario => Save(usuario, usuario.Id));
+
+      var usuarios = this.All<Usuario>().ToArray();
+
+      //
+      // Tickets
+      //
+      key = 0;
+      var statuses = Enum.GetValues(typeof(Status));
+      var maxTickets = this.LargeStore.Length;
+      for (int i = 0; i < maxTickets; i++)
+      {
+        var day = (i % 20) + 5;
+        var seconds = (7 * 60 * 60) + rnd.Next(9 * 60 * 60);
+
+        var status = (Status)statuses.GetValue(rnd.Next(statuses.Length));
+        var autor = usuarios[rnd.Next(usuarios.Length)];
+        var responsavel = usuarios.Except(autor).ElementAt(rnd.Next(usuarios.Length - 1));
+        
+        var ticket = new Ticket
+        {
+          Id = ++key,
+          Titulo = this.SmallStore[i],
+          Descricao = this.LargeStore[i],
+          CriadoEm = new DateTime(2018, 11, day).AddSeconds(seconds),
+          AutorId = autor.Id,
+          ResponsavelId = responsavel.Id,
+          Status = status
+        };
+
+        Save(ticket, ticket.Id);
+      }
+
+      //
+      // Comentarios
+      //
+      key = 0;
+      var tickets = this.All<Ticket>().ToArray();
+      var ticketsAbertosCount = tickets.Count(ticket => ticket.Status == Status.Aberto);
+      foreach (var ticket in tickets.Where(ticket => ticket.Status != Status.Aberto))
+      {
+        var criadoEm = ticket.CriadoEm;
+
+        var maxComentarios = rnd.Next(30);
+        for (int i = 0; i < maxComentarios; i++)
+        {
+          var seconds = rnd.Next(8 * 60 * 60);
+          criadoEm = criadoEm.AddSeconds(seconds);
+          var autor = usuarios[rnd.Next(usuarios.Length)];
+
+          var odd = rnd.Next(3);
+          var descricao =
+            (odd == 0)
+              ? this.LargeStore[rnd.Next(this.LargeStore.Length)]
+              : this.SmallStore[rnd.Next(this.SmallStore.Length)];
+
+          var comentario = new Comentario
+          {
+            Id = ++key,
+            TicketId = ticket.Id,
+            Descricao = descricao,
+            CriadoEm = criadoEm,
+            AutorId = autor.Id
+          };
+
+          Save(comentario, comentario.Id);
+        }
       }
     }
 

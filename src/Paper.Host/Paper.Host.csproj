@@ -32,6 +32,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Server\Demo\Store\data-store.large.txt" />
+    <None Remove="Server\Demo\Store\data-store.small.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Server\Demo\Store\data-store.large.txt" />
+    <EmbeddedResource Include="Server\Demo\Store\data-store.small.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.0" />
     <PackageReference Include="Npgsql" Version="4.0.0" />

@@ -18,8 +18,23 @@ namespace Paper.Media.Design.Papers
   {
     private readonly Action<T> setup;
     private readonly Action<Link> builder;
+    private readonly string title;
+    private readonly NameCollection rel;
 
-    public LinkTo(Action<T> setup = null, Action<Link> builder = null)
+    public LinkTo(string title = null, NameCollection rel = null)
+    {
+      this.title = title;
+      this.rel = rel;
+    }
+
+    public LinkTo(Action<T> setup, string title = null, NameCollection rel = null)
+    {
+      this.setup = setup;
+      this.title = title;
+      this.rel = rel;
+    }
+
+    public LinkTo(Action<T> setup, Action<Link> builder)
     {
       this.setup = setup;
       this.builder = builder;
@@ -43,8 +58,20 @@ namespace Paper.Media.Design.Papers
 
       builder?.Invoke(link);
 
+      if (title != null)
+      {
+        link.Title = title;
+      }
+
+      if (rel != null)
+      {
+        link.AddRel(rel);
+      }
+
       if (link.Rel?.Any() != true)
-        link.Rel = RelNames.Link;
+      {
+        link.AddRel(RelNames.Link);
+      }
 
       return link;
     }
