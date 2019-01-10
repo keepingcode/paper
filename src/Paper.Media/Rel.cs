@@ -56,7 +56,9 @@ namespace Paper.Media
 
     #region Personalizados
 
-    Link = 1000,
+    Blueprint = 1000,
+
+    Link,
 
     /// <summary>
     /// Relacionamento entre um link e um cabeçalho.

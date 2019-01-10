@@ -8,7 +8,7 @@ namespace Paper.Host.Server.Demo.Papers.Links
 {
   public static class MenuExtensions
   {
-    public static IEnumerable<ILink> ExceptSelf<T>(T menu)
+    public static IEnumerable<ILink> ExceptSelf<T>(this T menu)
       where T : IEnumerable<ILink>
     {
       return

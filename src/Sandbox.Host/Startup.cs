@@ -6,11 +6,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Paper.Core;
+using Sandbox.Host.Core;
 
-namespace Paper.Host.Server
+namespace Sandbox.Host
 {
   public class Startup
   {
@@ -23,8 +21,6 @@ namespace Paper.Host.Server
 
     public void ConfigureServices(IServiceCollection services)
     {
-      //services.AddPaperWebAppServices();
-      services.AddPaperServices();
     }
 
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -32,11 +28,11 @@ namespace Paper.Host.Server
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
 
+      app.UseMiddleware<SandboxMiddleware>();
+
       app.UseDefaultFiles();
       app.UseStaticFiles();
       app.UseDirectoryBrowser();
-      //app.UsePaperWebAppMiddlewares();
-      app.UsePaperMiddlewares();
     }
   }
 }

@@ -34,5 +34,9 @@ namespace Paper.Host.Server.Demo.Papers
 
     public IEnumerable<ILink> GetDataLinks(UsuarioModel data)
       => new UsuarioMenu(data);
+
+    public void Save(Usuario usuario)
+    {
+    }
   }
 }

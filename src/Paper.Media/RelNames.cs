@@ -55,6 +55,8 @@ namespace Paper.Media
 
     #region Personalizados
 
+    public const string Blueprint = "blueprint";
+
     public const string Link = "link";
 
     /// <summary>
