@@ -16,7 +16,18 @@ namespace Sandbox.Bot
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new Forms.MainForm());
+
+      var launcher = new Forms.LauncherForm();
+      Application.Run(launcher);
+
+      if (launcher.DialogResult == DialogResult.OK)
+      {
+        Application.Run(new Forms.MainForm(
+            launcher.PaperClient
+          , launcher.Blueprint
+          , launcher.BlueprintEntity
+        ));
+      }
     }
   }
 }

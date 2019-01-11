@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Toolset.Collections;
 using Toolset.Reflection;
 
-namespace Sandbox.Host.Core
+namespace Sandbox.Lib
 {
   public class UriString
   {
@@ -15,6 +18,8 @@ namespace Sandbox.Host.Core
     private string _path;
     private string _args;
     private string _verb;
+
+    private HashMap argMap;
 
     public UriString()
     {
@@ -79,13 +84,14 @@ namespace Sandbox.Host.Core
 
     public string Args
     {
-      get => _args;
+      get => _args ?? (_args = WrapArgs());
       set
       {
         if (!string.IsNullOrEmpty(value) && !Regex.IsMatch(value, @"^$|^/[^?]+"))
           throw new FormatException(@"Formato inválido para argumentos de URI. Exemplo de formato suportado: ""?id=10&nome=dez""");
 
-        _args = value ?? "";
+        argMap = new HashMap();
+        UnwrapArgs(value ?? "");
       }
     }
 
@@ -101,18 +107,146 @@ namespace Sandbox.Host.Core
       }
     }
 
+    public UriString SetArgs(string args)
+    {
+      UnwrapArgs(args);
+      return this;
+    }
+
+    public UriString SetArgs(object graph)
+    {
+      if (graph is string args)
+      {
+        UnwrapArgs(args);
+      }
+      else
+      {
+        foreach (var key in graph._GetPropertyNames())
+        {
+          var value = graph._Get(key);
+          if (value != null)
+          {
+            if (!(value is string) && value is IEnumerable items)
+            {
+              value = items.Cast<object>().ToList();
+            }
+            this.argMap[key] = value;
+          }
+        }
+      }
+      return this;
+    }
+
     public UriString Combine(UriString uri)
     {
-      var clone = new UriString(this);
       foreach (var property in uri._GetPropertyNames())
       {
         var value = uri._Get<string>(property);
         if (!string.IsNullOrEmpty(value))
         {
-          clone._Set(property, value);
+          this._Set(property, value);
         }
       }
-      return clone;
+      return this;
+    }
+
+    public UriString Clone()
+    {
+      return new UriString(this);
+    }
+
+    private void UnwrapArgs(string args)
+    {
+      if (string.IsNullOrWhiteSpace(args))
+        return;
+
+      var map = new HashMap();
+
+      args = args.Split('?').Last();
+      var tokens = args.Split('&');
+      foreach (var token in tokens)
+      {
+        var parts = token.Split('=');
+        var key = parts.First();
+        var value = parts.Skip(1).LastOrDefault() ?? "1";
+
+        var isArray = key.Contains("[]") || map.ContainsKey(key);
+        if (isArray)
+        {
+          key = key.Replace("[]", "");
+
+          List<object> items;
+
+          if (map.ContainsKey(key))
+          {
+            var current = map[key];
+            if (current is List<object> list)
+            {
+              items = list;
+            }
+            else
+            {
+              map[key] = items = new List<object> { current };
+            }
+          }
+          else
+          {
+            map[key] = items = new List<object>();
+          }
+
+          items.Add(value);
+        }
+        else
+        {
+          map[key] = value;
+        }
+      }
+
+      if (map.Count > 0)
+      {
+        this._args = null;
+        foreach (var key in map.Keys)
+        {
+          this.argMap[key] = map[key];
+        }
+      }
+    }
+
+    private string WrapArgs()
+    {
+      var terms = new List<string>();
+      foreach (var key in argMap.Keys)
+      {
+        var value = argMap[key];
+        if (value == null)
+          continue;
+
+        if (!(value is string) && value is IEnumerable items)
+        {
+          foreach (var item in items.Cast<object>())
+          {
+            terms.Add($"{key}[]={GetString(item)}");
+          }
+        }
+        else
+        {
+          terms.Add($"{key}={GetString(value)}");
+        }
+      }
+
+      return terms.Count > 0 ? $"?{string.Join("&", terms)}" : "";
+    }
+
+    private string GetString(object value)
+    {
+      if (value is DateTime date)
+      {
+        return date.ToString("yyyy-MM-ddTHH:mm:ss");
+      }
+      else
+      {
+        return value?.ToString();
+      }
     }
 
     private void Parse(string uri)

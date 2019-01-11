@@ -36,6 +36,12 @@ namespace Toolset
       if (targetType == typeof(string))
         return value.ToString();
 
+      if (targetType == typeof(Guid))
+        return Guid.Parse(value.ToString());
+
+      if (targetType == typeof(Version))
+        return Version.Parse(value.ToString());
+
       if (targetType == typeof(DateTime) && value is string)
       {
         var text = (string)value;

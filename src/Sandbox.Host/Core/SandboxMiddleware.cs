@@ -10,6 +10,7 @@ using Paper.Media;
 using Paper.Media.Design;
 using Paper.Media.Design.Papers;
 using Paper.Media.Serialization;
+using Sandbox.Lib;
 using Toolset.Xml;
 
 namespace Sandbox.Host.Core
@@ -37,7 +38,8 @@ namespace Sandbox.Host.Core
         var serializer = new MediaSerializer();
         var content = serializer.Serialize(entity, mediaType);
 
-        httpContext.Response.ContentType = mediaType;
+        httpContext.Response.ContentType = $"{mediaType}; charset=UTF-8";
+
         await httpContext.Response.WriteAsync(content);
       }
       else if (target?.Value is Uri uri)
@@ -56,7 +58,7 @@ namespace Sandbox.Host.Core
       switch (uri.Path.ToLower())
       {
         case "":
-          return uri.Combine("/index").ToUri();
+          return uri.Clone().Combine("/index").ToUri();
 
         case "/index":
           return GetIndex(uri);
@@ -79,7 +81,7 @@ namespace Sandbox.Host.Core
         Text = "Olá, mundo!"
       });
       entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Combine("/blueprint"), "Blueprint", Rel.Blueprint);
+      entity.AddLink(uri.Clone().Combine("/blueprint"), "Blueprint", Rel.Blueprint);
       return entity;
     }
 
@@ -94,15 +96,17 @@ namespace Sandbox.Host.Core
         Theme = "blue",
         Info = new Blueprint.Details
         {
-          Name = "DemoApp",
-          Title = "Demo App",
-          Description = "Aplicativo de demonstração do Paper",
+          Name = "Tickets",
+          Title = "Tickets",
+          Description = "Sistema de atendimento a clientes.",
+          Manufacturer = "KeepCoding",
+          Copyright = "Copyleft (ɔ) All rights reversed",
           Guid = Guid.Parse("D2C9BA1E-0F97-4C93-9FA9-AB1D5EDA2000"),
           Version = Version.Parse("1.0.0")
         }
       });
       entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Combine("/index"), "Início", Rel.Index);
+      entity.AddLink(uri.Clone().Combine("/index"), "Início", Rel.Index);
       return entity;
     }
   }

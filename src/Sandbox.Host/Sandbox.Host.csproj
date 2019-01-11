@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Paper.Media\Paper.Media.csproj" />
+    <ProjectReference Include="..\Sandbox.Lib\Sandbox.Lib.csproj" />
     <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj" />
     <ProjectReference Include="..\Toolset.Serialization\Toolset.Serialization.csproj" />
     <ProjectReference Include="..\Toolset.Text.Template\Toolset.Text.Template.csproj" />

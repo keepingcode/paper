@@ -24,6 +24,8 @@ namespace Paper.Media.Design.Papers
       public string Name { get; set; }
       public string Title { get; set; }
       public string Description { get; set; }
+      public string Manufacturer { get; set; }
+      public string Copyright { get; set; }
       public Version Version { get; set; }
     }
   }
