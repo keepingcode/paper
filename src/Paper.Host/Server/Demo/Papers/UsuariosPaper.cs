@@ -55,9 +55,5 @@ namespace Paper.Host.Server.Demo.Papers
 
       public string Nome { get; set; }
     }
-
-    public Usuario Create()
-    {
-    }
   }
 }

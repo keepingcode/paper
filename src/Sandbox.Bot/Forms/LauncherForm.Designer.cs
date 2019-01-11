@@ -28,6 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LauncherForm));
       this.lbMessage = new System.Windows.Forms.Label();
       this.pgProgress = new System.Windows.Forms.ProgressBar();
       this.btCancel = new System.Windows.Forms.Button();
@@ -101,11 +102,11 @@
       this.Controls.Add(this.btCancel);
       this.Controls.Add(this.pgProgress);
       this.Controls.Add(this.lbMessage);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(216, 170);
       this.Name = "LauncherForm";
-      this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Lançador do Sistema";
       this.TopMost = true;

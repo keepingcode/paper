@@ -37,7 +37,7 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -72,6 +72,24 @@
     <Compile Include="Forms\LauncherForm.Designer.cs">
       <DependentUpon>LauncherForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PaperForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PaperForm.Designer.cs">
+      <DependentUpon>PaperForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Papers\SandboxPaper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Papers\SandboxPaper.Designer.cs">
+      <DependentUpon>SandboxPaper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Papers\SinglePaper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\Papers\SinglePaper.Designer.cs">
+      <DependentUpon>SinglePaper.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,6 +97,7 @@
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Favicon.cs" />
+    <Compile Include="Helpers\Router.cs" />
     <Compile Include="Net\EntityParser.cs" />
     <Compile Include="Net\PaperClient.cs" />
     <Compile Include="Program.cs" />
@@ -92,6 +111,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LauncherForm.resx">
       <DependentUpon>LauncherForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PaperForm.resx">
+      <DependentUpon>PaperForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Papers\SandboxPaper.resx">
+      <DependentUpon>SandboxPaper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Papers\SinglePaper.resx">
+      <DependentUpon>SinglePaper.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
@@ -146,9 +174,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="favicon.ico">
+    <Content Include="Assets\favicon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Assets\up.ico" />
+    <None Include="Assets\form.ico" />
+    <None Include="Assets\invisible.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
