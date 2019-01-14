@@ -109,7 +109,6 @@
       this.Name = "LauncherForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Lançador do Sistema";
-      this.TopMost = true;
       this.Shown += new System.EventHandler(this.StartDialog_Shown);
       this.ResumeLayout(false);
       this.PerformLayout();

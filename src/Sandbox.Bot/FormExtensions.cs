@@ -24,12 +24,24 @@ namespace Sandbox.Bot
 
     public static void SetText(this Control control, string text)
     {
-      Do(control, () => control.Text = text);
+      Do(control, () =>
+      {
+        if (control.Text != text)
+        {
+          control.Text = text;
+        }
+      });
     }
 
     public static void SetForeColor(this Control control, Color color)
     {
-      Do(control, () => control.ForeColor = color);
+      Do(control, () =>
+      {
+        if (control.ForeColor != color)
+        {
+          control.ForeColor = color;
+        }
+      });
     }
   }
 }

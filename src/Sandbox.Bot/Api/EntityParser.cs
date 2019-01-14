@@ -1,17 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Paper.Media;
 using Paper.Media.Design.Papers;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Reflection;
 
-namespace Sandbox.Bot.Net
+namespace Sandbox.Bot.Api
 {
   static class EntityParser
   {
+    public static Entity ParseEntity(Stream inputStream)
+    {
+      var serializer = new MediaSerializer();
+      var entity = serializer.Deserialize(inputStream);
+      return entity;
+    }
+
     public static T ParseEntity<T>(Entity entity)
       where T : class, new()
     {

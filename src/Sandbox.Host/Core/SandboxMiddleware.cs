@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Net.Http.Headers;
+using Paper.Core;
 using Paper.Media;
 using Paper.Media.Design;
 using Paper.Media.Design.Papers;
 using Paper.Media.Serialization;
 using Sandbox.Lib;
+using Toolset;
 using Toolset.Xml;
 
 namespace Sandbox.Host.Core
@@ -26,10 +28,32 @@ namespace Sandbox.Host.Core
 
     public async Task Invoke(HttpContext httpContext, IServiceProvider serviceProvider)
     {
-      var requestUri = new UriString(httpContext.Request.GetDisplayUrl());
-      var target = RenderTarget(requestUri);
+      Entity entity = null;
+      try
+      {
+        var target = RenderTarget(httpContext);
+        if (target?.Value is Uri uri)
+        {
+          // Redirecionando para outra URI
+          httpContext.Response.StatusCode = (int)HttpStatusCode.Found;
+          httpContext.Response.Headers[HeaderNames.Location] = uri.ToString();
+          return;
+        }
 
-      if (target?.Value is Entity entity)
+        entity = target?.Value as Entity;
+        if (entity == null)
+        {
+          var requestUri = httpContext.Request.GetDisplayUrl();
+          entity = HttpEntity.Create(requestUri, HttpStatusCode.NotFound);
+        }
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+        entity = HttpEntity.Create(httpContext.Request.GetDisplayUrl(), ex);
+      }
+
+      try
       {
         var mediaType = httpContext.Request.ContentType?.Contains("xml") == true
           ? "application/xml"
@@ -38,27 +62,44 @@ namespace Sandbox.Host.Core
         var serializer = new MediaSerializer();
         var content = serializer.Serialize(entity, mediaType);
 
+        httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
         httpContext.Response.ContentType = $"{mediaType}; charset=UTF-8";
 
         await httpContext.Response.WriteAsync(content);
       }
-      else if (target?.Value is Uri uri)
+      catch (Exception ex)
       {
-        httpContext.Response.StatusCode = (int)HttpStatusCode.Found;
-        httpContext.Response.Headers[HeaderNames.Location] = uri.ToString();
-      }
-      else
-      {
-        await next.Invoke(httpContext);
+        ex.Trace();
+
+        var status = (int)HttpStatusCode.InternalServerError;
+        var statusDecription = 
+          HttpStatusCode.InternalServerError
+            .ToString()
+            .ChangeCase(TextCase.ProperCase);
+
+        httpContext.Response.StatusCode = status;
+        httpContext.Response.ContentType = $"text/plain; charset=UTF-8";
+
+        var nl = Environment.NewLine;
+        var cause = string.Join(nl, ex.GetCauseMessages().Select(x => $"  • {x}"));
+        var message = $"Fault {nl}  {status} - {statusDecription} {nl}Cause {nl}{cause}";
+
+        await httpContext.Response.WriteAsync(message);
       }
     }
 
-    private Target RenderTarget(UriString uri)
+    private Target RenderTarget(HttpContext httpContext)
     {
-      switch (uri.Path.ToLower())
+      var path = httpContext.Request.Path.Value;
+      var uri = new UriString(httpContext.Request.GetDisplayUrl(), httpContext.Request.PathBase);
+
+      switch (path.ToLower())
       {
         case "":
-          return uri.Clone().Combine("/index").ToUri();
+          return uri.Combine("/Index").ToUri();
+
+        case "/status":
+          return GetStatus(uri);
 
         case "/index":
           return GetIndex(uri);
@@ -71,6 +112,11 @@ namespace Sandbox.Host.Core
       }
     }
 
+    private Entity GetStatus(UriString uri)
+    {
+      return HttpEntity.Create(uri, HttpStatusCode.OK);
+    }
+
     private Entity GetIndex(UriString uri)
     {
       var entity = new Entity();
@@ -81,7 +127,7 @@ namespace Sandbox.Host.Core
         Text = "Olá, mundo!"
       });
       entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Clone().Combine("/blueprint"), "Blueprint", Rel.Blueprint);
+      entity.AddLink(uri.Clone().Combine("/Blueprint"), "Blueprint", Rel.Blueprint);
       return entity;
     }
 
@@ -106,7 +152,7 @@ namespace Sandbox.Host.Core
         }
       });
       entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Clone().Combine("/index"), "Início", Rel.Index);
+      entity.AddLink(uri.Clone().Combine("/Index"), "Início", Rel.Index);
       return entity;
     }
   }

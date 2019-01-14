@@ -10,26 +10,26 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
 using Paper.Media.Design.Papers;
+using Sandbox.Bot.Api;
 using Sandbox.Bot.Helpers;
-using Sandbox.Bot.Net;
 using Toolset;
 
 namespace Sandbox.Bot.Forms
 {
   public partial class LauncherForm : Form
   {
-    private CancellationTokenSource cancellationTokenSource;
+    private readonly CancellationTokenSource cancellation;
+    private readonly MediaClient client;
+
     private volatile bool suspended;
 
     public LauncherForm()
     {
-      this.cancellationTokenSource = new CancellationTokenSource();
-      this.PaperClient = new PaperClient();
+      this.cancellation = new CancellationTokenSource();
+      this.client = MediaClient.Current;
 
       InitializeComponent();
     }
-
-    public PaperClient PaperClient { get; private set; }
 
     public Entity BlueprintEntity { get; private set; }
 
@@ -37,22 +37,25 @@ namespace Sandbox.Bot.Forms
 
     private async void ConnectAsync()
     {
-      while (!cancellationTokenSource.IsCancellationRequested)
+      while (!cancellation.IsCancellationRequested)
       {
         try
         {
+          await Task.Delay(500);
+
           if (suspended)
           {
             lbMessage.SetText("Aguardando configurações...");
-            await Task.Delay(500);
             continue;
           }
 
           lbMessage.SetText("Localizando o servidor de dados...");
 
-          var entity = await PaperClient.ReadAsync("/blueprint");
+          var entity = await client.FindEntityAsync("/blueprint");
+          if (entity.IsFault())
+            throw entity.GetException() ?? new Exception(entity.GetMessage());
 
-          if (cancellationTokenSource.IsCancellationRequested)
+          if (cancellation.IsCancellationRequested)
             break;
           if (suspended)
             continue;
@@ -60,7 +63,7 @@ namespace Sandbox.Bot.Forms
           this.BlueprintEntity = entity;
           this.Blueprint = EntityParser.ParseEntity<Blueprint>(entity);
 
-          if (cancellationTokenSource.IsCancellationRequested)
+          if (cancellation.IsCancellationRequested)
             break;
           if (suspended)
             continue;
@@ -81,16 +84,16 @@ namespace Sandbox.Bot.Forms
           lbDetail.SetForeColor(Color.Firebrick);
         }
 
-        if (cancellationTokenSource.IsCancellationRequested)
+        if (cancellation.IsCancellationRequested)
           break;
         if (suspended)
           continue;
 
         lbMessage.SetText("Não conectado. Uma nova tentativa será feita em segundos...");
-        await Task.Delay(2000);
+        await Task.Delay(1500);
       }
 
-      if (cancellationTokenSource.IsCancellationRequested)
+      if (cancellation.IsCancellationRequested)
       {
         DialogResult = DialogResult.Cancel;
       }
@@ -101,7 +104,7 @@ namespace Sandbox.Bot.Forms
     {
       try
       {
-        var bytes = await PaperClient.ReadBytesAsync("/favicon.ico");
+        var bytes = await client.DownloadAsync("/favicon.ico");
         Favicon.Save(bytes);
       }
       catch (Exception ex)
@@ -118,7 +121,6 @@ namespace Sandbox.Bot.Forms
         using (var dialog = new SettingsDialog())
         {
           dialog.ShowDialog(this);
-          this.PaperClient = new PaperClient();
         }
       }
       finally
@@ -134,7 +136,7 @@ namespace Sandbox.Bot.Forms
 
     private void btCancel_Click(object sender, EventArgs e)
     {
-      cancellationTokenSource.Cancel();
+      cancellation.Cancel();
       lbMessage.Text = "Cancelando...";
       btCancel.Text = "Cancelando...";
       btCancel.Enabled = false;

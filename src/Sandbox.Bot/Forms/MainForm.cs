@@ -9,22 +9,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
 using Paper.Media.Design.Papers;
+using Sandbox.Bot.Api;
 using Sandbox.Bot.Forms.Papers;
 using Sandbox.Bot.Helpers;
-using Sandbox.Bot.Net;
 
 namespace Sandbox.Bot.Forms
 {
   public partial class MainForm : Form
   {
-    private readonly PaperClient client;
+    private readonly MediaClient client;
+    private readonly Blueprint blueprint;
+    private readonly Entity blueprintEntity;
 
-    private Blueprint blueprint;
-    private Entity blueprintEntity;
-
-    public MainForm(PaperClient client, Blueprint blueprint, Entity blueprintEntity)
+    public MainForm(Blueprint blueprint, Entity blueprintEntity)
     {
-      this.client = client;
+      this.client = MediaClient.Current;
       this.blueprint = blueprint;
       this.blueprintEntity = blueprintEntity;
       

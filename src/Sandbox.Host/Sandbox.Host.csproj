@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Paper.Core\Paper.Core.csproj" />
     <ProjectReference Include="..\Paper.Media\Paper.Media.csproj" />
     <ProjectReference Include="..\Sandbox.Lib\Sandbox.Lib.csproj" />
     <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj" />

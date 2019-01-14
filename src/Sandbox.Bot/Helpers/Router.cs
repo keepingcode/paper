@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
 using Sandbox.Bot.Forms;
-using Sandbox.Bot.Net;
 
 namespace Sandbox.Bot.Helpers
 {

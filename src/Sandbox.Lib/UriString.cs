@@ -15,6 +15,7 @@ namespace Sandbox.Lib
   {
     private string _protocol;
     private string _host;
+    private string _prefix;
     private string _path;
     private string _args;
     private string _verb;
@@ -25,8 +26,14 @@ namespace Sandbox.Lib
     {
     }
 
-    public UriString(string uri)
+    public UriString(Uri uri, string prefix = null)
+      : this(uri.ToString(), prefix)
     {
+    }
+
+    public UriString(string uri, string prefix = null)
+    {
+      this.Prefix = prefix;
       Parse(uri);
     }
 
@@ -54,13 +61,35 @@ namespace Sandbox.Lib
       }
     }
 
+    public string Prefix
+    {
+      get => _prefix;
+      set
+      {
+        if (!string.IsNullOrEmpty(value) && !Regex.IsMatch(value, @"^$|^/[^?]+"))
+          throw new FormatException(@"Formato inválido para um prefixo de URI. Exemplo de formato suportado: ""/api/1""");
+
+        while (value?.EndsWith("/") == true)
+        {
+          value = value.Substring(0, value.Length - 1);
+        }
+
+        _prefix = value ?? "";
+      }
+    }
+
     public string Path
     {
       get => _path;
       set
       {
         if (!string.IsNullOrEmpty(value) && !Regex.IsMatch(value, @"^$|^/[^?]+"))
-          throw new FormatException(@"Formato inválido para um caminho de URI. Exemplo de formato suportado: ""/api/usarios/123""");
+          throw new FormatException(@"Formato inválido para um caminho de URI. Exemplo de formato suportado: ""/usuarios/123""");
+
+        while (value?.EndsWith("/") == true)
+        {
+          value = value.Substring(0, value.Length - 1);
+        }
 
         value = value ?? "";
 
@@ -75,11 +104,6 @@ namespace Sandbox.Lib
           _path = value;
         }
       }
-    }
-
-    public Uri ToUri()
-    {
-      return new Uri(this.ToString(), UriKind.RelativeOrAbsolute);
     }
 
     public string Args
@@ -115,44 +139,52 @@ namespace Sandbox.Lib
 
     public UriString SetArgs(object graph)
     {
+      if (graph == null)
+        return this;
+
       if (graph is string args)
       {
         UnwrapArgs(args);
+        return this;
       }
-      else
+
+      foreach (var key in graph._GetPropertyNames())
       {
-        foreach (var key in graph._GetPropertyNames())
+        var value = graph._Get(key);
+        if (value != null)
         {
-          var value = graph._Get(key);
-          if (value != null)
+          if (!(value is string) && value is IEnumerable items)
           {
-            if (!(value is string) && value is IEnumerable items)
-            {
-              value = items.Cast<object>().ToList();
-            }
-            this.argMap[key] = value;
+            value = items.Cast<object>().ToList();
           }
+          this.argMap[key] = value;
         }
       }
       return this;
     }
 
+    public UriString Combine(string uri)
+    {
+      return Combine(new UriString(uri));
+    }
+
     public UriString Combine(UriString uri)
     {
-      foreach (var property in uri._GetPropertyNames())
+      foreach (var key in uri.argMap.Keys)
       {
-        var value = uri._Get<string>(property);
-        if (!string.IsNullOrEmpty(value))
-        {
-          this._Set(property, value);
-        }
+        this.argMap[key] = uri.argMap[key];
+      }
+      if (!string.IsNullOrEmpty(uri.Path))
+      {
+        this.Path = uri.Path;
       }
       return this;
     }
 
     public UriString Clone()
     {
-      return new UriString(this);
+      var clone = new UriString()._CopyFrom(this);
+      return clone;
     }
 
     private void UnwrapArgs(string args)
@@ -286,6 +318,14 @@ namespace Sandbox.Lib
         path = path.Substring(0, path.Length - 1);
       }
 
+      if (!string.IsNullOrEmpty(Prefix))
+      {
+        if (path.StartsWith($"{Prefix}/"))
+        {
+          path = path.Substring(Prefix.Length);
+        }
+      }
+
       match = Regex.Match(path, @"(.*)(/:[\w\d-._]+)$");
       if (match.Success)
       {
@@ -302,7 +342,18 @@ namespace Sandbox.Lib
 
     public override string ToString()
     {
-      return $"{Protocol}{Host}{Path}{Verb}{Args}";
+      return $"{Protocol}{Host}{Prefix}{Path}{Verb}{Args}";
+    }
+
+    public Uri ToUri()
+    {
+      return new Uri(this.ToString(), UriKind.RelativeOrAbsolute);
+    }
+
+    [Obsolete("No futuro UriString irá substituir Toolset.Route.")]
+    public Toolset.Route ToRoute()
+    {
+      return new Toolset.Route(ToString());
     }
 
     public static implicit operator string(UriString uri)
@@ -310,19 +361,15 @@ namespace Sandbox.Lib
       return uri.ToString();
     }
 
-    public static implicit operator UriString(string uri)
-    {
-      return new UriString(uri);
-    }
-
     public static implicit operator Uri(UriString uri)
     {
       return uri.ToUri();
     }
 
-    public static implicit operator UriString(Uri uri)
+    [Obsolete("No futuro UriString irá substituir Toolset.Route.")]
+    public static implicit operator Toolset.Route(UriString uri)
     {
-      return new UriString(uri.ToString());
+      return uri.ToRoute();
     }
   }
 }

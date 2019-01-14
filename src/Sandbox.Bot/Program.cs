@@ -22,11 +22,7 @@ namespace Sandbox.Bot
 
       if (launcher.DialogResult == DialogResult.OK)
       {
-        Application.Run(new Forms.MainForm(
-            launcher.PaperClient
-          , launcher.Blueprint
-          , launcher.BlueprintEntity
-        ));
+        Application.Run(new Forms.MainForm(launcher.Blueprint, launcher.BlueprintEntity));
       }
     }
   }
