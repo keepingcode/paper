@@ -62,11 +62,25 @@ namespace Sandbox.Bot.Api
       {
         var uri = GetApiEndpoint().Combine(route).SetArgs(args);
         var client = WebRequest.CreateHttp(uri.ToString());
-        using (var response = await client.GetResponseAsync())
-        using (var stream = response.GetResponseStream())
+
+        HttpWebResponse webResponse;
+        try
+        {
+          webResponse = (HttpWebResponse)await client.GetResponseAsync();
+        }
+        catch (Exception ex)
+        {
+          webResponse = (ex as WebException)?.Response as HttpWebResponse;
+
+          if (webResponse == null)
+            throw;
+        }
+
+        using (webResponse)
+        using (var stream = webResponse.GetResponseStream())
         {
           var entity = EntityParser.ParseEntity(stream);
-          return entity;
+          return Ret.As(webResponse.StatusCode, entity);
         }
       }
       catch (Exception ex)

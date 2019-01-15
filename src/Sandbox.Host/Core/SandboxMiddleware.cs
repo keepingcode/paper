@@ -29,6 +29,8 @@ namespace Sandbox.Host.Core
     public async Task Invoke(HttpContext httpContext, IServiceProvider serviceProvider)
     {
       Entity entity = null;
+      int status;
+
       try
       {
         var target = RenderTarget(httpContext);
@@ -46,11 +48,14 @@ namespace Sandbox.Host.Core
           var requestUri = httpContext.Request.GetDisplayUrl();
           entity = HttpEntity.Create(requestUri, HttpStatusCode.NotFound);
         }
+
+        status = (int)HttpStatusCode.OK;
       }
       catch (Exception ex)
       {
         ex.Trace();
         entity = HttpEntity.Create(httpContext.Request.GetDisplayUrl(), ex);
+        status = (int)HttpStatusCode.InternalServerError;
       }
 
       try
@@ -62,7 +67,7 @@ namespace Sandbox.Host.Core
         var serializer = new MediaSerializer();
         var content = serializer.Serialize(entity, mediaType);
 
-        httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+        httpContext.Response.StatusCode = (int)status;
         httpContext.Response.ContentType = $"{mediaType}; charset=UTF-8";
 
         await httpContext.Response.WriteAsync(content);
@@ -71,7 +76,8 @@ namespace Sandbox.Host.Core
       {
         ex.Trace();
 
-        var status = (int)HttpStatusCode.InternalServerError;
+        status = (int)HttpStatusCode.InternalServerError;
+
         var statusDecription = 
           HttpStatusCode.InternalServerError
             .ToString()
@@ -99,61 +105,17 @@ namespace Sandbox.Host.Core
           return uri.Combine("/Index").ToUri();
 
         case "/status":
-          return GetStatus(uri);
+          return SandboxEntities.GetStatus(uri);
 
         case "/index":
-          return GetIndex(uri);
+          return SandboxEntities.GetIndex(uri);
 
         case "/blueprint":
-          return GetBlueprint(uri);
+          return SandboxEntities.GetBlueprint(uri);
 
         default:
           return null;
       }
-    }
-
-    private Entity GetStatus(UriString uri)
-    {
-      return HttpEntity.Create(uri, HttpStatusCode.OK);
-    }
-
-    private Entity GetIndex(UriString uri)
-    {
-      var entity = new Entity();
-      entity.AddTitle("Início");
-      entity.AddClass(Class.Single);
-      entity.AddProperties(new
-      {
-        Text = "Olá, mundo!"
-      });
-      entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Clone().Combine("/Blueprint"), "Blueprint", Rel.Blueprint);
-      return entity;
-    }
-
-    private Entity GetBlueprint(UriString uri)
-    {
-      var entity = new Entity();
-      entity.AddTitle("Blueprint");
-      entity.AddClass(Class.Blueprint);
-      entity.AddProperties(new Blueprint
-      {
-        HasNavBox = true,
-        Theme = "blue",
-        Info = new Blueprint.Details
-        {
-          Name = "Tickets",
-          Title = "Tickets",
-          Description = "Sistema de atendimento a clientes.",
-          Manufacturer = "KeepCoding",
-          Copyright = "Copyleft (ɔ) All rights reversed",
-          Guid = Guid.Parse("D2C9BA1E-0F97-4C93-9FA9-AB1D5EDA2000"),
-          Version = Version.Parse("1.0.0")
-        }
-      });
-      entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Clone().Combine("/Index"), "Início", Rel.Index);
-      return entity;
     }
   }
 }

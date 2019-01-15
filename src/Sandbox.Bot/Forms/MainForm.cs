@@ -21,6 +21,12 @@ namespace Sandbox.Bot.Forms
     private readonly Blueprint blueprint;
     private readonly Entity blueprintEntity;
 
+    public static MainForm Current
+      => Application.OpenForms
+        .Cast<Form>()
+        .OfType<MainForm>()
+        .FirstOrDefault();
+
     public MainForm(Blueprint blueprint, Entity blueprintEntity)
     {
       this.client = MediaClient.Current;
@@ -46,7 +52,7 @@ namespace Sandbox.Bot.Forms
           if (!string.IsNullOrEmpty(link.Title))
           {
             item.Text = link.Title;
-            item.Click += (o, e) => Router.OpenPaper(link.Href);
+            item.Click += async (o, e) => await Router.OpenPaperAsync(link.Href);
             mnMenu.DropDownItems.Add(item);
           }
         }

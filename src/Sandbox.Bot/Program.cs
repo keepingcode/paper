@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Sandbox.Bot.Forms;
+using Sandbox.Widgets;
 
 namespace Sandbox.Bot
 {
@@ -17,12 +19,12 @@ namespace Sandbox.Bot
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      var launcher = new Forms.LauncherForm();
+      var launcher = new LauncherForm();
       Application.Run(launcher);
 
       if (launcher.DialogResult == DialogResult.OK)
       {
-        Application.Run(new Forms.MainForm(launcher.Blueprint, launcher.BlueprintEntity));
+        Application.Run(new MainForm(launcher.Blueprint, launcher.BlueprintEntity));
       }
     }
   }

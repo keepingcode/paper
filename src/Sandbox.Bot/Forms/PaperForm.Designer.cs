@@ -30,10 +30,10 @@
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PaperForm));
       this.tsContainer = new System.Windows.Forms.ToolStripContainer();
-      this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-      this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+      this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.opçõesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
       this.tsContainer.BottomToolStripPanel.SuspendLayout();
       this.tsContainer.TopToolStripPanel.SuspendLayout();
@@ -64,18 +64,6 @@
       this.tsContainer.TopToolStripPanel.Controls.Add(this.menuStrip1);
       this.tsContainer.TopToolStripPanel.Controls.Add(this.toolStrip1);
       // 
-      // menuStrip1
-      // 
-      this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
-      this.menuStrip1.Enabled = false;
-      this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.opçõesToolStripMenuItem});
-      this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-      this.menuStrip1.Name = "menuStrip1";
-      this.menuStrip1.Size = new System.Drawing.Size(626, 24);
-      this.menuStrip1.TabIndex = 0;
-      this.menuStrip1.Text = "menuStrip1";
-      // 
       // statusStrip1
       // 
       this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
@@ -84,15 +72,19 @@
       this.statusStrip1.Size = new System.Drawing.Size(626, 22);
       this.statusStrip1.TabIndex = 0;
       // 
-      // toolStrip1
+      // menuStrip1
       // 
-      this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
-      this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1});
-      this.toolStrip1.Location = new System.Drawing.Point(3, 24);
-      this.toolStrip1.Name = "toolStrip1";
-      this.toolStrip1.Size = new System.Drawing.Size(66, 25);
-      this.toolStrip1.TabIndex = 1;
+      this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
+      this.menuStrip1.Enabled = false;
+      this.menuStrip1.GripMargin = new System.Windows.Forms.Padding(0, 2, 0, 2);
+      this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.opçõesToolStripMenuItem});
+      this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+      this.menuStrip1.Name = "menuStrip1";
+      this.menuStrip1.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
+      this.menuStrip1.Size = new System.Drawing.Size(626, 24);
+      this.menuStrip1.TabIndex = 0;
+      this.menuStrip1.Text = "menuStrip1";
       // 
       // opçõesToolStripMenuItem
       // 
@@ -100,6 +92,19 @@
       this.opçõesToolStripMenuItem.Name = "opçõesToolStripMenuItem";
       this.opçõesToolStripMenuItem.Size = new System.Drawing.Size(59, 20);
       this.opçõesToolStripMenuItem.Text = "Opções";
+      // 
+      // toolStrip1
+      // 
+      this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+      this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1});
+      this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+      this.toolStrip1.Name = "toolStrip1";
+      this.toolStrip1.Padding = new System.Windows.Forms.Padding(6, 0, 1, 0);
+      this.toolStrip1.Size = new System.Drawing.Size(626, 25);
+      this.toolStrip1.Stretch = true;
+      this.toolStrip1.TabIndex = 1;
       // 
       // toolStripButton1
       // 

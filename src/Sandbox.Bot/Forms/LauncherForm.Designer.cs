@@ -1,4 +1,6 @@
-﻿namespace Sandbox.Bot.Forms
+﻿using Sandbox.Bot.Properties;
+
+namespace Sandbox.Bot.Forms
 {
   partial class LauncherForm
   {
@@ -102,7 +104,7 @@
       this.Controls.Add(this.btCancel);
       this.Controls.Add(this.pgProgress);
       this.Controls.Add(this.lbMessage);
-      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+      this.Icon = Resources.launch;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
       this.MinimumSize = new System.Drawing.Size(216, 170);

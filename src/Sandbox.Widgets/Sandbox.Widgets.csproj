@@ -4,18 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{77B22C5A-47E2-4048-BE65-93532C68C23C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Sandbox</RootNamespace>
-    <AssemblyName>Sandbox</AssemblyName>
+    <ProjectGuid>{E10CD80A-5D81-45FC-8757-FAF244BA3C9B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandbox.Widgets</RootNamespace>
+    <AssemblyName>Sandbox.Widgets</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -25,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -36,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -46,43 +45,61 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="BitWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BitWidget.Designer.cs">
+      <DependentUpon>BitWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ButtonWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ButtonWidget.Designer.cs">
+      <DependentUpon>ButtonWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InfoWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InfoWidget.Designer.cs">
+      <DependentUpon>InfoWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IWidget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Spec\HintAttribute.cs" />
-    <Compile Include="Spec\Hints.cs" />
-    <Compile Include="Spec\RouteAttribute.cs" />
-    <Compile Include="Spec\TextAttribute.cs" />
-    <Compile Include="Spec\HiddenAttribute.cs" />
-    <Compile Include="Spec\Page.cs" />
-    <Compile Include="Spec\Sort.cs" />
-    <Compile Include="Spec\Target.cs" />
-    <Compile Include="Demo\Models\UserFormForActivation.cs" />
-    <Compile Include="Demo\Models\UserFormForPassword.cs" />
-    <Compile Include="Demo\Models\UserForm.cs" />
-    <Compile Include="Demo\Domain\User.cs" />
-    <Compile Include="Demo\Models\UserFilter.cs" />
-    <Compile Include="Demo\Pages\UserPage.cs" />
-    <Compile Include="Demo\Pages\UsersPage.cs" />
+    <Compile Include="SandboxForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SandboxForm.Designer.cs">
+      <DependentUpon>SandboxForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TextWidget.Designer.cs">
+      <DependentUpon>TextWidget.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <EmbeddedResource Include="BitWidget.resx">
+      <DependentUpon>BitWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ButtonWidget.resx">
+      <DependentUpon>ButtonWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InfoWidget.resx">
+      <DependentUpon>InfoWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SandboxForm.resx">
+      <DependentUpon>SandboxForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TextWidget.resx">
+      <DependentUpon>TextWidget.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Paper.Media\Paper.Media.csproj">
-      <Project>{A1463E32-8E17-413B-A32D-EA942C6F1FB8}</Project>
-      <Name>Paper.Media</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sandbox.Lib\Sandbox.Lib.csproj">
-      <Project>{E86E558A-3728-4097-BB17-CEF350C603B9}</Project>
-      <Name>Sandbox.Lib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Toolset\Toolset.csproj">
       <Project>{EE82245E-2724-4073-947D-A1BBA0955D7F}</Project>
       <Name>Toolset</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
