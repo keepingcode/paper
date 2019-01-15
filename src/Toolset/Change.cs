@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,25 +11,70 @@ namespace Toolset
 {
   public static class Change
   {
+    public static T To<T>(object value)
+    {
+      var convertedValue = To(value, typeof(T));
+      return (convertedValue == null) ? default(T) : (T)convertedValue;
+    }
+
     public static object To(object value, Type targetType)
+    {
+      if (typeof(IList).IsAssignableFrom(targetType)
+       || typeof(IList<>).IsAssignableFrom(targetType))
+      {
+        var genericListType = (
+          from type in targetType.GetInterfaces()
+          where type.IsGenericType
+             && type.GetGenericTypeDefinition() == typeof(IList<>)
+          select type
+        ).FirstOrDefault();
+
+        if (targetType.IsArray)
+        {
+          var elementType = targetType.GetElementType();
+          var sourceList = value as IList ?? new[] { value };
+          var targetList = (IList)Activator.CreateInstance(targetType, sourceList.Count);
+          for (int i = 0; i < sourceList.Count; i++)
+          {
+            targetList[i] = ConvertTo(sourceList[i], elementType);
+          }
+          return targetList;
+        }
+        else if (genericListType != null)
+        {
+          var elementType = genericListType.GetGenericArguments().First();
+          var sourceList = value as IList ?? new[] { value };
+          var targetList = (IList)Activator.CreateInstance(targetType);
+          foreach (var sourceElement in sourceList)
+          {
+            var targetElement = ConvertTo(sourceElement, elementType);
+            targetList.Add(targetElement);
+          }
+          return targetList;
+        }
+        else
+        {
+          var sourceList = value as IList ?? new[] { value };
+          var targetList = (IList)Activator.CreateInstance(targetType, sourceList.Count);
+          for (int i = 0; i < sourceList.Count; i++)
+          {
+            targetList[i] = sourceList[i];
+          }
+          return targetList;
+        }
+      }
+      else
+      {
+        return ConvertTo(value, targetType);
+      }
+    }
+
+    private static object ConvertTo(object value, Type targetType)
     {
       var sourceType = value?.GetType();
 
       if (value == null)
         return null;
-
-      // Melhoria para tipos Nullable<T>
-      //
-      //  var type = targetType;
-      //
-      //  var isNullable = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-      //  if (isNullable)
-      //    type = Nullable.GetUnderlyingType(type);
-      //
-      //  ... conversao simples ...
-      //
-      //  if (isNullable)
-      //    value = Activator.CreateInstance(targetType, value);
 
       if (targetType.IsAssignableFrom(sourceType))
         return value;
@@ -42,21 +88,19 @@ namespace Toolset
       if (targetType == typeof(Version))
         return Version.Parse(value.ToString());
 
-      if (targetType == typeof(DateTime) && value is string)
+      if (targetType == typeof(DateTime) && value is string dateTime)
       {
-        var text = (string)value;
-        if (Regex.IsMatch(text, @"\d{4}-\d{2}-\d{2}.*"))
+        if (Regex.IsMatch(dateTime, @"\d{4}-\d{2}-\d{2}.*"))
         {
-          return DateTime.Parse(text, CultureInfo.InvariantCulture);
+          return DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
         }
       }
 
-      if (targetType == typeof(TimeSpan) && value is string)
+      if (targetType == typeof(TimeSpan) && value is string timeSpan)
       {
-        var text = (string)value;
-        if (Regex.IsMatch(text, @"(\d\.)?\d{2}:\d{2}.*"))
+        if (Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
         {
-          return DateTime.Parse(text);
+          return DateTime.Parse(timeSpan);
         }
       }
 
@@ -102,12 +146,6 @@ namespace Toolset
       }
 
       return convertedValue;
-    }
-
-    public static T To<T>(object value)
-    {
-      var convertedValue = To(value, typeof(T));
-      return (convertedValue == null) ? default(T) : (T)convertedValue;
     }
   }
 }

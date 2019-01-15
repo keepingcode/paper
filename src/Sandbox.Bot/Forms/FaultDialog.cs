@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace Sandbox.Bot.Forms
       var ln = Environment.NewLine;
 
       var entity = ret.Data as Entity;
-      var exception = ret.Data as Exception;
+      var exception = ret.Data as Exception ?? ret.Fault as Exception;
 
       var isErrorEntity = entity?.Class.Contains(ClassNames.Error) == true;
       if (isErrorEntity)
@@ -49,7 +50,7 @@ namespace Sandbox.Bot.Forms
       }
       else if (exception != null)
       {
-        description = string.Join(ln, exception.GetCauseMessages().Select(x => $"• {ln}"));
+        description = string.Join(ln, exception.GetCauseMessages().Select(x => $"• {x}"));
         stackTrace = exception.GetStackTrace();
       }
 
@@ -59,7 +60,8 @@ namespace Sandbox.Bot.Forms
       }
       if (status == null)
       {
-        status = (code ?? ret.Status).ToString().ChangeCase(TextCase.ProperCase);
+        var statusCode = (HttpStatusCode)(code ?? ret.Status);
+        status = statusCode.ToString().ChangeCase(TextCase.ProperCase);
       }
 
       lbMessage.Text = description?.ToString() ?? $"{code} - {status}";
@@ -73,7 +75,7 @@ namespace Sandbox.Bot.Forms
       txDetail.Visible = true;
       if (this.Height < 315)
       {
-        this.Height = 315;
+        this.Height = 400;
       }
     }
 

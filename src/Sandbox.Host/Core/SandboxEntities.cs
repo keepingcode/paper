@@ -13,12 +13,12 @@ namespace Sandbox.Host.Core
 {
   public static class SandboxEntities
   {
-    public static Entity GetStatus(UriString uri)
+    public static Entity GetStatus(UriString requestUri, string prefix)
     {
-      return HttpEntity.Create(uri, HttpStatusCode.OK);
+      return HttpEntity.Create(requestUri, HttpStatusCode.OK);
     }
 
-    public static Entity GetIndex(UriString uri)
+    public static Entity GetIndex(UriString requestUri, string prefix)
     {
       var entity = new Entity();
       entity.AddTitle("Início");
@@ -38,12 +38,15 @@ namespace Sandbox.Host.Core
         Donec = "Id turpis consectetur elit fermentum cursus.",
         UtQuis = "Lacus ultricies, ornare est ac, pretium lorem."
       });
-      entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Clone().Combine("/Blueprint"), "Blueprint", Rel.Blueprint);
+      entity.AddLinkSelf(requestUri);
+
+      var href = requestUri.Combine(prefix, "Blueprint");
+      entity.AddLink(href, "Blueprint", Rel.Blueprint);
+
       return entity;
     }
 
-    public static Entity GetBlueprint(UriString uri)
+    public static Entity GetBlueprint(UriString requestUri, string prefix)
     {
       var entity = new Entity();
       entity.AddTitle("Blueprint");
@@ -63,8 +66,11 @@ namespace Sandbox.Host.Core
           Version = Version.Parse("1.0.0")
         }
       });
-      entity.AddLinkSelf(uri);
-      entity.AddLink(uri.Clone().Combine("/Index"), "Início", Rel.Index);
+      entity.AddLinkSelf(requestUri);
+
+      var href = requestUri.Combine(prefix, "Index");
+      entity.AddLink(href, "Início", Rel.Index);
+
       return entity;
     }
   }

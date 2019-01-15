@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Toolset.Collections
@@ -73,6 +74,24 @@ namespace Toolset.Collections
     public bool ContainsKey(TKey key)
     {
       return map.ContainsKey(key);
+    }
+
+    public void CopyToDictionary(IDictionary target)
+    {
+      foreach (var entry in this)
+      {
+        target[entry.Key] = entry.Value;
+      }
+    }
+
+    public void CopyTo<TTargetKey, TTargetValue>(IDictionary<TTargetKey, TTargetValue> target)
+    {
+      foreach (var entry in this)
+      {
+        var key = Change.To<TTargetKey>(entry.Key);
+        var value = Change.To<TTargetValue>(entry.Value);
+        target[key] = value;
+      }
     }
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)

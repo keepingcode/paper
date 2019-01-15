@@ -27,130 +27,108 @@
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutDialog));
-      this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-      this.logoPictureBox = new System.Windows.Forms.PictureBox();
-      this.lbProductName = new System.Windows.Forms.Label();
-      this.lbVersion = new System.Windows.Forms.Label();
-      this.lbManufacturer = new System.Windows.Forms.Label();
-      this.lbCopyright = new System.Windows.Forms.Label();
-      this.txDescription = new System.Windows.Forms.TextBox();
       this.okButton = new System.Windows.Forms.Button();
-      this.tableLayoutPanel.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
+      this.txDescription = new System.Windows.Forms.TextBox();
+      this.lbCopyright = new System.Windows.Forms.Label();
+      this.lbManufacturer = new System.Windows.Forms.Label();
+      this.lbVersion = new System.Windows.Forms.Label();
+      this.lbProductName = new System.Windows.Forms.Label();
+      this.lbGuid = new System.Windows.Forms.Label();
       this.SuspendLayout();
-      // 
-      // tableLayoutPanel
-      // 
-      this.tableLayoutPanel.ColumnCount = 2;
-      this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-      this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 67F));
-      this.tableLayoutPanel.Controls.Add(this.logoPictureBox, 0, 0);
-      this.tableLayoutPanel.Controls.Add(this.lbProductName, 1, 0);
-      this.tableLayoutPanel.Controls.Add(this.lbVersion, 1, 1);
-      this.tableLayoutPanel.Controls.Add(this.lbManufacturer, 1, 2);
-      this.tableLayoutPanel.Controls.Add(this.lbCopyright, 1, 3);
-      this.tableLayoutPanel.Controls.Add(this.txDescription, 1, 4);
-      this.tableLayoutPanel.Controls.Add(this.okButton, 1, 5);
-      this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.tableLayoutPanel.Location = new System.Drawing.Point(9, 9);
-      this.tableLayoutPanel.Name = "tableLayoutPanel";
-      this.tableLayoutPanel.RowCount = 6;
-      this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-      this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-      this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-      this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-      this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-      this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-      this.tableLayoutPanel.Size = new System.Drawing.Size(417, 265);
-      this.tableLayoutPanel.TabIndex = 0;
-      // 
-      // logoPictureBox
-      // 
-      this.logoPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.logoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("logoPictureBox.Image")));
-      this.logoPictureBox.Location = new System.Drawing.Point(3, 3);
-      this.logoPictureBox.Name = "logoPictureBox";
-      this.tableLayoutPanel.SetRowSpan(this.logoPictureBox, 6);
-      this.logoPictureBox.Size = new System.Drawing.Size(131, 259);
-      this.logoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-      this.logoPictureBox.TabIndex = 12;
-      this.logoPictureBox.TabStop = false;
-      // 
-      // lbProductName
-      // 
-      this.lbProductName.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lbProductName.Location = new System.Drawing.Point(143, 0);
-      this.lbProductName.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
-      this.lbProductName.MaximumSize = new System.Drawing.Size(0, 17);
-      this.lbProductName.Name = "lbProductName";
-      this.lbProductName.Size = new System.Drawing.Size(271, 17);
-      this.lbProductName.TabIndex = 19;
-      this.lbProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // lbVersion
-      // 
-      this.lbVersion.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lbVersion.Location = new System.Drawing.Point(143, 26);
-      this.lbVersion.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
-      this.lbVersion.MaximumSize = new System.Drawing.Size(0, 17);
-      this.lbVersion.Name = "lbVersion";
-      this.lbVersion.Size = new System.Drawing.Size(271, 17);
-      this.lbVersion.TabIndex = 0;
-      this.lbVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // lbManufacturer
-      // 
-      this.lbManufacturer.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lbManufacturer.Location = new System.Drawing.Point(143, 52);
-      this.lbManufacturer.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
-      this.lbManufacturer.MaximumSize = new System.Drawing.Size(0, 17);
-      this.lbManufacturer.Name = "lbManufacturer";
-      this.lbManufacturer.Size = new System.Drawing.Size(271, 17);
-      this.lbManufacturer.TabIndex = 21;
-      this.lbManufacturer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // lbCopyright
-      // 
-      this.lbCopyright.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lbCopyright.Location = new System.Drawing.Point(143, 78);
-      this.lbCopyright.Margin = new System.Windows.Forms.Padding(6, 0, 3, 0);
-      this.lbCopyright.MaximumSize = new System.Drawing.Size(0, 17);
-      this.lbCopyright.Name = "lbCopyright";
-      this.lbCopyright.Size = new System.Drawing.Size(271, 17);
-      this.lbCopyright.TabIndex = 22;
-      this.lbCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // txDescription
-      // 
-      this.txDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.txDescription.Location = new System.Drawing.Point(143, 107);
-      this.txDescription.Margin = new System.Windows.Forms.Padding(6, 3, 3, 3);
-      this.txDescription.Multiline = true;
-      this.txDescription.Name = "txDescription";
-      this.txDescription.ReadOnly = true;
-      this.txDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-      this.txDescription.Size = new System.Drawing.Size(271, 126);
-      this.txDescription.TabIndex = 23;
-      this.txDescription.TabStop = false;
       // 
       // okButton
       // 
       this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.okButton.Location = new System.Drawing.Point(339, 239);
+      this.okButton.Location = new System.Drawing.Point(259, 216);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
-      this.okButton.TabIndex = 24;
+      this.okButton.TabIndex = 6;
       this.okButton.Text = "&OK";
+      // 
+      // txDescription
+      // 
+      this.txDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.txDescription.Location = new System.Drawing.Point(15, 130);
+      this.txDescription.Margin = new System.Windows.Forms.Padding(6, 3, 3, 3);
+      this.txDescription.Multiline = true;
+      this.txDescription.Name = "txDescription";
+      this.txDescription.ReadOnly = true;
+      this.txDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+      this.txDescription.Size = new System.Drawing.Size(319, 80);
+      this.txDescription.TabIndex = 5;
+      this.txDescription.TabStop = false;
+      // 
+      // lbCopyright
+      // 
+      this.lbCopyright.AutoSize = true;
+      this.lbCopyright.Location = new System.Drawing.Point(12, 98);
+      this.lbCopyright.MaximumSize = new System.Drawing.Size(0, 17);
+      this.lbCopyright.Name = "lbCopyright";
+      this.lbCopyright.Size = new System.Drawing.Size(51, 13);
+      this.lbCopyright.TabIndex = 4;
+      this.lbCopyright.Text = "Copyright";
+      this.lbCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lbManufacturer
+      // 
+      this.lbManufacturer.AutoSize = true;
+      this.lbManufacturer.Location = new System.Drawing.Point(12, 41);
+      this.lbManufacturer.MaximumSize = new System.Drawing.Size(0, 17);
+      this.lbManufacturer.Name = "lbManufacturer";
+      this.lbManufacturer.Size = new System.Drawing.Size(70, 13);
+      this.lbManufacturer.TabIndex = 1;
+      this.lbManufacturer.Text = "Manufacturer";
+      this.lbManufacturer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lbVersion
+      // 
+      this.lbVersion.AutoSize = true;
+      this.lbVersion.Location = new System.Drawing.Point(12, 60);
+      this.lbVersion.MaximumSize = new System.Drawing.Size(0, 17);
+      this.lbVersion.Name = "lbVersion";
+      this.lbVersion.Size = new System.Drawing.Size(42, 13);
+      this.lbVersion.TabIndex = 2;
+      this.lbVersion.Text = "Version";
+      this.lbVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lbProductName
+      // 
+      this.lbProductName.AutoSize = true;
+      this.lbProductName.Location = new System.Drawing.Point(12, 22);
+      this.lbProductName.MaximumSize = new System.Drawing.Size(0, 17);
+      this.lbProductName.Name = "lbProductName";
+      this.lbProductName.Size = new System.Drawing.Size(72, 13);
+      this.lbProductName.TabIndex = 0;
+      this.lbProductName.Text = "ProductName";
+      this.lbProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      // 
+      // lbGuid
+      // 
+      this.lbGuid.AutoSize = true;
+      this.lbGuid.Location = new System.Drawing.Point(12, 79);
+      this.lbGuid.MaximumSize = new System.Drawing.Size(0, 17);
+      this.lbGuid.Name = "lbGuid";
+      this.lbGuid.Size = new System.Drawing.Size(29, 13);
+      this.lbGuid.TabIndex = 3;
+      this.lbGuid.Text = "Guid";
+      this.lbGuid.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // AboutDialog
       // 
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(435, 283);
-      this.Controls.Add(this.tableLayoutPanel);
+      this.ClientSize = new System.Drawing.Size(346, 251);
+      this.Controls.Add(this.lbGuid);
+      this.Controls.Add(this.lbProductName);
+      this.Controls.Add(this.lbVersion);
+      this.Controls.Add(this.lbManufacturer);
+      this.Controls.Add(this.okButton);
+      this.Controls.Add(this.lbCopyright);
+      this.Controls.Add(this.txDescription);
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
@@ -160,22 +138,19 @@
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Sobre";
-      this.tableLayoutPanel.ResumeLayout(false);
-      this.tableLayoutPanel.PerformLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
     #endregion
 
-    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
-    private System.Windows.Forms.PictureBox logoPictureBox;
-    private System.Windows.Forms.Label lbProductName;
-    private System.Windows.Forms.Label lbVersion;
-    private System.Windows.Forms.Label lbManufacturer;
-    private System.Windows.Forms.Label lbCopyright;
-    private System.Windows.Forms.TextBox txDescription;
     private System.Windows.Forms.Button okButton;
+    private System.Windows.Forms.TextBox txDescription;
+    private System.Windows.Forms.Label lbCopyright;
+    private System.Windows.Forms.Label lbManufacturer;
+    private System.Windows.Forms.Label lbVersion;
+    private System.Windows.Forms.Label lbProductName;
+    private System.Windows.Forms.Label lbGuid;
   }
 }

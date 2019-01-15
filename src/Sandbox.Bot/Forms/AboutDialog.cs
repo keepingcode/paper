@@ -15,11 +15,12 @@ namespace Sandbox.Bot.Forms
     public AboutDialog(Blueprint blueprint)
     {
       InitializeComponent();
-      lbCopyright.Text = blueprint.Info.Copyright;
-      lbManufacturer.Text = blueprint.Info.Manufacturer;
-      lbProductName.Text = blueprint.Info.Title;
-      lbVersion.Text = blueprint.Info.Version.ToString();
-      txDescription.Text = blueprint.Info.Description;
+      lbProductName.Text = blueprint.Info?.Title;
+      lbManufacturer.Text = blueprint.Info?.Manufacturer;
+      lbVersion.Text = blueprint.Info?.Version?.ToString();
+      lbGuid.Text = blueprint.Info?.Guid.ToString("D").ToUpper();
+      lbCopyright.Text = blueprint.Info?.Copyright;
+      txDescription.Text = blueprint.Info?.Description;
     }
   }
 }

@@ -40,7 +40,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.lbMessage.Location = new System.Drawing.Point(12, 14);
       this.lbMessage.Name = "lbMessage";
-      this.lbMessage.Size = new System.Drawing.Size(409, 53);
+      this.lbMessage.Size = new System.Drawing.Size(409, 79);
       this.lbMessage.TabIndex = 0;
       this.lbMessage.Text = "...";
       // 
@@ -48,7 +48,7 @@
       // 
       this.btOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.btOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.btOk.Location = new System.Drawing.Point(346, 94);
+      this.btOk.Location = new System.Drawing.Point(346, 122);
       this.btOk.Name = "btOk";
       this.btOk.Size = new System.Drawing.Size(75, 23);
       this.btOk.TabIndex = 2;
@@ -59,7 +59,7 @@
       // 
       this.lnDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.lnDetail.AutoSize = true;
-      this.lnDetail.Location = new System.Drawing.Point(12, 99);
+      this.lnDetail.Location = new System.Drawing.Point(12, 127);
       this.lnDetail.Name = "lnDetail";
       this.lnDetail.Size = new System.Drawing.Size(49, 13);
       this.lnDetail.TabIndex = 3;
@@ -75,10 +75,10 @@
       this.txDetail.BackColor = System.Drawing.SystemColors.Control;
       this.txDetail.BorderStyle = System.Windows.Forms.BorderStyle.None;
       this.txDetail.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.txDetail.Location = new System.Drawing.Point(15, 70);
+      this.txDetail.Location = new System.Drawing.Point(15, 96);
       this.txDetail.Name = "txDetail";
       this.txDetail.ReadOnly = true;
-      this.txDetail.Size = new System.Drawing.Size(406, 18);
+      this.txDetail.Size = new System.Drawing.Size(406, 20);
       this.txDetail.TabIndex = 4;
       this.txDetail.Text = "";
       this.txDetail.Visible = false;
@@ -89,7 +89,7 @@
       this.AcceptButton = this.btOk;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(433, 129);
+      this.ClientSize = new System.Drawing.Size(433, 157);
       this.ControlBox = false;
       this.Controls.Add(this.txDetail);
       this.Controls.Add(this.lnDetail);

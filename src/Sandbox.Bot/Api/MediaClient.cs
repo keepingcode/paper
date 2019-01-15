@@ -20,14 +20,11 @@ namespace Sandbox.Bot.Api
     {
     }
 
-    public UriString GetEndpoint() => new UriString(Settings.Endpoint);
-    public UriString GetApiEndpoint() => new UriString(Settings.Endpoint, "/Api/1");
-
     public async Task<Ret> CheckConnectivityAsync()
     {
       try
       {
-        var uri = GetApiEndpoint().Combine("/Status");
+        var uri = new UriString(Settings.Endpoint).Combine(ApiInfo.Prefix, "/Status");
         var client = WebRequest.CreateHttp(uri.ToString());
         using (var response = await client.GetResponseAsync())
         using (var stream = response.GetResponseStream())
@@ -60,7 +57,7 @@ namespace Sandbox.Bot.Api
     {
       try
       {
-        var uri = GetApiEndpoint().Combine(route).SetArgs(args);
+        var uri = new UriString(Settings.Endpoint).Combine(ApiInfo.Prefix, route).SetArgs(args);
         var client = WebRequest.CreateHttp(uri.ToString());
 
         HttpWebResponse webResponse;
@@ -93,7 +90,7 @@ namespace Sandbox.Bot.Api
     {
       try
       {
-        var uri = GetEndpoint().Combine(route).SetArgs(args);
+        var uri = new UriString(Settings.Endpoint).Combine(route).SetArgs(args);
         var client = WebRequest.CreateHttp(uri.ToString());
         using (var response = (HttpWebResponse)await client.GetResponseAsync())
         {

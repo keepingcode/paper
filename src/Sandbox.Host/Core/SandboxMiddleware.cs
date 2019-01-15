@@ -96,22 +96,24 @@ namespace Sandbox.Host.Core
 
     private Target RenderTarget(HttpContext httpContext)
     {
+      var prefix = httpContext.Request.PathBase.Value;
       var path = httpContext.Request.Path.Value;
-      var uri = new UriString(httpContext.Request.GetDisplayUrl(), httpContext.Request.PathBase);
+
+      var requestUri = new UriString(httpContext.Request.GetDisplayUrl());
 
       switch (path.ToLower())
       {
         case "":
-          return uri.Combine("/Index").ToUri();
+          return requestUri.Combine(prefix).Combine("Index").ToUri();
 
         case "/status":
-          return SandboxEntities.GetStatus(uri);
+          return SandboxEntities.GetStatus(requestUri, prefix);
 
         case "/index":
-          return SandboxEntities.GetIndex(uri);
+          return SandboxEntities.GetIndex(requestUri, prefix);
 
         case "/blueprint":
-          return SandboxEntities.GetBlueprint(uri);
+          return SandboxEntities.GetBlueprint(requestUri, prefix);
 
         default:
           return null;

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sandbox.Host.Core;
+using Sandbox.Lib;
 
 namespace Sandbox.Host
 {
@@ -30,10 +31,10 @@ namespace Sandbox.Host
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
 
-      app.Map("/Api/1", nestApp => nestApp.UseMiddleware<SandboxMiddleware>());
+      app.Map(ApiInfo.Prefix, nestApp => nestApp.UseMiddleware<SandboxMiddleware>());
 
       app.UseRewriter(new RewriteOptions()
-        .AddRedirect(@"^$", "/Api/1/Index", (int)HttpStatusCode.Found)
+        .AddRedirect(@"^$", $"{ApiInfo.Prefix}/Index", (int)HttpStatusCode.Found)
       );
 
       app.UseDefaultFiles();

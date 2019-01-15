@@ -8,6 +8,12 @@ namespace Sandbox.Bot
 {
   static class Settings
   {
-    public static string Endpoint = "http://localhost:8080/";
+    public static string Prefix = "/Api/1";
+
+    public static string Host = "localhost";
+
+    public static int Port = 8080;
+
+    public static string Endpoint => $"http://{Host}:{Port}/";
   }
 }
