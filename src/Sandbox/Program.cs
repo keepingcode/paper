@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Sandbox.Lib;
+using Sandbox.Lib.Domain.Dbo;
 using Toolset;
+using Toolset.Data;
 
 namespace Sandbox
 {
@@ -20,26 +22,17 @@ namespace Sandbox
 
       try
       {
-        var url = "http://host.com/path/:verb?arg=val";
+        var url = "http://host.com/path/:verb?id.min=10&id.max=20";
         Debug.WriteLine(url);
 
         var uri = (UriString)url;
         Debug.WriteLine(uri);
 
-        //uri = uri.SetProtocol("protocol");
-        //Debug.WriteLine(uri);
-
-        //uri = uri.SetHost("host.com");
-        //Debug.WriteLine(uri);
-
-        //uri = uri.SetPath("/path");
-        //Debug.WriteLine(uri);
-
-        uri = uri.SetArgs("?id=10&id=20?id=40");
+        uri = uri.SetArg("x", Range.Above(30));
         Debug.WriteLine(uri);
 
-        Debug.WriteLine(uri.GetArg<string>("arg"));
-        Debug.WriteLine(uri.GetArg<List<int>>("id"));
+        // Debug.WriteLine(uri.GetArg<string>("arg"));
+        // Debug.WriteLine(uri.GetArg<List<int>>("id"));
       }
       catch (Exception ex)
       {

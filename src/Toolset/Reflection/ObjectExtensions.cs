@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Toolset.Collections;
 using Toolset.Data;
 
 namespace Toolset.Reflection
@@ -159,6 +160,24 @@ namespace Toolset.Reflection
           $"Era esperado um valor para a propriedade {property.Name} compatível com \"{property.PropertyType.FullName}\" mas foi obtido: \"{value}\""
           , ex);
       }
+    }
+
+    public static HashMap _GetMap(this object target, params string[] propertyNames)
+    {
+      return _GetMap(target, (IEnumerable<string>)propertyNames);
+    }
+
+    public static HashMap _GetMap(this object target, IEnumerable<string> propertyNames)
+    {
+      var map = new HashMap();
+      foreach (var propertyName in propertyNames)
+      {
+        if (target._HasProperty(propertyName))
+        {
+          map[propertyName] = target._Get(propertyName);
+        }
+      }
+      return map;
     }
 
     public static void _Set(this object target, string propertyName, object value)

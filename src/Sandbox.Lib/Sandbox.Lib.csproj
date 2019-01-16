@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Paper.Media\Paper.Media.csproj" />
+    <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj" />
     <ProjectReference Include="..\Toolset\Toolset.csproj" />
   </ItemGroup>
 

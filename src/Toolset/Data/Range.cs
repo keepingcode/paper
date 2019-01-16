@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Toolset.Reflection;
 
 namespace Toolset.Data
 {
@@ -68,6 +69,18 @@ namespace Toolset.Data
     public static RangeEx<string> Below(string max)
     {
       return new RangeEx<string>(null, max);
+    }
+
+    public static bool IsRangeCompatible(object value)
+    {
+      return value?._Has("min") == true || value?._Has("max") == true;
+    }
+
+    public static Range CreateCompatibleRange(object value)
+    {
+      var min = value._Get("min");
+      var max = value._Get("max");
+      return new Range(min, max);
     }
   }
 }

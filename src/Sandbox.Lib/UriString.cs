@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Data;
 using Toolset.Reflection;
 
 namespace Sandbox.Lib
@@ -117,8 +118,28 @@ namespace Sandbox.Lib
         var key = parts.First();
         var value = parts.Skip(1).LastOrDefault() ?? "1";
 
+        var isRange = key.EndsWith(".min") || key.EndsWith(".max");
         var isArray = key.Contains("[]") || cache.ContainsKey(key);
-        if (isArray)
+
+        if (isRange)
+        {
+          var isMin = key.EndsWith(".min");
+          key = Regex.Replace(key, "(.min|.max)$", "");
+
+          Range range;
+
+          var current = cache[key];
+          if (current is Range)
+          {
+            range = (Range)current;
+          }
+
+          var min = isMin ? value : range.Min;
+          var max = isMin ? range.Max : value;
+
+          cache[key] = new Range(min, max);
+        }
+        else if (isArray)
         {
           key = key.Replace("[]", "");
 
@@ -151,7 +172,8 @@ namespace Sandbox.Lib
 
       foreach (var key in cache.Keys)
       {
-        map[key] = cache[key];
+        var value = cache[key];
+        SetCompatibleMapValue(map, key, value);
       }
     }
 
@@ -163,14 +185,27 @@ namespace Sandbox.Lib
       foreach (var key in graph._GetPropertyNames())
       {
         var value = graph._Get(key);
-        if (value != null)
+        SetCompatibleMapValue(map, key, value);
+      }
+    }
+
+    private void SetCompatibleMapValue(HashMap map, string key, object value)
+    {
+      if (value == null)
+      {
+        map.Remove(key);
+      }
+      else
+      {
+        if (Range.IsRangeCompatible(value))
         {
-          if (!(value is string) && value is IEnumerable items)
-          {
-            value = items.Cast<object>().ToList();
-          }
-          map[key] = value;
+          value = Range.CreateCompatibleRange(value);
         }
+        else if (!(value is string) && value is IEnumerable items)
+        {
+          value = items.Cast<object>().ToList();
+        }
+        map[key] = value;
       }
     }
 
@@ -186,7 +221,20 @@ namespace Sandbox.Lib
         if (value == null)
           continue;
 
-        if (!(value is string) && value is IEnumerable items)
+        if (value is Range range)
+        {
+          var min = Change.To<string>(range.Min);
+          var max = Change.To<string>(range.Max);
+          if (!string.IsNullOrEmpty(min))
+          {
+            terms.Add($"{key}.min={min}");
+          }
+          if (!string.IsNullOrEmpty(max))
+          {
+            terms.Add($"{key}.max={max}");
+          }
+        }
+        else if (!(value is string) && value is IEnumerable items)
         {
           foreach (var item in items.Cast<object>())
           {
@@ -244,6 +292,11 @@ namespace Sandbox.Lib
       return value;
     }
 
+    public ICollection<string> GetArgNames()
+    {
+      return this.parts.Args.Keys;
+    }
+
     public UriString SetProtocol(string value)
     {
       if (string.IsNullOrWhiteSpace(value))
@@ -298,7 +351,8 @@ namespace Sandbox.Lib
 
     public UriString SetArg(string key, object value)
     {
-      var part = new Parts { Args = new HashMap { { key, value } } };
+      var part = new Parts { Args = new HashMap() };
+      SetCompatibleMapValue(part.Args, key, value);
       var clone = CloneWithModifications(part);
       return clone;
     }

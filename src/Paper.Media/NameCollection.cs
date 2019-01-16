@@ -30,6 +30,21 @@ namespace Paper.Media
     {
     }
 
+    public bool Has(string term)
+    {
+      return this.Any(x => x.EqualsIgnoreCase(term));
+    }
+
+    public bool HasAnyOf(params string[] terms)
+    {
+      return this.Any(x => x.EqualsAnyIgnoreCase(terms));
+    }
+
+    public bool HasAllOf(params string[] terms)
+    {
+      return terms.All(x => this.Any(y => x.EqualsIgnoreCase(y)));
+    }
+
     protected override void OnCommitAdd(ItemStore store, IEnumerable<string> items, int index = -1)
     {
       items = ParseNames2(items).ToArray();
