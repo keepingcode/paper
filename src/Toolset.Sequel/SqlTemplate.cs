@@ -539,22 +539,24 @@ namespace Toolset.Sequel
         return null;
       }
 
-      if (raw.GetType().IsPrimitive)
+      if (var?.Kind == VarKinds.Primitive)
       {
-        args[parameter] = var.Value;
-        return "{0} = @" + parameter;
-      }
-
-      if (raw is string)
-      {
-        if (Var.HasWildcards(raw as string))
+        if (raw is string)
         {
-          args[parameter] = raw;
-          return "{0} like @" + parameter;
+          if (Var.HasWildcards(raw as string))
+          {
+            args[parameter] = raw;
+            return "{0} like @" + parameter;
+          }
+          else
+          {
+            args[parameter] = raw;
+            return "{0} = @" + parameter;
+          }
         }
         else
         {
-          args[parameter] = raw;
+          args[parameter] = var.Value;
           return "{0} = @" + parameter;
         }
       }
@@ -593,7 +595,7 @@ namespace Toolset.Sequel
 
       if (var?.Kind == VarKinds.List)
       {
-        var items = Commander.CreateSqlCompatibleValue(var.List);
+        var items = Commander.CreateSqlCompatibleValue(var);
         var values = string.Join(",", (IEnumerable)items);
         return "{0} in (" + values + ")";
       }

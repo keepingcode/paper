@@ -57,9 +57,10 @@ namespace Toolset.Sequel
         return DBNull.Value;
       }
 
-      if (raw.GetType().IsValueType || raw is string)
+      if (value is XNode)
       {
-        return value;
+        var xml = ((XNode)value).ToString(SaveOptions.DisableFormatting);
+        return xml;
       }
 
       if (value is Sql)
@@ -67,10 +68,9 @@ namespace Toolset.Sequel
         return DBNull.Value;
       }
 
-      if (value is XNode)
+      if ((value as IVar)?.Kind == VarKinds.Primitive)
       {
-        var xml = ((XNode)value).ToString(SaveOptions.DisableFormatting);
-        return xml;
+        return value;
       }
 
       if ((value as IVar)?.Kind == VarKinds.Range)
@@ -102,6 +102,11 @@ namespace Toolset.Sequel
         }
         var text = string.Join(",", list);
         return text;
+      }
+
+      if (value is string || value.GetType().IsPrimitive)
+      {
+        return value;
       }
 
       return DBNull.Value;
