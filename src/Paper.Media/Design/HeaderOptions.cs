@@ -46,6 +46,19 @@ namespace Paper.Media.Design
     }
 
     /// <summary>
+    /// Adiciona o tipo de dado de um campo.
+    /// </summary>
+    /// <param name="builder">O construtor do cabeçalho.</param>
+    /// <param name="type">O tipo do campo.</param>
+    /// <returns>A própria instância do construtor do cabeçalho.</returns>
+    public HeaderOptions AddDataType(Type type)
+    {
+      var dataType = DataTypeNames.GetDataTypeName(type);
+      entity.AddProperty("DataType", dataType);
+      return this;
+    }
+
+    /// <summary>
     /// Marca ou desmarca um campo como visível.
     /// </summary>
     /// <param name="builder">O construtor do cabeçalho.</param>

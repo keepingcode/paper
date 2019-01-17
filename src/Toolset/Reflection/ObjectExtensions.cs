@@ -61,7 +61,7 @@ namespace Toolset.Reflection
       }
     }
 
-    public static T _GetAttr<T>(this object typeOrObject)
+    public static T _GetAttribute<T>(this object typeOrObject)
       where T : Attribute
     {
       if (typeOrObject == null)
@@ -71,14 +71,42 @@ namespace Toolset.Reflection
       var attr = member.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
       return attr;
     }
+    
+    public static T _GetAttribute<T>(this object typeOrObject, string propertyOrMethodName)
+      where T : Attribute
+    {
+      if (typeOrObject == null)
+        return null;
 
-    public static IEnumerable<T> _GetAttrs<T>(this object typeOrObject)
+      var member =
+        (MemberInfo)_GetPropertyInfo(typeOrObject, propertyOrMethodName)
+        ?? _GetMethodInfo(typeOrObject, propertyOrMethodName);
+
+      var attr = member.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
+      return attr;
+    }
+
+    public static IEnumerable<T> _GetAttributes<T>(this object typeOrObject)
       where T : Attribute
     {
       if (typeOrObject == null)
         return null;
 
       var member = typeOrObject as MemberInfo ?? typeOrObject.GetType();
+      var attrs = member.GetCustomAttributes(true).OfType<T>();
+      return attrs;
+    }
+
+    public static IEnumerable<T> _GetAttributes<T>(this object typeOrObject, string propertyOrMethodName)
+      where T : Attribute
+    {
+      if (typeOrObject == null)
+        return null;
+
+      var member =
+        (MemberInfo)_GetPropertyInfo(typeOrObject, propertyOrMethodName)
+        ?? _GetMethodInfo(typeOrObject, propertyOrMethodName);
+
       var attrs = member.GetCustomAttributes(true).OfType<T>();
       return attrs;
     }

@@ -520,7 +520,7 @@ namespace Paper.Media.Serialization
 
     private string MakeCompatibleName(PropertyInfo property)
     {
-      var attr = property._GetAttr<DataMemberAttribute>();
+      var attr = property._GetAttribute<DataMemberAttribute>();
       var name = attr?.Name ?? property.Name;
       return MakeCompatibleName(name);
     }

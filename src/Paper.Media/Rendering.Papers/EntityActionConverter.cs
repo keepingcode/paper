@@ -84,7 +84,7 @@ namespace Paper.Media.Rendering.Papers
       //
       // Propriedades personalizadas
       //
-      var attributes = property._GetAttrs<FieldAttribute>();
+      var attributes = property._GetAttributes<FieldAttribute>();
       foreach (var attribute in attributes)
       {
         attribute.RenderField(field, property, graph, ctx);

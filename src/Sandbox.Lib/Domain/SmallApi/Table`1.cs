@@ -14,16 +14,16 @@ namespace Sandbox.Lib.Domain.SmallApi
     where TEntity : class, new()
     where TFilter : class, new()
   {
-    public Type PkType => typeof(TPk);
-    public Type FilterType => typeof(TFilter);
-
     static Table()
     {
       TableInfo = ExtractTableInfo<TEntity>();
       FilterInfo = ExtractFilterInfo<TFilter>();
     }
 
+    [Ignore]
     public static TableInfo TableInfo { get; }
+
+    [Ignore]
     public static FilterInfo FilterInfo { get; }
 
     private static TableInfo ExtractTableInfo<T>()

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
+using Paper.Media.Serialization;
 using Sandbox.Lib;
 using Sandbox.Lib.Domain;
 using Sandbox.Lib.Domain.Dbo;
@@ -32,9 +33,18 @@ namespace Sandbox
       {
         SequelSettings.TraceQueries = true;
 
-        Table table = new TBusuario();
-        Entity targetEntity = new Entity();
-        DbEntities.CopyTable(table, targetEntity);
+        using (var db = new Db())
+        {
+
+          Table table = TBusuario.Find(1);
+          Entity targetEntity = new Entity();
+          DbEntities.CopyTable(table, targetEntity);
+
+          var serializer = new MediaSerializer();
+          var json = serializer.SerializeToJson(targetEntity);
+          Debug.WriteLine(Json.Beautify(json));
+
+        }
       }
       catch (Exception ex)
       {
