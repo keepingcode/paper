@@ -34,30 +34,18 @@ namespace Toolset
 
     public Type RawType { get; }
 
-    public VarKind Kind
-    {
-      get
-      {
-        if (IsValue) return VarKind.Value;
-        if (IsArray) return VarKind.Array;
-        if (IsRange) return VarKind.Range;
-        return VarKind.Null;
-      }
-    }
+    public VarKind Kind { get; set; }
 
-    public bool IsNull => !(IsValue || IsArray || IsRange);
-
-    public bool IsValue { get; private set; }
-    public bool IsArray { get; private set; }
-    public bool IsRange { get; private set; }
+    public bool IsNull => Kind == VarKind.Null;
+    public bool IsValue => Kind == VarKind.Value;
+    public bool IsArray => Kind == VarKind.Array;
+    public bool IsRange => Kind == VarKind.Range;
 
     public object RawValue
     {
       get => _rawValue;
       set
       {
-        IsValue = IsRange = IsArray = false;
-
         while (value is Var any)
         {
           value = any.RawValue;
@@ -66,6 +54,7 @@ namespace Toolset
         if (value == null || value == DBNull.Value)
         {
           _rawValue = null;
+          Kind = VarKind.Null;
           return;
         }
 
@@ -83,7 +72,7 @@ namespace Toolset
           }
 
           _rawValue = value;
-          IsRange = true;
+          Kind = VarKind.Range;
         }
         else if (value is IEnumerable && !(value is string))
         {
@@ -111,12 +100,12 @@ namespace Toolset
           }
 
           _rawValue = value;
-          IsArray = true;
+          Kind = VarKind.Array;
         }
         else
         {
           _rawValue = Change.To(value, RawType);
-          IsValue = true;
+          Kind = VarKind.Value;
         }
       }
     }

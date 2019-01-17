@@ -43,7 +43,7 @@ namespace Paper.Media.Utilities
     private void Insert(string path, TValue value, bool overwrite)
     {
       Node<TValue> node = entries;
-      foreach (var token in path.ToLower().Split('/').NonEmpty())
+      foreach (var token in path.ToLower().Split('/').NonNullOrEmpty())
       {
         var key = token.Contains("{") ? "*" : token;
         if (!node.ContainsKey(key))
@@ -95,7 +95,7 @@ namespace Paper.Media.Utilities
     private Node<TValue> FindNodeExact(string path)
     {
       Node<TValue> index = entries;
-      foreach (var token in path.ToLower().Split('/').NonEmpty())
+      foreach (var token in path.ToLower().Split('/').NonNullOrEmpty())
       {
         var key = index.ContainsKey(token) ? token : index.ContainsKey("*") ? "*" : null;
         if (key == null)
@@ -107,7 +107,7 @@ namespace Paper.Media.Utilities
 
     private Node<TValue> FindNodeByPrefix(string path)
     {
-      var tokens = path.ToLower().Split('/').NonEmpty().GetEnumerator();
+      var tokens = path.ToLower().Split('/').NonNullOrEmpty().GetEnumerator();
 
       tokens.MoveNext();
 

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using Toolset.Data;
+using Toolset.Reflection;
 
 namespace Toolset.Sequel
 {
@@ -53,6 +56,31 @@ namespace Toolset.Sequel
     {
       var text = string.Join("\n", sqlParts);
       return new Sql(scope) { Text = text };
+    }
+
+    /// <summary>
+    /// Obtém uma representação do objeto no formato esperado pelo SQL.
+    /// Números são retornados como estão e textos, datas e outros tipos especiais
+    /// são retornados entre apóstrofos.
+    /// </summary>
+    /// <param name="value">O valor a ser convertido.</param>
+    /// <returns>O número ou o texto entre apóstrofos.</returns>
+    internal static string ToQuotedPattern(this object value)
+    {
+      if (value.IsNull())
+        return "null";
+
+      if (value is string
+       || value is DateTime
+       || value is TimeSpan
+       || value is Uri
+       || value is Guid)
+        return $"'{value}'";
+
+      if (value is bool bit)
+        return bit ? "1" : "0";
+
+      return value.ToString();
     }
   }
 }

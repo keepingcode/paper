@@ -103,7 +103,7 @@ namespace Toolset.Sequel
 
       if (SequelSettings.ExtendedTemplateEnabled)
         ApplyExtendedTemplate(sql);
-
+      
       return sql;
     }
 
@@ -411,6 +411,46 @@ namespace Toolset.Sequel
         var criteria = CreateCriteria(name, value, args, keyGen);
         text = ReplaceMatches(text, name, criteria);
       }
+
+      var patterns = new[] {
+        new[] { @"1=1\sand\s1=1", "1=1"},
+        new[] { @"1=1\sand\s1=0", "1=0"},
+        new[] { @"1=0\sand\s1=1", "1=0"},
+        new[] { @"1=0\sand\s1=0", "1=0"},
+
+        new[] { @"1=1\sor\s1=1", "1=1"},
+        new[] { @"1=1\sor\s1=0", "1=1"},
+        new[] { @"1=0\sor\s1=1", "1=1"},
+        new[] { @"1=0\sor\s1=0", "1=0"},
+
+        new[] { @"1=1\sand\s", ""},
+        new[] { @"\sand\s1=1", ""},
+        new[] { @"1=0\sor\s", ""},
+        new[] { @"\sor\s1=0", ""},
+
+        new[] { @"\sand\s\(1=1\)", ""},
+        new[] { @"\(1=1\)\sand\s", ""},
+        new[] { @"\sor\s\(1=0\)", ""},
+        new[] { @"\(1=0\)\sor\s", ""}
+      };
+
+      bool changed;
+      do
+      {
+        changed = false;
+        foreach (var pattern in patterns)
+        {
+          var oldText = pattern[0];
+          var newText = pattern[1];
+          var replacement = Regex.Replace(text, oldText, newText);
+          if (replacement != text)
+          {
+            text = replacement;
+            changed = true;
+          }
+        }
+      } while (changed);
+
       return text;
     }
 

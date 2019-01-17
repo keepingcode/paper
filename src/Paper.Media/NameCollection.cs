@@ -84,7 +84,7 @@ namespace Paper.Media
     {
       var names =
         from token in tokens.NonNull()
-        from name in token.Split(',', ';', '|').NonWhitespace()
+        from name in token.Split(',', ';', '|').NonNullOrWhitespace()
         select name;
       foreach (var name in names)
       {

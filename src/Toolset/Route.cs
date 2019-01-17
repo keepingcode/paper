@@ -827,7 +827,7 @@ namespace Toolset
             segments = Enumerable.Empty<string>();
           }
 
-          foreach (var part in parts.NonEmpty())
+          foreach (var part in parts.NonNullOrEmpty())
           {
             if (part == ".")
               continue;
@@ -956,7 +956,7 @@ namespace Toolset
 
     private IEnumerable<string> EnumeratePath()
     {
-      return EnumerateTrail().Select(x => x.paths).NonEmpty().Reverse().SelectMany();
+      return EnumerateTrail().Select(x => x.paths).NonNullOrEmpty().Reverse().SelectMany();
     }
 
     private IEnumerable<Arg> EnumerateArg()
@@ -984,7 +984,7 @@ namespace Toolset
                 }
               )
           )
-          .NonEmpty()
+          .NonNullOrEmpty()
           .Reverse()
           .SelectMany()
           .GroupBy(arg => arg.Name)

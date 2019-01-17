@@ -126,18 +126,14 @@ namespace Sandbox.Lib
           var isMin = key.EndsWith(".min");
           key = Regex.Replace(key, "(.min|.max)$", "");
 
-          Range range = null;
-
-          var current = cache[key];
-          if (current is Range)
+          var range = cache[key] as Range;
+          if (range != null)
           {
-            range = (Range)current;
+            cache[key] = range = new Range();
           }
 
-          var min = isMin ? value : range.Min;
-          var max = isMin ? range.Max : value;
-
-          cache[key] = new Range(min, max);
+          range.Min = isMin ? value : range.Min;
+          range.Max = isMin ? range.Max : value;
         }
         else if (isArray)
         {

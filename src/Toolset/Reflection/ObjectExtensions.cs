@@ -11,10 +11,10 @@ namespace Toolset.Reflection
   public static class ObjectExtensions
   {
     private readonly static BindingFlags Flags =
-      BindingFlags.Public | BindingFlags.Instance;
+      BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
-    private readonly static BindingFlags CaseInsensitiveFlags = 
-      BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase;
+    private readonly static BindingFlags CaseInsensitiveFlags =
+      BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.IgnoreCase;
 
     public static PropertyInfo _GetPropertyInfo(this object typeOrObject, string propertyName)
     {

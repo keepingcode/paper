@@ -61,6 +61,10 @@
       <Project>{E86E558A-3728-4097-BB17-CEF350C603B9}</Project>
       <Name>Sandbox.Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj">
+      <Project>{96270BEA-C95D-4DA6-B415-82065B83A283}</Project>
+      <Name>Toolset.Sequel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Toolset\Toolset.csproj">
       <Project>{EE82245E-2724-4073-947D-A1BBA0955D7F}</Project>
       <Name>Toolset</Name>

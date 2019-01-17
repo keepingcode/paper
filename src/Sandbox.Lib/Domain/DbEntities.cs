@@ -1,18 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Paper.Media;
+using Sandbox.Lib.Domain.SmallApi;
 using Toolset;
 using Toolset.Data;
 using Toolset.Reflection;
 
 namespace Sandbox.Lib.Domain
 {
-  static class DbEntities
+  public static class DbEntities
   {
-    public static Ret CopyFilter(UriString uri, object targetFilter)
+    public static void CopyTable(Table table, Entity targetEntity)
     {
-      throw new NotImplementedException();
+      var tableInfo = table.GetType()._Get<TableInfo>("TableInfo");
+      var filterInfo = table.GetType()._Get<FilterInfo>("FilterInfo");
+
+      Debug.WriteLine(tableInfo);
+      Debug.WriteLine(filterInfo);
+    }
+
+    public static void CopyTable(Entity entity, Table table)
+    {
+
+    }
+
+    public static void CopyFilter(UriString uri, object targetFilter)
+    {
       foreach (var argName in uri.GetArgNames())
       {
         if (targetFilter._Has(argName))
@@ -23,19 +38,8 @@ namespace Sandbox.Lib.Domain
       }
     }
 
-    public static Ret CopyFilter(object filter, UriString targetUri)
+    public static void CopyFilter(object filter, UriString targetUri)
     {
-      throw new NotImplementedException();
-    }
-
-    public static Ret CopyGraph(object graph, Entity targetEntity)
-    {
-      throw new NotImplementedException();
-    }
-
-    public static Ret CopyGraph(Entity entity, object targetGraph)
-    {
-      throw new NotImplementedException();
     }
   }
 }

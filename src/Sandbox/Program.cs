@@ -7,11 +7,15 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Paper.Media;
 using Sandbox.Lib;
+using Sandbox.Lib.Domain;
 using Sandbox.Lib.Domain.Dbo;
+using Sandbox.Lib.Domain.SmallApi;
 using Toolset;
 using Toolset.Data;
 using Toolset.Reflection;
+using Toolset.Sequel;
 using Toolset.Xml;
 
 namespace Sandbox
@@ -26,50 +30,16 @@ namespace Sandbox
 
       try
       {
-        {
-          var ret = DoOk();
-          Debug.WriteLine(ret);
-        }
+        SequelSettings.TraceQueries = true;
 
-        {
-          var ret = DoOk(10.01);
-          Debug.WriteLine((Ret<int>)(Ret)ret);
-        }
-
-        {
-          var ret = DoFail();
-          Debug.WriteLine(ret);
-        }
-
-        {
-          var ret = DoFail(10.01);
-          Debug.WriteLine(ret);
-        }
+        Table table = new TBusuario();
+        Entity targetEntity = new Entity();
+        DbEntities.CopyTable(table, targetEntity);
       }
       catch (Exception ex)
       {
         ex.Trace();
       }
-    }
-
-    static Ret DoOk()
-    {
-      return true;
-    }
-
-    static Ret<T> DoOk<T>(T value)
-    {
-      return value;
-    }
-
-    static Ret DoFail()
-    {
-      return new Exception("Failure happens!");
-    }
-
-    static Ret<T> DoFail<T>(T value)
-    {
-      return new Exception("Failure happens!");
     }
   }
 }

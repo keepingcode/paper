@@ -29,9 +29,12 @@ namespace Toolset.Sequel
     public static T Set<T>(this T sql, NameValueCollection parameters)
       where T : IParameterMap
     {
-      foreach (var key in parameters.AllKeys)
+      if (parameters != null)
       {
-        sql.Parameters[key] = parameters[key];
+        foreach (var key in parameters.AllKeys)
+        {
+          sql.Parameters[key] = parameters[key];
+        }
       }
       return sql;
     }
@@ -49,9 +52,12 @@ namespace Toolset.Sequel
     public static T Set<T>(this T sql, IEnumerable<KeyValuePair<string, object>> parameters)
       where T : IParameterMap
     {
-      foreach (var parameter in parameters)
+      if (parameters != null)
       {
-        sql.Parameters[parameter.Key] = parameter.Value;
+        foreach (var parameter in parameters)
+        {
+          sql.Parameters[parameter.Key] = parameter.Value;
+        }
       }
       return sql;
     }

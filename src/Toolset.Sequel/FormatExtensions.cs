@@ -18,7 +18,7 @@ namespace Toolset.Sequel
     /// <returns>A SQL indentada.</returns>
     public static Sql Uglify(this Sql sql)
     {
-      var lines = sql.Text.Split('\n').NonWhitespace().Select(x => x.Trim());
+      var lines = sql.Text.Split('\n').NonNullOrWhitespace().Select(x => x.Trim());
       sql.Text = string.Join(" ", lines).Trim();
       return sql;
     }

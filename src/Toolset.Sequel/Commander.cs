@@ -49,7 +49,6 @@ namespace Toolset.Sequel
 
     public static object CreateSqlCompatibleValue(object value)
     {
-      //var var = value as Var;
       value = (value as Var)?.RawType ?? value;
 
       if (value.IsNull())
@@ -90,12 +89,7 @@ namespace Toolset.Sequel
           return list.Cast<byte>().ToArray();
         }
 
-        var sample = list.FirstOrDefault();
-        if (sample is string)
-        {
-          list = list.Select(x => "'" + x + "'");
-        }
-        var text = string.Join(",", list);
+        var text = string.Join(",", list.Select(x => x.ToQuotedPattern()));
         return text;
       }
 
