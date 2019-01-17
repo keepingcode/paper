@@ -32,8 +32,8 @@ namespace Sandbox.Bot.Forms
 
       var ln = Environment.NewLine;
 
-      var entity = ret.Data as Entity;
-      var exception = ret.Data as Exception ?? ret.Fault as Exception;
+      var entity = ret.Value as Entity;
+      var exception = ret.Value as Exception ?? ret.Fault as Exception;
 
       var isErrorEntity = entity?.Class.Contains(ClassNames.Error) == true;
       if (isErrorEntity)

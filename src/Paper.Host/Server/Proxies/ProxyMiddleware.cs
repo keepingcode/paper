@@ -68,21 +68,21 @@ namespace Paper.WebApp.Server.Proxies
           var res = httpContext.Response;
 
           var uri = CreateTargetUri(req, proxy);
-          if (uri.IsFault())
+          if (!uri.OK)
           {
             await SendStatusAsync(httpContext, uri);
             return;
           }
 
           var message = CreateMessage(req, uri);
-          if (message.IsFault())
+          if (!message.OK)
           {
             await SendStatusAsync(httpContext, message);
             return;
           }
 
           ret = CopyRequestToMessage(req, message);
-          if (ret.IsFault())
+          if (!ret.OK)
           {
             await SendStatusAsync(httpContext, ret);
             return;
@@ -91,7 +91,7 @@ namespace Paper.WebApp.Server.Proxies
           var result = await httpClient.SendAsync(message);
 
           ret = CopyResultToResponse(result, res);
-          if (ret.IsFault())
+          if (!ret.OK)
           {
             await SendStatusAsync(httpContext, ret);
             return;
@@ -112,7 +112,7 @@ namespace Paper.WebApp.Server.Proxies
       var res = httpContext.Response;
 
       var entity = 
-        (ret.Data as Entity)
+        (ret.Value as Entity)
         ?? HttpEntity.CreateFromRet(req.GetRequestUri(), ret);
 
       var contentType = HttpNegotiation.SelectContentType(req);

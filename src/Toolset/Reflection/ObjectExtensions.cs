@@ -194,14 +194,23 @@ namespace Toolset.Reflection
         return;
       }
 
-      // Tratamento especial para o tipo Any do Toolset.
-      if (typeof(IVar).IsAssignableFrom(property.PropertyType))
-      {
-        if (!(value is IVar))
-        {
-          value = Activator.CreateInstance(property.PropertyType, value);
-        }
-      }
+
+
+
+      /// TODO: REVER
+      //// Tratamento especial para o tipo Any do Toolset.
+      //if (typeof(IVar).IsAssignableFrom(property.PropertyType))
+      //{
+      //  if (!(value is IVar))
+      //  {
+      //    value = Activator.CreateInstance(property.PropertyType, value);
+      //  }
+      //}
+
+
+
+
+
 
       if (property.PropertyType.IsAssignableFrom(value.GetType()))
       {

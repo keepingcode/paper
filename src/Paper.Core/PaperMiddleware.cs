@@ -38,7 +38,7 @@ namespace Paper.Core
       var injector = new Injector(serviceProvider);
 
       var ret = RenderEntity(httpContext, injector, paperType);
-      var entity = ret.Data ?? HttpEntity.CreateFromRet(req.GetRequestUri(), ret);
+      var entity = ret.Value ?? HttpEntity.CreateFromRet(req.GetRequestUri(), ret);
 
       var contentType = HttpNegotiation.SelectContentType(req);
       var encoding = HttpNegotiation.SelectEncoding(req);

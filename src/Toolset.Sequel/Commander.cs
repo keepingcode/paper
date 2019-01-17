@@ -49,8 +49,8 @@ namespace Toolset.Sequel
 
     public static object CreateSqlCompatibleValue(object value)
     {
-      var var = value as IVar;
-      var raw = var?.Value ?? value;
+      //var var = value as Var;
+      value = (value as Var)?.RawType ?? value;
 
       if (value.IsNull())
       {
@@ -68,19 +68,14 @@ namespace Toolset.Sequel
         return DBNull.Value;
       }
 
-      if ((value as IVar)?.Kind == VarKinds.Primitive)
+      if (value is string || value.GetType().IsPrimitive)
       {
         return value;
       }
 
-      if ((value as IVar)?.Kind == VarKinds.Range)
+      if (value is IEnumerable enumerable)
       {
-        return DBNull.Value;
-      }
-
-      if ((value as IVar)?.Kind == VarKinds.List)
-      {
-        var list = ((IVar)value).List.Cast<object>();
+        var list = enumerable.Cast<object>();
 
         if (!list.Any())
         {
@@ -102,11 +97,6 @@ namespace Toolset.Sequel
         }
         var text = string.Join(",", list);
         return text;
-      }
-
-      if (value is string || value.GetType().IsPrimitive)
-      {
-        return value;
       }
 
       return DBNull.Value;

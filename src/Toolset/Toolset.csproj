@@ -7,6 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Date.cs" />
+    <Compile Remove="Data\IVar.cs" />
+    <Compile Remove="Data\Range.cs" />
+    <Compile Remove="Data\RangeEx.cs" />
+    <Compile Remove="Data\Range`1.cs" />
+    <Compile Remove="Data\Time.cs" />
+    <Compile Remove="Data\Var.cs" />
+    <Compile Remove="Data\VarAny.cs" />
+    <Compile Remove="Data\VarAny`1.cs" />
+    <Compile Remove="Data\VarKinds.cs" />
+    <Compile Remove="Data\VarString.cs" />
+    <Compile Remove="Data\Var`1.cs" />
+    <Compile Remove="IRet.cs" />
+    <Compile Remove="RetFault.cs" />
+    <Compile Remove="RetStatus.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Transactions" />
   </ItemGroup>
 

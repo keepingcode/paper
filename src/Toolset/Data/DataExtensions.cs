@@ -21,7 +21,7 @@ namespace Toolset.Data
     {
       return (value == null)
           || (value == DBNull.Value)
-          || (((value as IVar)?.IsNull) == true);
+          || (((value as Var)?.IsNull) == true);
     }
 
     public static DbProviderFactory GetFactory(string provider)

@@ -187,19 +187,9 @@ namespace Paper.Media.Design.Papers
       if (value == null)
         return MakeConstantExpression<T>(true);
 
-      var isAny = value is IVar;
-      if (isAny)
+      while (value is Var var)
       {
-        var any = (IVar)value;
-
-        // Raramente um valor de um tipo Any pode ser outro tipo Any.
-        // Neste caso vamos seguir com o valor do tipo Any mais profundo encontrado.
-        while (any.Value is IVar)
-        {
-          value = any.Value;
-        }
-
-        value = any.Value;
+        value = var.Value;
       }
 
       var isList = (value is IEnumerable) && !(value is string);
@@ -404,7 +394,7 @@ namespace Paper.Media.Design.Papers
       // Sendo
       //   PROP: O nome do campo pesquisado informado pelo parametro 'field'
       var targetType = typeof(T)._GetPropertyType(field);
-      var regexPattern = Var.CreateTextPattern(pattern);
+      var regexPattern = pattern.GetWildcardPattern();
 
       var param = Expression.Parameter(typeof(T));
       var lambda =

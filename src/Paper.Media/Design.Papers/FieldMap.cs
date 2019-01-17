@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Toolset;
 using Toolset.Collections;
 using Toolset.Data;
 using Toolset.Reflection;
@@ -46,9 +47,9 @@ namespace Paper.Media.Design.Papers
 
     private static object ResolveValue(object value)
     {
-      while (value is IVar)
+      while (value is Var var)
       {
-        value = ((IVar)value).Value;
+        value = var.Value;
       }
       return value;
     }

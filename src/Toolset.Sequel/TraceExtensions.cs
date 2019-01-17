@@ -36,14 +36,14 @@ namespace Toolset.Sequel
         builder.Append(" := ");
 
         var value = sql[parameter];
-        var var = value as IVar;
-        if (var?.Kind == VarKinds.Range)
+        var var = value as Var;
+        if (var?.IsRange == true)
         {
           builder.AppendLine($"{var.Range}");
         }
-        else if (var?.Kind == VarKinds.List)
+        else if (var?.IsArray == true)
         {
-          var items = var.List.Cast<object>();
+          var items = var.Array.Cast<object>();
           var item = items.FirstOrDefault();
           var isMany = item.IsEnumerable();
           var isBinary = item is byte;

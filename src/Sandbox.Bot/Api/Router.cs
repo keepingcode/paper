@@ -19,7 +19,7 @@ namespace Sandbox.Bot.Api
       var client = MediaClient.Current;
 
       var entity = await client.FindEntityAsync(route, args);
-      if (entity.IsFault())
+      if (!entity.OK)
       {
         var dialog = new FaultDialog(entity);
         dialog.ShowDialog(MainForm.Current);

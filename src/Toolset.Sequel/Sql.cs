@@ -70,7 +70,7 @@ namespace Toolset.Sequel
           }
         }
 
-        Parameters[name] = value.IsPrimitive() ? value : (value as IVar ?? new VarAny(value));
+        Parameters[name] = value.IsPrimitive() ? value : (value as Var ?? new Var(value));
       }
     }
 

@@ -4,56 +4,96 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Toolset
 {
-  public class Ret<T> : Ret, IRet
+  public class Ret<T>
   {
+    private Type valueType;
+
+    private T _value;
+    private string _faultMessage;
+
     internal Ret()
     {
     }
 
-    public new T Data
+    public bool OK => Status < 400;
+
+    public int Status { get; set; }
+
+    public T Value { get; set; }
+
+    public Exception Fault { get; set; }
+
+    public string FaultMessage
     {
-      get => (base.Data is T) ? (T)base.Data : default(T);
-      set => base.Data = value;
+      get
+      {
+        if (OK)
+          return null;
+
+        if (_faultMessage != null)
+          return _faultMessage;
+
+        if (Fault is Exception ex)
+          return string.Join(Environment.NewLine, ex.GetCauseMessages());
+
+        return Fault?.ToString()
+            ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
+      }
+      set => _faultMessage = value;
+    }
+
+    public override string ToString()
+    {
+      var message =
+        FaultMessage
+        ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
+
+      var value = OK ? $": {Change.To<string>(Value)}" : null;
+
+      return $"{{{Status} {message}{value}}}";
     }
 
     public static implicit operator T(Ret<T> ret)
     {
-      return ret.Data;
+      return ret.Value;
     }
 
-    public static implicit operator Ret<T>(T instance)
+    public static implicit operator Ret<T>(T value)
     {
-      return Ret.Ok(instance);
+      return Ret.Ok(value);
     }
 
-    public static implicit operator Exception(Ret<T> ret)
+    public static implicit operator Ret<T>(Exception ex)
     {
-      return ret.Fault as Exception;
+      return Ret.Fail(ex);
     }
 
-    public static implicit operator Ret<T>(Exception exception)
+    #region Conversões implícitas
+
+    public static implicit operator Ret<T>(Ret other)
     {
-      return Ret.Fail(exception);
+      var ret = new Ret<T>();
+      ret.Status = other.Status;
+      ret.Value = Change.To<T>(other.Value);
+      ret.Fault = other.Fault;
+      ret._faultMessage = other._faultMessage;
+      return ret;
     }
 
-    public static implicit operator Ret<T>(RetStatus ok)
+    public static implicit operator Ret(Ret<T> other)
     {
-      return new Ret<T>
-      {
-        Status = ok.Status
-      };
+      var ret = new Ret();
+      ret.Status = other.Status;
+      ret.Value = other.Value;
+      ret.Fault = other.Fault;
+      ret._faultMessage = other._faultMessage;
+      return ret;
     }
 
-    public static implicit operator Ret<T>(RetFault fault)
-    {
-      return new Ret<T>
-      {
-        Status = fault.Status,
-        Fault = fault.Fault
-      };
-    }
+    #endregion
   }
 }

@@ -126,7 +126,7 @@ namespace Sandbox.Lib
           var isMin = key.EndsWith(".min");
           key = Regex.Replace(key, "(.min|.max)$", "");
 
-          Range range;
+          Range range = null;
 
           var current = cache[key];
           if (current is Range)

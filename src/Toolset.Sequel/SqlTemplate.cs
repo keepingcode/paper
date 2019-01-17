@@ -455,7 +455,7 @@ namespace Toolset.Sequel
         body = body.Substring(1, body.Length - 2);
 
         var candidate = args.Get(bagName);
-        var enumerable = (candidate as IEnumerable) ?? ((candidate as IVar)?.Value as IEnumerable);
+        var enumerable = (candidate as IEnumerable) ?? ((candidate as Var)?.Value as IEnumerable);
         var bags = enumerable?.OfType<IDictionary<string, object>>();
         if (bags?.Any() != true)
         {
@@ -531,39 +531,35 @@ namespace Toolset.Sequel
     /// <returns>A condição que substituirá o template.</returns>
     private static string CreateCriteria(string parameter, object value, IDictionary<string, object> args, KeyGen keyGen)
     {
-      var var = value as IVar;
-      var raw = (var != null) ? var.Value : value;
+      value = (value as Var)?.Value ?? value;
 
-      if (raw == null)
+      if (value == null)
       {
         return null;
       }
 
-      if (var?.Kind == VarKinds.Primitive)
+      if (value is string text)
       {
-        if (raw is string)
+        if (text.HasWildcardPattern())
         {
-          if (Var.HasWildcards(raw as string))
-          {
-            args[parameter] = raw;
-            return "{0} like @" + parameter;
-          }
-          else
-          {
-            args[parameter] = raw;
-            return "{0} = @" + parameter;
-          }
+          args[parameter] = value;
+          return "{0} like @" + parameter;
         }
         else
         {
-          args[parameter] = var.Value;
+          args[parameter] = value;
           return "{0} = @" + parameter;
         }
       }
 
-      if (raw is Sql)
+      if (value.GetType().IsPrimitive)
       {
-        var nestSql = (value as Sql) ?? (var?.Value as Sql);
+        args[parameter] = value;
+        return "{0} = @" + parameter;
+      }
+
+      if (value is Sql nestSql)
+      {
         var nestGen = keyGen.Derive();
         var nestArgs = nestSql.Parameters;
         var nestText = nestSql.Text + "\n";
@@ -593,17 +589,15 @@ namespace Toolset.Sequel
         return "{0} in (" + nestText + ")";
       }
 
-      if (var?.Kind == VarKinds.List)
+      if (value is IEnumerable list)
       {
-        var items = Commander.CreateSqlCompatibleValue(var);
+        var items = Commander.CreateSqlCompatibleValue(list);
         var values = string.Join(",", (IEnumerable)items);
         return "{0} in (" + values + ")";
       }
 
-      if (var?.Kind == VarKinds.Range)
+      if (value is Range range)
       {
-        var range = var.Range;
-
         if (range.Min != null && range.Max != null)
         {
           var minArg = keyGen.DeriveName(parameter);
@@ -631,7 +625,7 @@ namespace Toolset.Sequel
         return "{0} = @" + parameter;
       }
 
-      args[parameter] = raw;
+      args[parameter] = value;
       return "{0} = @" + parameter;
     }
 

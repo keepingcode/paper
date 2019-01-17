@@ -429,5 +429,20 @@ namespace Toolset
 
     #endregion
 
+    #region SQL Like Pattern
+
+    public static bool HasWildcardPattern(this string text)
+    {
+      return text?.Contains("%") == true || text?.Contains("_") == true;
+    }
+
+    public static string GetWildcardPattern(this string text)
+    {
+      return (text != null)
+        ? $"^{Regex.Escape(text).Replace("%", ".*").Replace("_", ".")}$"
+        : "";
+    }
+
+    #endregion
   }
 }

@@ -30,7 +30,7 @@ namespace Sandbox.Lib.Domain.Dbo
     public class Filter
     {
       public Var<int> DFid_usuario { get; set; }
-      public VarString DFnome_usuario { get; set; }
+      public Var<string> DFnome_usuario { get; set; }
       public Var<int> DFnivel_usuario { get; set; }
       public Var<int> DFcod_empresa { get; set; }
       public Var<bool> DFativo_inativo { get; set; }

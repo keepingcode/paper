@@ -43,7 +43,7 @@ namespace Sandbox.Bot.Api
           catch (Exception ex)
           {
             ex.Trace();
-            return Ret.As(HttpStatusCode.UnsupportedMediaType);
+            return Ret.Ok(HttpStatusCode.UnsupportedMediaType);
           }
         }
       }
@@ -77,7 +77,7 @@ namespace Sandbox.Bot.Api
         using (var stream = webResponse.GetResponseStream())
         {
           var entity = EntityParser.ParseEntity(stream);
-          return Ret.As(webResponse.StatusCode, entity);
+          return Ret.Ok(entity, webResponse.StatusCode);
         }
       }
       catch (Exception ex)

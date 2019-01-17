@@ -67,7 +67,7 @@ namespace Paper.Media.Rendering.Papers
           field.AddRequired();
         }
 
-        var isVar = typeof(IVar).IsAssignableFrom(property.PropertyType);
+        var isVar = typeof(Var).IsAssignableFrom(property.PropertyType);
         if (isVar)
         {
           field.AddAllowMany();

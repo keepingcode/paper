@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Toolset.Reflection;
 
 namespace Toolset
 {
@@ -71,81 +72,124 @@ namespace Toolset
 
     private static object ConvertTo(object value, Type targetType)
     {
-      var sourceType = value?.GetType();
-
-      if (value == null)
-        return null;
-
-      if (targetType.IsAssignableFrom(sourceType))
-        return value;
-
-      if (targetType == typeof(string))
-        return value.ToString();
-
-      if (targetType == typeof(Guid))
-        return Guid.Parse(value.ToString());
-
-      if (targetType == typeof(Version))
-        return Version.Parse(value.ToString());
-
-      if (targetType == typeof(DateTime) && value is string dateTime)
+      Type sourceType = value?.GetType();
+      try
       {
-        if (Regex.IsMatch(dateTime, @"\d{4}-\d{2}-\d{2}.*"))
+        if (value == null || value == DBNull.Value)
         {
-          return DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
+          return Default.Of(targetType);
         }
-      }
 
-      if (targetType == typeof(TimeSpan) && value is string timeSpan)
-      {
-        if (Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
+        if (targetType.IsAssignableFrom(sourceType))
         {
-          return DateTime.Parse(timeSpan);
+          return value;
         }
-      }
 
-      var flags = BindingFlags.Static | BindingFlags.Public;
-
-      var methods = sourceType.GetMethods(flags).Concat(targetType.GetMethods(flags));
-      var casting = (
-        from method in methods
-        where method.Name == "op_Implicit"
-           || method.Name == "op_Explicit"
-        where method.GetParameters().Length == 1
-           && sourceType.IsAssignableFrom(method.GetParameters().Single().ParameterType)
-           && targetType.IsAssignableFrom(method.ReturnType)
-        select method
-      ).FirstOrDefault();
-
-      if (casting != null)
-      {
-        var castValue = casting.Invoke(null, new[] { value });
-        return castValue;
-      }
-
-      targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-      object convertedValue;
-
-      if (targetType.IsEnum)
-      {
-        var text = value.ToString();
-        if (Regex.IsMatch(text, "[0-9]+"))
+        if (targetType == typeof(string))
         {
-          int number = int.Parse(text);
-          convertedValue = Enum.ToObject(targetType, number);
+          if (value is DateTime dateAndTime)
+          {
+            if (dateAndTime.Hour == 0
+             && dateAndTime.Minute == 0
+             && dateAndTime.Second == 0
+             && dateAndTime.Millisecond == 0)
+            {
+              return dateAndTime.ToString("yyyy-MM-dd");
+            }
+            else
+            {
+              return dateAndTime.ToString("yyyy-MM-ddTHH:mm:ss");
+            }
+          }
+          else
+          {
+            if (value._HasMethod("ToString", typeof(IFormatProvider)))
+            {
+              return value._Call("ToString", CultureInfo.InvariantCulture);
+            }
+            else
+            {
+              return value.ToString();
+            }
+          }
+        }
+
+        if (targetType == typeof(Guid))
+        {
+          return Guid.Parse(value.ToString());
+        }
+
+        if (targetType == typeof(Version))
+        {
+          return Version.Parse(value.ToString());
+        }
+
+        if (targetType == typeof(DateTime) && value is string dateTime)
+        {
+          if (Regex.IsMatch(dateTime, @"\d{4}-\d{2}-\d{2}.*"))
+          {
+            return DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
+          }
+        }
+
+        if (targetType == typeof(TimeSpan) && value is string timeSpan)
+        {
+          if (Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
+          {
+            return DateTime.Parse(timeSpan);
+          }
+        }
+
+        var flags = BindingFlags.Static | BindingFlags.Public;
+
+        var methods = sourceType.GetMethods(flags).Concat(targetType.GetMethods(flags));
+        var casting = (
+          from method in methods
+          where method.Name == "op_Implicit"
+             || method.Name == "op_Explicit"
+          where method.GetParameters().Length == 1
+             && sourceType.IsAssignableFrom(method.GetParameters().Single().ParameterType)
+             && targetType.IsAssignableFrom(method.ReturnType)
+          select method
+        ).FirstOrDefault();
+
+        if (casting != null)
+        {
+          var castValue = casting.Invoke(null, new[] { value });
+          return castValue;
+        }
+
+        targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+        object convertedValue;
+
+        if (targetType.IsEnum)
+        {
+          var text = value.ToString();
+          if (Regex.IsMatch(text, "[0-9]+"))
+          {
+            int number = int.Parse(text);
+            convertedValue = Enum.ToObject(targetType, number);
+          }
+          else
+          {
+            convertedValue = Enum.Parse(targetType, text);
+          }
         }
         else
         {
-          convertedValue = Enum.Parse(targetType, text);
+          convertedValue = Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
         }
-      }
-      else
-      {
-        convertedValue = Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
-      }
 
-      return convertedValue;
+        return convertedValue;
+      }
+      catch (InvalidCastException ex)
+      {
+        throw new InvalidCastException(
+          $"Impossível converter {sourceType.FullName} em {targetType.FullName}.",
+          ex
+        );
+      }
     }
   }
 }

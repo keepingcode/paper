@@ -339,13 +339,13 @@ namespace Paper.Media.Serialization
         value = MakeCompatibleName(value.ToString());
       }
 
-      if (value is IVar)
+      if (value is Var var)
       {
         // var any = (Any)value;
         // // apenas extrai o valor real de Any e prossegue...
         // if (any.IsText) value = any.Text;
         // if (any.
-        value = ((IVar)value).Value;
+        value = var.Value;
       }
 
       if (IsNull(value))

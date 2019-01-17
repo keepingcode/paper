@@ -52,8 +52,8 @@ namespace Sandbox.Bot.Forms
           lbMessage.SetText("Localizando o servidor de dados...");
 
           var entity = await client.FindEntityAsync("/Blueprint");
-          if (entity.IsFault())
-            throw entity.GetException() ?? new Exception(entity.GetMessage());
+          if (!entity.OK)
+            throw entity.Fault ?? new Exception(entity.FaultMessage);
 
           if (cancellation.IsCancellationRequested)
             break;

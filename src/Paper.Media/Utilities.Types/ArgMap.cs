@@ -41,8 +41,8 @@ namespace Media.Utilities.Types
         if (value == null)
           break;
 
-        while (value is IVar)
-          value = ((IVar)value).Value;
+        while (value is Var var)
+          value = var.Value;
 
         if (value is ArgMap)
           value = ((ArgMap)value).items[token];

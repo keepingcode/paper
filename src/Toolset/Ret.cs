@@ -4,107 +4,118 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using Toolset.Xml;
 
 namespace Toolset
 {
-  public class Ret : IRet
+  public class Ret
   {
+    private Type valueType;
+
+    internal object _value;
+    internal string _faultMessage;
+
     internal Ret()
     {
     }
 
+    public bool OK => Status < 400;
+
     public int Status { get; set; }
 
-    public object Data { get; set; }
+    public object Value { get; set; }
 
-    public object Fault { get; set; }
+    public Exception Fault { get; set; }
 
-    public static implicit operator Exception(Ret ret)
+    public string FaultMessage
     {
-      return ret.Fault as Exception;
-    }
-
-    public static implicit operator Ret(Exception exception)
-    {
-      return Ret.Fail(exception);
-    }
-
-    public static implicit operator Ret(RetStatus ok)
-    {
-      return new Ret
+      get
       {
-        Status = ok.Status
-      };
+        if (OK)
+          return null;
+
+        if (_faultMessage != null)
+          return _faultMessage;
+
+        if (Fault is Exception ex)
+          return string.Join(Environment.NewLine, ex.GetCauseMessages());
+
+        return Fault?.ToString()
+            ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
+      }
+      set => _faultMessage = value;
     }
 
-    public static implicit operator Ret(RetFault fault)
+    public override string ToString()
     {
-      return new Ret
-      {
-        Status = fault.Status,
-        Fault = fault.Fault
-      };
+      var message =
+        FaultMessage
+        ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
+
+      return $"{{{Status} {message}{(OK ? $": {Value}" : null)}}}";
     }
 
-    public static implicit operator Ret(bool status)
+    public static implicit operator Ret(bool ok)
     {
-      return status ? Ret.Ok() : Ret.As(HttpStatusCode.BadRequest);
+      return ok ? Ret.Ok() : Ret.Fail();
+    }
+
+    public static implicit operator Ret(Exception ex)
+    {
+      return Ret.Fail(ex);
     }
 
     #region Métodos Ok()
 
-    public static RetStatus Ok()
+    public static Ret Ok()
     {
-      return new RetStatus
+      return new Ret
       {
         Status = (int)HttpStatusCode.OK
       };
     }
 
-    public static Ret<T> Ok<T>(T data)
+    public static Ret Ok(int status)
     {
-      return new Ret<T>
-      {
-        Status = (int)HttpStatusCode.OK,
-        Data = data
-      };
-    }
-
-    #endregion
-
-    #region Métodos Create()
-
-    public static RetStatus As(int status)
-    {
-      return new RetStatus
+      return new Ret
       {
         Status = status
       };
     }
 
-    public static Ret<T> As<T>(int status, T data)
+    public static Ret Ok(HttpStatusCode status)
     {
-      return new Ret<T>
-      {
-        Status = status,
-        Data = data
-      };
-    }
-
-    public static RetStatus As(HttpStatusCode status)
-    {
-      return new RetStatus
+      return new Ret
       {
         Status = (int)status
       };
     }
 
-    public static Ret<T> As<T>(HttpStatusCode status, T data)
+    public static Ret<T> Ok<T>(T value)
+    {
+      return new Ret<T>
+      {
+        Status = (int)HttpStatusCode.OK,
+        Value = value
+      };
+    }
+
+    public static Ret<T> Ok<T>(T value, int status)
+    {
+      return new Ret<T>
+      {
+        Status = status,
+        Value = value
+      };
+    }
+
+    public static Ret<T> Ok<T>(T value, HttpStatusCode status)
     {
       return new Ret<T>
       {
         Status = (int)status,
-        Data = data
+        Value = value
       };
     }
 
@@ -112,125 +123,116 @@ namespace Toolset
 
     #region Métodos Fail()
 
-    public static RetFault Throw(IRet ret)
-    {
-      return new RetFault
-      {
-        Status = ret.Status,
-        Fault = ret.Fault
-      };
-    }
+    //public static RetFault Throw(Ret ret)
+    //{
+    //  return new RetFault
+    //  {
+    //    Status = ret.Status,
+    //    Fault = ret.Fault
+    //  };
+    //}
 
-    public static RetFault Fail()
+    public static Ret Fail()
     {
-      return new RetFault
+      return new Ret
       {
         Status = (int)HttpStatusCode.InternalServerError
       };
     }
 
-    public static RetFault Fail(object fault)
+    public static Ret Fail(string faultMessage)
     {
-      return new RetFault
+      return new Ret
       {
         Status = (int)HttpStatusCode.InternalServerError,
+        FaultMessage = faultMessage
+      };
+    }
+
+    public static Ret Fail(Exception fault)
+    {
+      return new Ret
+      {
+        Status = fault is NotImplementedException
+          ? (int)HttpStatusCode.NotImplemented
+          : (int)HttpStatusCode.InternalServerError,
         Fault = fault
       };
     }
 
-    public static RetFault Fail(string message)
+    public static Ret Fail(int status)
     {
-      return new RetFault
-      {
-        Status = (int)HttpStatusCode.InternalServerError,
-        Fault = message
-      };
-    }
-
-    public static RetFault Fail(Exception exception)
-    {
-      var status =
-        exception is NotImplementedException
-          ? HttpStatusCode.NotImplemented
-          : HttpStatusCode.InternalServerError;
-
-      exception.Debug();
-      return new RetFault
-      {
-        Status = (int)status,
-        Fault = exception
-      };
-    }
-
-    public static RetFault Fail(int status)
-    {
-      return new RetFault
+      return new Ret
       {
         Status = status
       };
     }
 
-    public static RetFault Fail(int status, object fault)
+    public static Ret Fail(int status, string faultMessage)
     {
-      return new RetFault
+      return new Ret
+      {
+        Status = status,
+        FaultMessage = faultMessage
+      };
+    }
+
+    public static Ret Fail(int status, Exception fault)
+    {
+      fault.Debug();
+      return new Ret
       {
         Status = status,
         Fault = fault
       };
     }
 
-    public static RetFault Fail(int status, string message)
+    public static Ret Fail(int status, string faultMessage, Exception fault)
     {
-      return new RetFault
+      fault.Debug();
+      return new Ret
       {
         Status = status,
-        Fault = message
+        FaultMessage = faultMessage,
+        Fault = fault
       };
     }
 
-    public static RetFault Fail(int status, Exception exception)
+    public static Ret Fail(HttpStatusCode status)
     {
-      exception.Debug();
-      return new RetFault
-      {
-        Status = status,
-        Fault = exception
-      };
-    }
-
-    public static RetFault Fail(HttpStatusCode status)
-    {
-      return new RetFault
+      return new Ret
       {
         Status = (int)status
       };
     }
 
-    public static RetFault Fail(HttpStatusCode status, object fault)
+    public static Ret Fail(HttpStatusCode status, string faultMessage)
     {
-      return new RetFault
+      return new Ret
+      {
+        Status = (int)status,
+        FaultMessage = faultMessage
+      };
+    }
+
+    public static Ret Fail(HttpStatusCode status, Exception fault)
+    {
+      fault.Debug();
+      return new Ret
       {
         Status = (int)status,
         Fault = fault
       };
     }
 
-    public static RetFault Fail(HttpStatusCode status, string message)
+    public static Ret Fail(HttpStatusCode status, string faultMessage, Exception fault)
     {
-      return new RetFault
+      fault.Debug();
+      return new Ret
       {
         Status = (int)status,
-        Fault = message
-      };
-    }
-
-    public static RetFault Fail(HttpStatusCode status, Exception exception)
-    {
-      exception.Debug();
-      return new RetFault
-      {
-        Status = (int)status,
-        Fault = exception
+        FaultMessage = faultMessage,
+        Fault = fault
       };
     }
 
