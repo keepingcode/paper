@@ -127,7 +127,7 @@ namespace Sandbox.Lib
           key = Regex.Replace(key, "(.min|.max)$", "");
 
           var range = cache[key] as Range;
-          if (range != null)
+          if (range == null)
           {
             cache[key] = range = new Range();
           }
@@ -217,6 +217,11 @@ namespace Sandbox.Lib
         if (value == null)
           continue;
 
+        if (value is Var var)
+        {
+          value = var.RawValue;
+        }
+
         if (value is Range range)
         {
           var min = Change.To<string>(range.Min);
@@ -254,7 +259,7 @@ namespace Sandbox.Lib
         target.Host = Coalesce(part.Host, target.Host);
         if (!string.IsNullOrEmpty(part.Path))
         {
-          if (part.Path.StartsWith("/"))
+          if (target.Path == null || part.Path.StartsWith("/"))
           {
             target.Path = part.Path;
           }

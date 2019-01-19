@@ -35,13 +35,17 @@ namespace Sandbox
 
         using (var db = new Db())
         {
-
+          
           Table table = TBusuario.Find(1);
-          Entity targetEntity = new Entity();
-          DbEntities.CopyTable(table, targetEntity);
+          Filter filter = new TBusuario.Filter();
+          filter.Row = Range.Between(10, 50);
+          Entity entity = new Entity();
+          DbEntities.CopyTable(table, filter, entity);
+
+          entity.Canonicalize("http://host.com/Api/1?f=json");
 
           var serializer = new MediaSerializer();
-          var json = serializer.SerializeToJson(targetEntity);
+          var json = serializer.SerializeToJson(entity);
           Debug.WriteLine(Json.Beautify(json));
 
         }

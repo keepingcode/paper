@@ -14,6 +14,7 @@ namespace Paper.Media
     private string _type;
     private string _dataType;
     private string _title;
+    private bool? _readOnly;
 
     /// <summary>
     /// Nome do campo.
@@ -72,6 +73,16 @@ namespace Paper.Media
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 40)]
     public virtual object Value { get; set; }
+
+    /// <summary>
+    /// Torna o campo editável ou somente leitura.
+    /// </summary>
+    [DataMember(Name = "readonly", EmitDefaultValue = false, Order = 45)]
+    public virtual bool? ReadOnly
+    {
+      get => (DataType == DataTypeNames.Label) ? true : _readOnly;
+      set => _readOnly = value;
+    }
 
     /// <summary>
     /// Tipo de objeto do campo.
@@ -139,12 +150,6 @@ namespace Paper.Media
     /// </summary>
     [DataMember(Name = "__Required", EmitDefaultValue = false, Order = 100)]
     public virtual bool? Required { get; set; }
-
-    /// <summary>
-    /// Torna o campo editável ou somente leitura.
-    /// </summary>
-    [DataMember(Name = "__ReadOnly", EmitDefaultValue = false, Order = 110)]
-    public virtual bool? ReadOnly { get; set; }
 
     /// <summary>
     /// Tamanho mínimo para um texto ou menor valor para um número.

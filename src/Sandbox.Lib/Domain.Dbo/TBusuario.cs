@@ -10,40 +10,29 @@ using Toolset.Sequel;
 
 namespace Sandbox.Lib.Domain.Dbo
 {
-  [Table(Schema = "dbo")]
   public class TBusuario : Table<TBusuario, int, TBusuario.Filter>
   {
     [Pk(AutoIncrement.Yes)]
     public int DFid_usuario { get; set; }
-    public string DFnome_usuario { get; set; }
-    public int DFcod_empresa { get; set; }
-    public int DFnivel_usuario { get; set; }
-    [Hidden]
+    public string DFlogin { get; set; }
+    public string DFnome { get; set; }
+    public bool DFativo { get; set; }
+    [Secret]
     public string DFsenha { get; set; }
-    public bool DFsenha_expira { get; set; }
-    public string DFpapel { get; set; }
-    public bool DFativo_inativo { get; set; }
-    [Hidden]
-    public int? DFid_pessoa { get; set; }
-    [Hidden]
-    public int? DFid_centro_distribuicao { get; set; }
-    [Hidden]
-    public int? DFcod_setor_usuario { get; set; }
-    [Hidden]
-    public DateTime? DFdata_expiracao_senha { get; set; }
-    [Hidden]
-    public int? DFcod_papel { get; set; }
+    [Fk(typeof(TBempresa))]
+    public int? DFid_empresa_padrao { get; set; }
+    [Fk(typeof(TBpapel_usuario))]
+    public int? DFid_papel_usuario { get; set; }
 
-    public class Filter
+    public class Filter : SmallApi.Filter
     {
-      public Var<int> DFid_usuario { get; set; }
-      public Var<string> DFnome_usuario { get; set; }
-      public Var<int> DFnivel_usuario { get; set; }
-      public Var<int> DFcod_empresa { get; set; }
-      public Var<bool> DFativo_inativo { get; set; }
-
-      [RowNumber]
-      public Var<int> DFrow_number { get; set; }
+      public Var<int?> DFid_usuario { get; set; }
+      public Var<string> DFlogin { get; set; }
+      public Var<string> DFnome { get; set; }
+      public Var<bool?> DFativo { get; set; }
+      public Var<string> DFsenha { get; set; }
+      public Var<int?> DFid_empresa_padrao { get; set; }
+      public Var<int?> DFid_papel_usuario { get; set; }
     }
   }
 }

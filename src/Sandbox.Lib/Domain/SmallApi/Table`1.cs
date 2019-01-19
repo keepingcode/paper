@@ -10,13 +10,13 @@ using Toolset.Sequel;
 
 namespace Sandbox.Lib.Domain.SmallApi
 {
-  public abstract class Table<TEntity, TPk, TFilter> : Table
-    where TEntity : class, new()
-    where TFilter : class, new()
+  public abstract class Table<TTable, TPk, TFilter> : Table
+    where TTable : Table, new()
+    where TFilter : Filter, new()
   {
     static Table()
     {
-      TableInfo = ExtractTableInfo<TEntity>();
+      TableInfo = ExtractTableInfo<TTable>();
       FilterInfo = ExtractFilterInfo<TFilter>();
     }
 
@@ -78,12 +78,13 @@ namespace Sandbox.Lib.Domain.SmallApi
 
       return new FilterInfo
       {
+        FilterType = type,
         RowNumberName = rowNumberName,
         FieldNames = fieldNames.ToArray()
       };
     }
 
-    public static Ret<TEntity> Find(TPk id)
+    public static Ret<TTable> Find(TPk id)
     {
       try
       {
@@ -97,7 +98,7 @@ namespace Sandbox.Lib.Domain.SmallApi
               .Set("p_table", TableInfo.TableName)
               .Set("p_pk", TableInfo.PkName)
               .Set("p_id", id)
-              .SelectOneGraph<TEntity>();
+              .SelectOneGraph<TTable>();
           return entity;
         }
       }
@@ -107,7 +108,7 @@ namespace Sandbox.Lib.Domain.SmallApi
       }
     }
 
-    public static Ret<TEntity[]> Find(TFilter filter = null)
+    public static Ret<TTable[]> Find(TFilter filter = null)
     {
       try
       {
@@ -139,7 +140,7 @@ namespace Sandbox.Lib.Domain.SmallApi
               .Set("p_comparisons", comparisons)
               .Set("p_row_number", rowNumber)
               .Set(parameters)
-              .SelectGraphArray<TEntity>();
+              .SelectGraphArray<TTable>();
           return entities;
         }
       }
@@ -149,7 +150,7 @@ namespace Sandbox.Lib.Domain.SmallApi
       }
     }
 
-    public static Ret Insert(TEntity entity)
+    public static Ret Insert(TTable entity)
     {
       try
       {
@@ -186,7 +187,7 @@ namespace Sandbox.Lib.Domain.SmallApi
       }
     }
 
-    public static Ret InsertOrUpdate(TEntity entity)
+    public static Ret InsertOrUpdate(TTable entity)
     {
       try
       {
@@ -252,7 +253,7 @@ namespace Sandbox.Lib.Domain.SmallApi
       }
     }
 
-    public static Ret Update(TEntity entity, params string[] fields)
+    public static Ret Update(TTable entity, params string[] fields)
     {
       try
       {
@@ -293,7 +294,7 @@ namespace Sandbox.Lib.Domain.SmallApi
       }
     }
 
-    public static Ret Delete(TEntity entity)
+    public static Ret Delete(TTable entity)
     {
       try
       {
@@ -381,22 +382,22 @@ namespace Sandbox.Lib.Domain.SmallApi
 
     public Ret Insert()
     {
-      return Insert((TEntity)(object)this);
+      return Insert((TTable)(object)this);
     }
 
     public Ret InsertOrUpdate()
     {
-      return InsertOrUpdate((TEntity)(object)this);
+      return InsertOrUpdate((TTable)(object)this);
     }
 
     public Ret Update(params string[] fields)
     {
-      return Update((TEntity)(object)this, fields);
+      return Update((TTable)(object)this, fields);
     }
 
     public Ret Delete()
     {
-      return Delete((TEntity)(object)this);
+      return Delete((TTable)(object)this);
     }
 
     public override string ToString()

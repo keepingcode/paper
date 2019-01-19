@@ -16,7 +16,7 @@ namespace Paper.Media
   /// Ações são comumente usadas na criação de forms HTML.
   /// </summary
   [DataContract(Namespace = Namespaces.Default, Name = "Action")]
-  public class EntityAction : IMediaObject
+  public class EntityAction : IMediaObject, IHyperLink
   {
     private string _title { get; set; }
 

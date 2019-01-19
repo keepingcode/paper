@@ -145,5 +145,35 @@ namespace Toolset
 
       return type.GetGenericArguments().FirstOrDefault();
     }
+
+    public static implicit operator Var(object[] value)
+    {
+      return new Var(value);
+    }
+
+    public static implicit operator Var(List<object> value)
+    {
+      return new Var(value);
+    }
+
+    public static implicit operator Var(Range value)
+    {
+      return new Var(value);
+    }
+
+    public static implicit operator object[] (Var value)
+    {
+      return value.Array as object[] ?? value.Array?.Cast<object>().ToArray();
+    }
+
+    public static implicit operator List<object>(Var value)
+    {
+      return value.Array as List<object> ?? value.Array?.Cast<object>().ToList();
+    }
+
+    public static implicit operator Range(Var value)
+    {
+      return value.Range;
+    }
   }
 }

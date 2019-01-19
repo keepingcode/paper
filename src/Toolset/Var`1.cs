@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Toolset
@@ -49,6 +50,46 @@ namespace Toolset
     {
       get => (Range<T>)base.Range;
       set => base.Range = value;
+    }
+
+    public static implicit operator Var<T>(T value)
+    {
+      return new Var<T>(value);
+    }
+
+    public static implicit operator Var<T>(T[] value)
+    {
+      return new Var<T>(value);
+    }
+
+    public static implicit operator Var<T>(List<T> value)
+    {
+      return new Var<T>(value);
+    }
+
+    public static implicit operator Var<T>(Range<T> value)
+    {
+      return new Var<T>(value);
+    }
+
+    public static implicit operator T(Var<T> value)
+    {
+      return value.Value;
+    }
+
+    public static implicit operator T[] (Var<T> value)
+    {
+      return value.Array as T[] ?? value.Array?.ToArray();
+    }
+
+    public static implicit operator List<T>(Var<T> value)
+    {
+      return value.Array as List<T> ?? value.Array?.ToList();
+    }
+
+    public static implicit operator Range<T>(Var<T> value)
+    {
+      return value.Range;
     }
   }
 }

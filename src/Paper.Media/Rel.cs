@@ -105,6 +105,16 @@ namespace Paper.Media
     /// </summary>
     PrimaryLink,
 
+    /// <summary>
+    /// Representação de um link secundário, numa coleção de links
+    /// </summary>
+    SecondaryLink,
+
+    /// <summary>
+    /// Representação de um link terciário, numa coleção de links
+    /// </summary>
+    TertiaryLink,
+
     #endregion
   }
 }

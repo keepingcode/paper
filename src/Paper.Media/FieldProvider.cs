@@ -9,7 +9,7 @@ namespace Paper.Media
   /// Provedor de dados de um campo.
   /// </summary>
   [DataContract(Namespace = Namespaces.Default)]
-  public class FieldProvider
+  public class FieldProvider : IHyperLink
   {
     /// <summary>
     /// URL de referência do provedor de dados.

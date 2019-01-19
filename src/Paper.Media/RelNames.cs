@@ -103,7 +103,17 @@ namespace Paper.Media
     /// Representação de um link primário, numa coleção de links
     /// </summary>
     public const string PrimaryLink = "PrimaryLink";
- 
+
+    /// <summary>
+    /// Representação de um link secundário, numa coleção de links
+    /// </summary>
+    public const string SecondaryLink = "SecondaryLink";
+
+    /// <summary>
+    /// Representação de um link terciário, numa coleção de links
+    /// </summary>
+    public const string TertiaryLink = "TertiaryLink";
+
     #endregion
   }
 }

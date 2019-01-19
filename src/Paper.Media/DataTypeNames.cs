@@ -18,6 +18,13 @@ namespace Paper.Media
   public static class DataTypeNames
   {
     /// <summary>
+    /// Tipo para campo informativo.
+    /// Nomes alternativos:
+    /// - info
+    /// </summary>
+    public const string Label = "label";
+
+    /// <summary>
     /// Tipo para campo texto.
     /// Nomes alternativos:
     /// - string
@@ -150,6 +157,9 @@ namespace Paper.Media
         case "string":
         case "text":
           return Text;
+
+        case "info":
+          return Label;
 
         default:
           return dataTypeName;

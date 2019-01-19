@@ -82,7 +82,7 @@ namespace Toolset.Reflection
         (MemberInfo)_GetPropertyInfo(typeOrObject, propertyOrMethodName)
         ?? _GetMethodInfo(typeOrObject, propertyOrMethodName);
 
-      var attr = member.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
+      var attr = member?.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
       return attr;
     }
 
