@@ -35,7 +35,6 @@ namespace Sandbox
 
         using (var db = new Db())
         {
-          
           Table table = TBusuario.Find(1);
           Filter filter = new TBusuario.Filter();
           filter.Row = Range.Between(10, 50);
@@ -47,7 +46,6 @@ namespace Sandbox
           var serializer = new MediaSerializer();
           var json = serializer.SerializeToJson(entity);
           Debug.WriteLine(Json.Beautify(json));
-
         }
       }
       catch (Exception ex)

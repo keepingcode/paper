@@ -18,15 +18,15 @@ namespace Sandbox.Lib.Domain
     {
       var apiBase = new UriString("^/Domain");
 
-      //var tableInfo = table._Get<TableInfo>("TableInfo");
-      //var id = table._Get(tableInfo.PkName);
+      var tableInfo = table._Get<TableInfo>("TableInfo");
+      var id = table._Get(tableInfo.PkName);
 
-      //entity.AddLinkSelf(MakeDomainRoute(uri, table, id));
-      //entity.AddClass(Class.Data);
-      //entity.AddClass(Conventions.MakeName(table));
+      entity.AddLinkSelf(MakeDomainRoute(apiBase, table, id));
+      entity.AddClass(Class.Data);
+      entity.AddClass(Conventions.MakeName(table));
 
-      //AddProperties(table, filter, entity, uri);
-      // // /*Nao existe filtro quando Class=Data*/ AddFilter(table, filter, entity, uri);
+      AddProperties(table, filter, entity, apiBase);
+      // /*Nao existe filtro quando Class=Data*/ AddFilter(table, filter, entity, uri);
       AddActions(table, filter, entity, apiBase);
     }
 

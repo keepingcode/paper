@@ -17,22 +17,17 @@ namespace Sandbox.Bot.Forms
 {
   public partial class MainForm : Form
   {
-    private readonly MediaClient client;
     private readonly Blueprint blueprint;
     private readonly Entity blueprintEntity;
 
     public static MainForm Current
-      => Application.OpenForms
-        .Cast<Form>()
-        .OfType<MainForm>()
-        .FirstOrDefault();
+      => Application.OpenForms.Cast<Form>().OfType<MainForm>().FirstOrDefault();
 
     public MainForm(Blueprint blueprint, Entity blueprintEntity)
     {
-      this.client = MediaClient.Current;
       this.blueprint = blueprint;
       this.blueprintEntity = blueprintEntity;
-      
+
       InitializeComponent();
 
       LoadFavicon();
@@ -57,27 +52,6 @@ namespace Sandbox.Bot.Forms
           }
         }
       }
-
-      var sandbox = new ToolStripMenuItem();
-      sandbox.Text = "Sandbox";
-      sandbox.Click += (o, e) =>
-      {
-        var paperForm = (
-          from form in Application.OpenForms.OfType<PaperForm>()
-          where form.PaperControl is SandboxPaper
-          select form
-        ).FirstOrDefault();
-
-        if (paperForm == null)
-        {
-          paperForm = new PaperForm(null);
-          paperForm.MdiParent = this;
-        }
-
-        paperForm.Focus();
-        paperForm.Show();
-      };
-      mnMenu.DropDownItems.Add(sandbox);
     }
 
     private void LoadFavicon()

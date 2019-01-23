@@ -1,0 +1,208 @@
+﻿{
+  "title": "User 2",
+  "class": [
+    "data"
+  ],
+  "properties": {
+    "id": 2,
+    "username": "beltrano",
+    "nickname": "BEL TRANO",
+    "password": "qwer0987",
+    "active": 1
+  },
+  "entities": [
+    {
+      "class": [
+        "header"
+      ],
+      "rel": [
+        "data"
+      ],
+      "properties": {
+        "name": "id",
+        "title": "Id",
+        "dataType": "number",
+        "hidden": 1
+      }
+    },
+    {
+      "class": [
+        "header"
+      ],
+      "rel": [
+        "data"
+      ],
+      "properties": {
+        "name": "username",
+        "title": "User Name",
+        "dataType": "text"
+      }
+    },
+    {
+      "class": [
+        "header"
+      ],
+      "rel": [
+        "data"
+      ],
+      "properties": {
+        "name": "nickname",
+        "title": "Nick Name",
+        "dataType": "text"
+      }
+    },
+    {
+      "class": [
+        "header"
+      ],
+      "rel": [
+        "data"
+      ],
+      "properties": {
+        "name": "password",
+        "title": "Password",
+        "dataType": "password"
+      }
+    },
+    {
+      "class": [
+        "header"
+      ],
+      "rel": [
+        "data"
+      ],
+      "properties": {
+        "name": "active",
+        "title": "Active",
+        "dataType": "bit"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "name": "edit",
+      "title": "Edit Record",
+      "rel": [ "primaryLink" ],
+      "method": "PUT",
+      "href": "/Api/1/Sandbox/Users/2?f=json",
+      "fields": [
+        {
+          "name": "id",
+          "type": "hidden",
+          "title": "Id",
+          "value": 1,
+          "readonly": 1
+        },
+        {
+          "name": "username",
+          "type": "text",
+          "title": "User Name",
+          "value": "beltrano",
+          "readonly": 1
+        },
+        {
+          "name": "nickname",
+          "type": "text",
+          "title": "Nick Name",
+          "value": "BEL TRANO"
+        },
+        {
+          "name": "active",
+          "type": "checkbox",
+          "title": "Active",
+          "value": "1",
+          "checked": 1
+        },
+        {
+          "name": "submit",
+          "type": "submit",
+          "title": "Save"
+        }
+      ]
+    },
+    {
+      "name": "delete",
+      "title": "Delete Record",
+      "rel": [ "secondaryLink" ],
+      "method": "DELETE",
+      "href": "/Api/1/Sandbox/Users/2?f=json",
+      "fields": [
+        {
+          "name": "username",
+          "type": "text",
+          "title": "User Name",
+          "value": "beltrano",
+          "readonly": 1
+        },
+        {
+          "name": "nickname",
+          "type": "text",
+          "title": "Nick Name",
+          "value": "BEL TRANO",
+          "readonly": 1
+        },
+        {
+          "name": "confirmation",
+          "type": "text",
+          "title": "Confirmation",
+          "value": "Are you sure you want to delete this record?",
+          "readonly": 1
+        },
+        {
+          "name": "submit",
+          "type": "submit",
+          "title": "Permanently delete this record"
+        }
+      ]
+    },
+    {
+      "name": "new",
+      "title": "Create New Record",
+      "rel": [ "secondaryLink" ],
+      "method": "POST",
+      "href": "/Api/1/Sandbox/Users?f=json",
+      "fields": [
+        {
+          "name": "id",
+          "type": "text",
+          "title": "Id",
+          "value": 0,
+          "hidden": 1,
+          "readonly": 1
+        },
+        {
+          "name": "username",
+          "type": "text",
+          "title": "User Name",
+          "required": 1
+        },
+        {
+          "name": "nickname",
+          "type": "text",
+          "title": "Nick Name",
+          "required": 1
+        },
+        {
+          "name": "active",
+          "type": "checkbox",
+          "title": "Active",
+          "value": "1",
+          "hidden": 1
+        },
+        {
+          "name": "submit",
+          "type": "submit",
+          "title": "Create"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "rel": [
+        "self"
+      ],
+      "href": "/Api/1/Sandbox/Users/2?f=json"
+    }
+  ]
+}

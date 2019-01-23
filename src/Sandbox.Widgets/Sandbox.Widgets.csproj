@@ -57,6 +57,13 @@
     <Compile Include="ButtonWidget.Designer.cs">
       <DependentUpon>ButtonWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlExtensions.cs" />
+    <Compile Include="HiddenWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HiddenWidget.Designer.cs">
+      <DependentUpon>HiddenWidget.cs</DependentUpon>
+    </Compile>
     <Compile Include="InfoWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -84,6 +91,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ButtonWidget.resx">
       <DependentUpon>ButtonWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HiddenWidget.resx">
+      <DependentUpon>HiddenWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InfoWidget.resx">
       <DependentUpon>InfoWidget.cs</DependentUpon>

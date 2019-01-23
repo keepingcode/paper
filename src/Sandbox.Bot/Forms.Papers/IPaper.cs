@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +8,12 @@ using System.Windows.Forms;
 
 namespace Sandbox.Bot.Forms.Papers
 {
-  public partial class SandboxPaper : UserControl
+  interface IPaper
   {
-    public SandboxPaper()
-    {
-      InitializeComponent();
-    }
+    Control Control { get; }
+
+    string Text { get; }
+
+    Icon Icon { get; }
   }
 }

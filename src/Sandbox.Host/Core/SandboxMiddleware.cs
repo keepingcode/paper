@@ -116,8 +116,20 @@ namespace Sandbox.Host.Core
           return SandboxEntities.GetBlueprint(requestUri, prefix);
 
         default:
-          return null;
+          return FindEmbeddedResource(path);
       }
+    }
+
+    private Target FindEmbeddedResource(string path)
+    {
+      var name = path.Replace("/", "-") + ".json";
+      var text = GetType().GetResourceText(name);
+      if (text == null)
+        return null;
+
+      var media = new MediaSerializer("json");
+      var entity = media.Deserialize(text);
+      return entity;
     }
   }
 }

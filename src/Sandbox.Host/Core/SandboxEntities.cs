@@ -68,8 +68,8 @@ namespace Sandbox.Host.Core
       });
       entity.AddLinkSelf(requestUri);
 
-      var href = requestUri.Combine(prefix, "Index");
-      entity.AddLink(href, "Início", Rel.Index);
+      entity.AddLink(requestUri.Combine(prefix, "Index"), "Início", Rel.Index);
+      entity.AddLink(requestUri.Combine(prefix, "Users", "1"), "User 1", Rel.Link);
 
       return entity;
     }

@@ -31,9 +31,10 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       this.tbMenu = new System.Windows.Forms.MenuStrip();
       this.mnMenu = new System.Windows.Forms.ToolStripMenuItem();
-      this.mnHelp = new System.Windows.Forms.ToolStripMenuItem();
-      this.mnAbout = new System.Windows.Forms.ToolStripMenuItem();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.mnWindow = new System.Windows.Forms.ToolStripMenuItem();
+      this.mnAbout = new System.Windows.Forms.ToolStripMenuItem();
+      this.sadsadToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
       this.tbMenu.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -41,8 +42,9 @@
       // 
       this.tbMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnMenu,
-            this.mnHelp});
+            this.mnWindow});
       this.tbMenu.Location = new System.Drawing.Point(0, 0);
+      this.tbMenu.MdiWindowListItem = this.mnWindow;
       this.tbMenu.Name = "tbMenu";
       this.tbMenu.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
       this.tbMenu.Size = new System.Drawing.Size(722, 24);
@@ -56,21 +58,6 @@
       this.mnMenu.Size = new System.Drawing.Size(50, 20);
       this.mnMenu.Text = "&Menu";
       // 
-      // mnHelp
-      // 
-      this.mnHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnAbout});
-      this.mnHelp.Name = "mnHelp";
-      this.mnHelp.Size = new System.Drawing.Size(50, 20);
-      this.mnHelp.Text = "&Ajuda";
-      // 
-      // mnAbout
-      // 
-      this.mnAbout.Name = "mnAbout";
-      this.mnAbout.Size = new System.Drawing.Size(104, 22);
-      this.mnAbout.Text = "&Sobre";
-      this.mnAbout.Click += new System.EventHandler(this.mnAbout_Click);
-      // 
       // statusStrip1
       // 
       this.statusStrip1.Location = new System.Drawing.Point(0, 491);
@@ -78,6 +65,27 @@
       this.statusStrip1.Size = new System.Drawing.Size(722, 22);
       this.statusStrip1.TabIndex = 3;
       this.statusStrip1.Text = "statusStrip1";
+      // 
+      // mnWindow
+      // 
+      this.mnWindow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnAbout,
+            this.sadsadToolStripMenuItem});
+      this.mnWindow.Name = "mnWindow";
+      this.mnWindow.Size = new System.Drawing.Size(51, 20);
+      this.mnWindow.Text = "&Janela";
+      // 
+      // mnAbout
+      // 
+      this.mnAbout.Name = "mnAbout";
+      this.mnAbout.Size = new System.Drawing.Size(180, 22);
+      this.mnAbout.Text = "&Sobre";
+      this.mnAbout.Click += new System.EventHandler(this.mnAbout_Click);
+      // 
+      // sadsadToolStripMenuItem
+      // 
+      this.sadsadToolStripMenuItem.Name = "sadsadToolStripMenuItem";
+      this.sadsadToolStripMenuItem.Size = new System.Drawing.Size(177, 6);
       // 
       // MainForm
       // 
@@ -104,8 +112,9 @@
     private System.Windows.Forms.MenuStrip tbMenu;
     private System.Windows.Forms.StatusStrip statusStrip1;
     private System.Windows.Forms.ToolStripMenuItem mnMenu;
-    private System.Windows.Forms.ToolStripMenuItem mnHelp;
+    private System.Windows.Forms.ToolStripMenuItem mnWindow;
     private System.Windows.Forms.ToolStripMenuItem mnAbout;
+    private System.Windows.Forms.ToolStripSeparator sadsadToolStripMenuItem;
   }
 }
 

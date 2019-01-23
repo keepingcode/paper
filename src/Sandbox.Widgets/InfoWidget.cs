@@ -18,7 +18,10 @@ namespace Sandbox.Widgets
     public InfoWidget()
     {
       InitializeComponent();
+      this.EnhanceControl();
     }
+
+    public Control Control => this;
 
     [Browsable(true)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
@@ -36,10 +39,10 @@ namespace Sandbox.Widgets
 
     public string Value
     {
-      get => lbContent.Text;
+      get => txContent.Text;
       set
       {
-        lbContent.Text = value;
+        txContent.Text = value;
         OnPropertyChanged(nameof(Value));
       }
     }
@@ -49,6 +52,8 @@ namespace Sandbox.Widgets
       get => Value;
       set => Value = Change.To<string>(value);
     }
+
+    public bool ReadOnly { get; set; }
 
     private void InfoWidget_Resize(object sender, EventArgs e)
     {

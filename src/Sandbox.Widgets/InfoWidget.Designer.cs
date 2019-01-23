@@ -29,7 +29,7 @@
     private void InitializeComponent()
     {
       this.lbCaption = new System.Windows.Forms.Label();
-      this.lbContent = new System.Windows.Forms.Label();
+      this.txContent = new System.Windows.Forms.TextBox();
       this.SuspendLayout();
       // 
       // lbCaption
@@ -41,23 +41,25 @@
       this.lbCaption.TabIndex = 0;
       this.lbCaption.Text = "Cabeçalho";
       // 
-      // lbContent
+      // txContent
       // 
-      this.lbContent.AutoSize = true;
-      this.lbContent.Location = new System.Drawing.Point(-3, 19);
-      this.lbContent.Name = "lbContent";
-      this.lbContent.Size = new System.Drawing.Size(53, 13);
-      this.lbContent.TabIndex = 1;
-      this.lbContent.Text = "Conteúdo";
+      this.txContent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.txContent.Location = new System.Drawing.Point(0, 16);
+      this.txContent.Name = "txContent";
+      this.txContent.ReadOnly = true;
+      this.txContent.Size = new System.Drawing.Size(153, 20);
+      this.txContent.TabIndex = 2;
       // 
       // InfoWidget
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.AutoSize = true;
-      this.Controls.Add(this.lbContent);
+      this.Controls.Add(this.txContent);
       this.Controls.Add(this.lbCaption);
       this.Name = "InfoWidget";
+      this.Size = new System.Drawing.Size(153, 150);
       this.Resize += new System.EventHandler(this.InfoWidget_Resize);
       this.ResumeLayout(false);
       this.PerformLayout();
@@ -67,6 +69,6 @@
     #endregion
 
     private System.Windows.Forms.Label lbCaption;
-    private System.Windows.Forms.Label lbContent;
+    private System.Windows.Forms.TextBox txContent;
   }
 }

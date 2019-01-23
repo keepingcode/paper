@@ -19,7 +19,10 @@ namespace Sandbox.Widgets
     {
       InitializeComponent();
       FeedbackPlaceholder();
+      this.EnhanceControl();
     }
+
+    public Control Control => this;
 
     public string Placeholder
     {
@@ -62,6 +65,16 @@ namespace Sandbox.Widgets
     {
       get => Value;
       set => Value = Change.To<string>(value);
+    }
+
+    public bool ReadOnly
+    {
+      get => txContent.ReadOnly;
+      set
+      {
+        txContent.ReadOnly = value;
+        txContent.BorderStyle = value ? BorderStyle.None : BorderStyle.Fixed3D;
+      }
     }
 
     private void TextWidget_Resize(object sender, EventArgs e)

@@ -17,7 +17,12 @@ namespace Sandbox.Widgets
     public ButtonWidget()
     {
       InitializeComponent();
+      this.EnhanceControl();
+
+      btAction.Click += (o, e) => this.OnClick(e);
     }
+
+    public Control Control => this;
 
     [Browsable(true)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
@@ -37,6 +42,12 @@ namespace Sandbox.Widgets
     {
       get;
       set;
+    }
+
+    public bool ReadOnly
+    {
+      get => !btAction.Enabled;
+      set => btAction.Enabled = !value;
     }
 
     public void OnPropertyChanged(string property)

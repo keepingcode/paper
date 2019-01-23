@@ -1,6 +1,6 @@
-﻿namespace Sandbox.Widgets
+﻿namespace Sandbox.Bot.Forms.Papers
 {
-  partial class ButtonWidget
+  partial class DataPaper
   {
     /// <summary> 
     /// Required designer variable.
@@ -28,37 +28,32 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.btAction = new System.Windows.Forms.Button();
+      this.pnContent = new System.Windows.Forms.FlowLayoutPanel();
       this.SuspendLayout();
       // 
-      // btAction
+      // pnContent
       // 
-      this.btAction.AutoSize = true;
-      this.btAction.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.btAction.Location = new System.Drawing.Point(0, 0);
-      this.btAction.Name = "btAction";
-      this.btAction.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
-      this.btAction.Size = new System.Drawing.Size(48, 23);
-      this.btAction.TabIndex = 0;
-      this.btAction.Text = "Text";
-      this.btAction.UseVisualStyleBackColor = true;
+      this.pnContent.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnContent.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+      this.pnContent.Location = new System.Drawing.Point(10, 10);
+      this.pnContent.Name = "pnContent";
+      this.pnContent.Size = new System.Drawing.Size(407, 275);
+      this.pnContent.TabIndex = 1;
       // 
-      // ButtonWidget
+      // SinglePaper
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.AutoSize = true;
-      this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.Controls.Add(this.btAction);
-      this.Name = "ButtonWidget";
-      this.Size = new System.Drawing.Size(51, 26);
+      this.Controls.Add(this.pnContent);
+      this.Name = "SinglePaper";
+      this.Padding = new System.Windows.Forms.Padding(10);
+      this.Size = new System.Drawing.Size(427, 295);
       this.ResumeLayout(false);
-      this.PerformLayout();
 
     }
 
     #endregion
 
-    private System.Windows.Forms.Button btAction;
+    private System.Windows.Forms.FlowLayoutPanel pnContent;
   }
 }
