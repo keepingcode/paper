@@ -183,7 +183,7 @@
         },
         {
           "name": "active",
-          "type": "hidden",
+          "type": "checkbox",
           "title": "Active",
           "value": "1"
         },

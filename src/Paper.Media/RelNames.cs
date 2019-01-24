@@ -80,6 +80,21 @@ namespace Paper.Media
     public const string Card = "card";
 
     /// <summary>
+    /// Estabelece relacionamento entre o alvo e o dado.
+    /// </summary>
+    public const string Data = "data";
+
+    /// <summary>
+    /// Estabelece relacionamento entre o alvo e a tabela.
+    /// </summary>
+    public const string Rows = "rows";
+
+    /// <summary>
+    /// Estabelece relacionamento entre o alvo e a lista de cartões.
+    /// </summary>
+    public const string Cards = "cargs";
+
+    /// <summary>
     /// Estabelece relacionamento entre o alvo e um cabeçalho de dados.
     /// </summary>
     public const string DataHeader = "dataHeader";

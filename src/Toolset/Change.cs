@@ -85,6 +85,28 @@ namespace Toolset
           return value;
         }
 
+        if (targetType == typeof(bool))
+        {
+          if (value is string text)
+          {
+            return text == "1"
+                || text.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                || text.Equals("yes", StringComparison.InvariantCultureIgnoreCase)
+                || text.Equals("on", StringComparison.InvariantCultureIgnoreCase)
+                || text.Equals("ok", StringComparison.InvariantCultureIgnoreCase)
+                || text.Equals("sim", StringComparison.InvariantCultureIgnoreCase);
+          }
+          else if (value is IConvertible convertible)
+          {
+            var number = convertible.ToDecimal(CultureInfo.InvariantCulture);
+            return number.CompareTo(0M) != 0;
+          }
+          else
+          {
+            return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+          }
+        }
+
         if (targetType == typeof(string))
         {
           if (value is DateTime dateAndTime)

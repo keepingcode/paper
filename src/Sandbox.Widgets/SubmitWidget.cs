@@ -11,11 +11,14 @@ using Toolset;
 
 namespace Sandbox.Widgets
 {
-  public partial class HiddenWidget : UserControl, IWidget
+  public partial class SubmitWidget : UserControl, IWidget
   {
-    public HiddenWidget()
+    public SubmitWidget()
     {
       InitializeComponent();
+      this.EnhanceControl();
+
+      btAction.Click += (o, e) => this.OnClick(e);
     }
 
     public Control Control => this;
@@ -30,11 +33,19 @@ namespace Sandbox.Widgets
 
     public string Category { get; set; }
 
-    public string Title { get; set; }
+    public string Title
+    {
+      get => btAction.Text;
+      set => btAction.Text = value;
+    }
 
     public string Placeholder { get; set; }
 
-    public bool ReadOnly { get; set; }
+    public bool ReadOnly
+    {
+      get => !btAction.Enabled;
+      set => btAction.Enabled = !value;
+    }
 
     public bool Required { get; set; }
 
@@ -53,14 +64,5 @@ namespace Sandbox.Widgets
     public bool AllowWildcards { get; set; }
 
     public Ret ValidateChanges() => true;
-
-    protected override void OnVisibleChanged(EventArgs e)
-    {
-      base.OnVisibleChanged(e);
-      if (this.Visible)
-      {
-        this.Visible = false;
-      }
-    }
   }
 }

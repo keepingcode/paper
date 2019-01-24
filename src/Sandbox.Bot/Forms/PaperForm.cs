@@ -129,7 +129,7 @@ namespace Sandbox.Bot.Forms
     {
       tbActions.Enabled = false;
 
-      var dialog = new ActionDialog(Entity, action);
+      var dialog = new ActionForm(Entity, action);
 
       dialog.MdiParent = this.MdiParent;
       dialog.Location = new Point(this.Location.X + 25, this.Location.Y + 25);

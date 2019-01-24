@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Widgets
 {
-  partial class BitWidget
+  partial class SubmitWidget
   {
     /// <summary> 
     /// Required designer variable.
@@ -28,28 +28,30 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.ckValue = new System.Windows.Forms.CheckBox();
+      this.btAction = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
-      // ckValue
+      // btAction
       // 
-      this.ckValue.AutoSize = true;
-      this.ckValue.Location = new System.Drawing.Point(0, 3);
-      this.ckValue.Name = "ckValue";
-      this.ckValue.Size = new System.Drawing.Size(72, 17);
-      this.ckValue.TabIndex = 2;
-      this.ckValue.Text = "Conteudo";
-      this.ckValue.UseVisualStyleBackColor = true;
+      this.btAction.AutoSize = true;
+      this.btAction.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.btAction.Location = new System.Drawing.Point(0, 0);
+      this.btAction.Name = "btAction";
+      this.btAction.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
+      this.btAction.Size = new System.Drawing.Size(48, 23);
+      this.btAction.TabIndex = 0;
+      this.btAction.Text = "Text";
+      this.btAction.UseVisualStyleBackColor = true;
       // 
-      // BitWidget
+      // ButtonWidget
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.AutoSize = true;
       this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-      this.Controls.Add(this.ckValue);
-      this.Name = "BitWidget";
-      this.Size = new System.Drawing.Size(75, 23);
+      this.Controls.Add(this.btAction);
+      this.Name = "ButtonWidget";
+      this.Size = new System.Drawing.Size(51, 26);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -57,6 +59,6 @@
 
     #endregion
 
-    private System.Windows.Forms.CheckBox ckValue;
+    private System.Windows.Forms.Button btAction;
   }
 }

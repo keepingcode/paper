@@ -1,6 +1,6 @@
 ﻿namespace Sandbox.Bot.Forms
 {
-  partial class ActionDialog
+  partial class ActionForm
   {
     /// <summary>
     /// Required designer variable.
@@ -28,7 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActionDialog));
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActionForm));
       this.tsContainer = new System.Windows.Forms.ToolStripContainer();
       this.panel1 = new System.Windows.Forms.Panel();
       this.pnContent = new System.Windows.Forms.FlowLayoutPanel();

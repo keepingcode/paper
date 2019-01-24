@@ -164,10 +164,9 @@
       "fields": [
         {
           "name": "id",
-          "type": "text",
+          "type": "hidden",
           "title": "Id",
           "value": 0,
-          "hidden": 1,
           "readonly": 1
         },
         {
@@ -186,8 +185,7 @@
           "name": "active",
           "type": "checkbox",
           "title": "Active",
-          "value": "1",
-          "hidden": 1
+          "value": "1"
         },
         {
           "name": "submit",

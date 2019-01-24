@@ -10,20 +10,22 @@ using System.Windows.Forms;
 using Toolset;
 using System.Text.RegularExpressions;
 using System.Net;
+using System.Globalization;
 
 namespace Sandbox.Widgets
 {
-  public partial class TextWidget : UserControl, IWidget
+  public partial class NumberWidget : UserControl, IWidget
   {
     private const int DefaultHeight = 39;
 
     private object originalValue;
 
-    public TextWidget()
+    public NumberWidget()
     {
       InitializeComponent();
       FeedbackPlaceholder();
       this.Value = "";
+      this.Placeholder = "0";
       this.EnhanceControl();
     }
 
@@ -31,10 +33,56 @@ namespace Sandbox.Widgets
 
     public bool HasChanged => Value != originalValue;
 
+    private decimal? ConvertToNumber(string text)
+    {
+      var digits = Regex.Replace(text, "[^0-9,.]", "");
+      digits = digits.Replace(",", ".");
+      if (digits != "")
+      {
+        decimal number;
+        var ok = decimal.TryParse(digits, out number);
+        if (ok)
+          return number;
+      }
+      return null;
+    }
+
+    private string ConvertToString(decimal? number)
+    {
+      return (number != null) ? number.ToString() : null;
+    }
+
     public object Value
     {
-      get => txContent.Text;
-      set => originalValue = txContent.Text = Change.To<string>(value);
+      get => ConvertToNumber(txContent.Text);
+      set
+      {
+        decimal? number;
+        if (value is decimal)
+        {
+          number = (decimal)value;
+        }
+        else if (value is decimal?)
+        {
+          number = (decimal?)value;
+        }
+        else if (value is string text)
+        {
+          number = ConvertToNumber(text);
+        }
+        else
+        {
+          try
+          {
+            number = Change.To<decimal>(value);
+          }
+          catch
+          {
+            number = null;
+          }
+        }
+        txContent.Text = ConvertToString(number);
+      }
     }
 
     public string Type { get; set; }
@@ -65,11 +113,13 @@ namespace Sandbox.Widgets
         {
           txContent.BorderStyle = BorderStyle.None;
           txContent.Location = new Point(0 + 4, 16 + 4);
+          btUp.Enabled = btDown.Enabled = false;
         }
         else
         {
           txContent.BorderStyle = BorderStyle.Fixed3D;
           txContent.Location = new Point(0, 16);
+          btUp.Enabled = btDown.Enabled = true;
         }
       }
     }
@@ -123,6 +173,20 @@ namespace Sandbox.Widgets
       return true;
     }
 
+    private void Up()
+    {
+      var number = ConvertToNumber(txContent.Text) ?? 0;
+      number++;
+      txContent.Text = ConvertToString(number);
+    }
+
+    private void Down()
+    {
+      var number = ConvertToNumber(txContent.Text) ?? 0;
+      number--;
+      txContent.Text = ConvertToString(number);
+    }
+
     private void FeedbackPlaceholder()
     {
       var hasFocus = this.ContainsFocus && txContent.ContainsFocus;
@@ -170,6 +234,16 @@ namespace Sandbox.Widgets
     private void TextWidget_Leave(object sender, EventArgs e)
     {
       FeedbackPlaceholder();
+    }
+
+    private void btUp_Click(object sender, EventArgs e)
+    {
+      Up();
+    }
+
+    private void btDown_Click(object sender, EventArgs e)
+    {
+      Down();
     }
   }
 }

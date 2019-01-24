@@ -81,6 +81,21 @@ namespace Paper.Media
     Card,
 
     /// <summary>
+    /// Estabelece relacionamento entre o alvo e o dado.
+    /// </summary>
+    Data,
+
+    /// <summary>
+    /// Estabelece relacionamento entre o alvo e a tabela.
+    /// </summary>
+    Rows,
+
+    /// <summary>
+    /// Estabelece relacionamento entre o alvo e a lista de cartões.
+    /// </summary>
+    Cards,
+
+    /// <summary>
     /// Estabelece relacionamento entre o alvo e um cabeçalho de dados.
     /// </summary>
     DataHeader,

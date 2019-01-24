@@ -45,17 +45,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitWidget.cs">
+    <Compile Include="CheckboxWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="BitWidget.Designer.cs">
-      <DependentUpon>BitWidget.cs</DependentUpon>
+    <Compile Include="CheckboxWidget.Designer.cs">
+      <DependentUpon>CheckboxWidget.cs</DependentUpon>
     </Compile>
-    <Compile Include="ButtonWidget.cs">
+    <Compile Include="SubmitWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ButtonWidget.Designer.cs">
-      <DependentUpon>ButtonWidget.cs</DependentUpon>
+    <Compile Include="SubmitWidget.Designer.cs">
+      <DependentUpon>SubmitWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="ControlExtensions.cs" />
     <Compile Include="HiddenWidget.cs">
@@ -72,11 +72,16 @@
     </Compile>
     <Compile Include="IWidget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SandboxForm.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SandboxForm.Designer.cs">
-      <DependentUpon>SandboxForm.cs</DependentUpon>
+    <Compile Include="NumberWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NumberWidget.Designer.cs">
+      <DependentUpon>NumberWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="TextWidget.cs">
       <SubType>UserControl</SubType>
@@ -84,13 +89,14 @@
     <Compile Include="TextWidget.Designer.cs">
       <DependentUpon>TextWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="WidgetFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BitWidget.resx">
-      <DependentUpon>BitWidget.cs</DependentUpon>
+    <EmbeddedResource Include="CheckboxWidget.resx">
+      <DependentUpon>CheckboxWidget.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ButtonWidget.resx">
-      <DependentUpon>ButtonWidget.cs</DependentUpon>
+    <EmbeddedResource Include="SubmitWidget.resx">
+      <DependentUpon>SubmitWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HiddenWidget.resx">
       <DependentUpon>HiddenWidget.cs</DependentUpon>
@@ -98,8 +104,12 @@
     <EmbeddedResource Include="InfoWidget.resx">
       <DependentUpon>InfoWidget.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SandboxForm.resx">
-      <DependentUpon>SandboxForm.cs</DependentUpon>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NumberWidget.resx">
+      <DependentUpon>NumberWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextWidget.resx">
       <DependentUpon>TextWidget.cs</DependentUpon>
@@ -110,6 +120,11 @@
       <Project>{EE82245E-2724-4073-947D-A1BBA0955D7F}</Project>
       <Name>Toolset</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\down.png" />
+    <Content Include="Assets\icons.svg" />
+    <Content Include="Assets\up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Paper.Media;
+using Toolset;
 
 namespace Sandbox.Lib
 {
@@ -59,6 +61,29 @@ namespace Sandbox.Lib
           ForEachHyperLink(value, visitor);
         }
       }
+    }
+
+    public static Entity FindHeader(this Entity entity, string headerName, Rel relation)
+    {
+      return FindHeader(entity, headerName, relation.GetName());
+    }
+
+    public static Entity FindHeader(this Entity entity, string headerName, string relation)
+    {
+      if (entity?.Entities == null)
+        return null;
+
+      var header = (
+        from child in entity.Entities
+        where child.Class.Has(ClassNames.Header)
+           && child.Rel.Has(relation)
+        from property in child.Properties
+        where property.Name.EqualsIgnoreCase("name")
+           && property.Value?.ToString().EqualsIgnoreCase(headerName) == true
+        select child
+      ).FirstOrDefault();
+
+      return header;
     }
   }
 }

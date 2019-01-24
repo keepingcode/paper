@@ -42,11 +42,14 @@ namespace Sandbox.Bot.Forms.Papers
 
       foreach (Property property in properties)
       {
-        var widget = new InfoWidget();
-        widget.Text = property.Name.ChangeCase(TextCase.ProperCase);
-        widget.Value = property.Value?.ToString();
-        widget.Width = 200;
-        pnContent.Controls.Add(widget);
+        var header = entity.FindHeader(property.Name, Rel.Data);
+        var headerTitle = header.Properties["title"]?.Value?.ToString();
+
+        IWidget widget = new InfoWidget();
+        widget.Title = headerTitle ?? property.Name.ChangeCase(TextCase.ProperCase);
+        widget.Value = property.Value;
+        widget.Control.Width = 200;
+        pnContent.Controls.Add(widget.Control);
       }
     }
   }

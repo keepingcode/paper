@@ -11,18 +11,29 @@ using Toolset;
 
 namespace Sandbox.Widgets
 {
-  public partial class HiddenWidget : UserControl, IWidget
+  public partial class CheckboxWidget : UserControl, IWidget
   {
-    public HiddenWidget()
+    private object originalValue;
+
+    public CheckboxWidget()
     {
       InitializeComponent();
+      this.EnhanceControl();
     }
 
     public Control Control => this;
 
-    public bool HasChanged => false;
+    public bool HasChanged => Value != originalValue;
 
-    public object Value { get; set; }
+    public object Value
+    {
+      get => ckValue.Checked ? 1 : 0;
+      set
+      {
+        ckValue.Checked = Change.To<bool>(value);
+        originalValue = ckValue.Checked ? 1 : 0;
+      }
+    }
 
     public string Type { get; set; }
 
@@ -30,11 +41,19 @@ namespace Sandbox.Widgets
 
     public string Category { get; set; }
 
-    public string Title { get; set; }
+    public string Title
+    {
+      get => ckValue.Text;
+      set => ckValue.Text = value;
+    }
 
     public string Placeholder { get; set; }
 
-    public bool ReadOnly { get; set; }
+    public bool ReadOnly
+    {
+      get => !ckValue.Enabled;
+      set => ckValue.Enabled = !value;
+    }
 
     public bool Required { get; set; }
 
@@ -53,14 +72,5 @@ namespace Sandbox.Widgets
     public bool AllowWildcards { get; set; }
 
     public Ret ValidateChanges() => true;
-
-    protected override void OnVisibleChanged(EventArgs e)
-    {
-      base.OnVisibleChanged(e);
-      if (this.Visible)
-      {
-        this.Visible = false;
-      }
-    }
   }
 }
