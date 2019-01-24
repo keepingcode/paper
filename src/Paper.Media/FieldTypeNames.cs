@@ -12,6 +12,8 @@ namespace Paper.Media
   /// </summary>
   public static class FieldTypeNames
   {
+    #region Tipos internos do HTML
+
     public const string Hidden = "hidden";
     public const string Text = "text";
     public const string Search = "search";
@@ -31,6 +33,14 @@ namespace Paper.Media
     public const string Checkbox = "checkbox";
     public const string Radio = "radio";
     public const string File = "file";
+
+    #endregion
+
+    #region Tipos adicionais
+
+    public const string Submit = "submit";
+    
+    #endregion
 
     /// <summary>
     /// Obtém um tipo apropriado para o componente de edição do campo, conforme

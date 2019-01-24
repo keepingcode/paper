@@ -460,18 +460,18 @@ namespace Sandbox.Lib
       return uri;
     }
 
-    public static explicit operator UriString(string uri)
+    public static implicit operator UriString(string uri)
     {
       return new UriString(uri);
     }
 
-    public static explicit operator UriString(Uri uri)
+    public static implicit operator UriString(Uri uri)
     {
       return new UriString(uri);
     }
 
     [Obsolete("No futuro UriString irá substituir Toolset.Route.")]
-    public static explicit operator UriString(Toolset.Route uri)
+    public static implicit operator UriString(Toolset.Route uri)
     {
       return new UriString(uri.ToString());
     }

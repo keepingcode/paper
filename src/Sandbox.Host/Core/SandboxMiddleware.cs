@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -96,10 +99,18 @@ namespace Sandbox.Host.Core
 
     private Target RenderTarget(HttpContext httpContext)
     {
-      var prefix = httpContext.Request.PathBase.Value;
-      var path = httpContext.Request.Path.Value;
+      var req = httpContext.Request;
+      var method = req.Method;
+      var prefix = req.PathBase.Value;
+      var path = req.Path.Value;
+      var requestUri = new UriString(req.GetDisplayUrl());
 
-      var requestUri = new UriString(httpContext.Request.GetDisplayUrl());
+      if (method.EqualsAnyIgnoreCase(MethodNames.Post, MethodNames.Put, MethodNames.Patch))
+      {
+        var serializer = new MediaSerializer(req.ContentType);
+        var entity = serializer.Deserialize(req.Body);
+        Debug.WriteLine(Json.Beautify(serializer.SerializeToJson(entity)));
+      }
 
       switch (path.ToLower())
       {

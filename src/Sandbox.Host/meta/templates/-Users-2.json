@@ -116,7 +116,8 @@
         {
           "name": "submit",
           "type": "submit",
-          "title": "Save"
+          "title": "Save",
+          "value": "Save"
         }
       ]
     },
@@ -151,7 +152,8 @@
         {
           "name": "submit",
           "type": "submit",
-          "title": "Permanently delete this record"
+          "title": "Permanently delete this record",
+          "value": "Delete"
         }
       ]
     },
@@ -190,7 +192,8 @@
         {
           "name": "submit",
           "type": "submit",
-          "title": "Create"
+          "title": "Create",
+          "value": "Save"
         }
       ]
     }

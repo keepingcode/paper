@@ -362,6 +362,11 @@ namespace Toolset
       return terms.Contains(text);
     }
 
+    public static bool EqualsAny(this string text, IEnumerable<string> terms)
+    {
+      return terms.Contains(text);
+    }
+
     public static bool EqualsAnyIgnoreCase(this string text, params string[] terms)
     {
       return terms.Any(x => x.EqualsIgnoreCase(text));

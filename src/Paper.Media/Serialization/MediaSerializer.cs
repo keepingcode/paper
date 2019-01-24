@@ -12,11 +12,20 @@ namespace Paper.Media.Serialization
 {
   public class MediaSerializer : ISerializer
   {
-    public enum Formats { Json, Xml }
+    public enum Formats
+    {
+      Json,
+      Xml
+    }
 
     public MediaSerializer()
     {
       this.DefaultFormat = Formats.Json;
+    }
+
+    public MediaSerializer(Formats defaultFormat)
+    {
+      DefaultFormat = defaultFormat;
     }
 
     public MediaSerializer(string defaultFormat)

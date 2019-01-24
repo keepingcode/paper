@@ -51,7 +51,7 @@ namespace Sandbox.Bot.Forms
 
           lbMessage.SetText("Localizando o servidor de dados...");
 
-          var entity = await client.FindEntityAsync("/Blueprint");
+          var entity = await client.TransferAsync("Blueprint");
           if (!entity.OK)
             throw entity.Fault ?? new Exception(entity.FaultMessage);
 
@@ -60,8 +60,8 @@ namespace Sandbox.Bot.Forms
           if (suspended)
             continue;
 
-          this.BlueprintEntity = entity;
-          this.Blueprint = EntityParser.ParseEntity<Blueprint>(entity);
+          this.BlueprintEntity = entity.Value;
+          this.Blueprint = EntityParser.ParseEntity<Blueprint>(entity.Value);
 
           if (cancellation.IsCancellationRequested)
             break;
@@ -104,7 +104,7 @@ namespace Sandbox.Bot.Forms
     {
       try
       {
-        var bytes = await client.DownloadAsync("/favicon.ico");
+        var bytes = await client.TransferBytesAsync("/favicon.ico");
         Favicon.Save(bytes);
       }
       catch (Exception ex)

@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
+using Paper.Media.Design;
+using Sandbox.Bot.Api;
 using Sandbox.Bot.Properties;
 using Sandbox.Lib;
 using Sandbox.Widgets;
@@ -52,7 +54,18 @@ namespace Sandbox.Bot.Forms
 
         if (widget is SubmitWidget button)
         {
-          button.Click += (o, e) => Submit();
+          button.Click += async (o, e) =>
+          {
+            pnContent.Enabled = false;
+            try
+            {
+              await SubmitAsync();
+            }
+            finally
+            {
+              pnContent.Enabled = true;
+            }
+          };
         }
         if (field.ReadOnly == true)
         {
@@ -63,9 +76,33 @@ namespace Sandbox.Bot.Forms
       }
     }
 
-    private void Submit()
+    private async Task SubmitAsync()
     {
-      MessageBox.Show("Submit");
+      try
+      {
+        var formData = new Entity();
+        formData.AddClass(Class.FormData);
+
+        foreach (var widget in pnContent.Controls.OfType<IWidget>())
+        {
+          if (widget.Value != null)
+          {
+            var name = widget.Name;
+            var text = Change.To<string>(widget.Value);
+            formData.AddProperty(name, text);
+          }
+        }
+
+        var route = action.Href;
+        var method = action.Method ?? MethodNames.Post;
+
+        await MediaClient.Current.TransferAsync(route, method, formData);
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+        MessageBox.Show(this, ex.Message, "Falha", MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
     }
   }
 }

@@ -89,5 +89,11 @@ namespace Paper.Media
     /// Classe de uma entidade que representa um propriedade ou coluna de dados.
     /// </summary>
     Field,
+
+    /// <summary>
+    /// Classe de uma entidade contendo dados editados pelo usuário e enviados do cliente
+    /// para o serviço.
+    /// </summary>
+    FormData,
   }
 }

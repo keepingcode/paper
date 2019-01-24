@@ -93,6 +93,12 @@ namespace Paper.Media
     public const string Field = "field";
 
     /// <summary>
+    /// Classe de uma entidade contendo dados editados pelo usuário e enviados do cliente
+    /// para o serviço.
+    /// </summary>
+    public const string FormData = "formData";
+
+    /// <summary>
     /// Determina o nome de classe da entidade.
     /// </summary>
     /// <param name="typeOrInstance">O tipo ou a instância da entidade.</param>

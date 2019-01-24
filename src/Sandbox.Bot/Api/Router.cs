@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Paper.Media;
 using Sandbox.Bot.Api;
 using Sandbox.Bot.Forms;
+using Sandbox.Lib;
 using Toolset;
 
 namespace Sandbox.Bot.Api
@@ -16,9 +17,10 @@ namespace Sandbox.Bot.Api
   {
     public async static Task OpenPaperAsync(string route, params string[] args)
     {
-      var client = MediaClient.Current;
+      route = new UriString(route).SetArgs(args);
 
-      var entity = await client.FindEntityAsync(route, args);
+      var client = MediaClient.Current;
+      var entity = await client.TransferAsync(route);
       if (!entity.OK)
       {
         var dialog = new FaultDialog(entity);
@@ -26,7 +28,7 @@ namespace Sandbox.Bot.Api
         return;
       }
 
-      await OpenPaperAsync(entity);
+      await OpenPaperAsync(entity.Value);
     }
 
     public async static Task OpenPaperAsync(Entity entity)

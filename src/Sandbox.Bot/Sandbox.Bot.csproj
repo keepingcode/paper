@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="Api\EntityParser.cs" />
     <Compile Include="Api\MediaClient.cs" />
+    <Compile Include="Api\Result.cs" />
     <Compile Include="FormExtensions.cs" />
     <Compile Include="Forms.Papers\IPaper.cs" />
     <Compile Include="Forms\AboutDialog.cs">
