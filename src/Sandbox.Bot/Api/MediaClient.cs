@@ -62,7 +62,7 @@ namespace Sandbox.Bot.Api
       try
       {
         Ret ret = null;
-        await DoRequestAsync(route, method, requestData, webResponse =>
+        await DoRequestAsync(route, method, null, requestData, webResponse =>
         {
           var isRedirect = ((int)webResponse.StatusCode / 100) == 3;
           if (isRedirect)
@@ -98,7 +98,7 @@ namespace Sandbox.Bot.Api
       try
       {
         Ret ret = null;
-        await DoRequestAsync(route, method, requestData, async webResponse =>
+        await DoRequestAsync(route, method, "application/octet-stream", requestData, async webResponse =>
         {
           if (webResponse.StatusCode == HttpStatusCode.OK)
           {
@@ -126,6 +126,7 @@ namespace Sandbox.Bot.Api
     private async Task DoRequestAsync(
       UriString route,
       string method,
+      string mimeType,
       object requestData,
       Action<HttpWebResponse> onSuccess)
     {
@@ -159,6 +160,10 @@ namespace Sandbox.Bot.Api
 
       var client = WebRequest.CreateHttp((string)route);
       client.Method = method;
+      client.ContentType = (requestData is Entity)
+        ? "application/vnd.siren+json" : "application/octet-stream";
+      client.Accept = mimeType ?? "application/vnd.siren+json";
+      client.Headers[HttpRequestHeader.AcceptEncoding] = "UTF-8";
 
       if (hasData && hasBody)
       {

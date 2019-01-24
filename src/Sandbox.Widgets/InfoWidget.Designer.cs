@@ -45,10 +45,11 @@
       // 
       this.txContent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.txContent.Location = new System.Drawing.Point(0, 16);
+      this.txContent.BorderStyle = System.Windows.Forms.BorderStyle.None;
+      this.txContent.Location = new System.Drawing.Point(4, 20);
       this.txContent.Name = "txContent";
       this.txContent.ReadOnly = true;
-      this.txContent.Size = new System.Drawing.Size(153, 20);
+      this.txContent.Size = new System.Drawing.Size(153, 13);
       this.txContent.TabIndex = 2;
       // 
       // InfoWidget

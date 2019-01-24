@@ -153,6 +153,18 @@
           "type": "submit",
           "title": "Permanently delete this record",
           "value": "Delete"
+        },
+        {
+          "name": "submit",
+          "type": "submit",
+          "title": "Move to trash",
+          "value": "Trash"
+        },
+        {
+          "name": "none",
+          "type": "hidden",
+          "title": "Talz",
+          "value": "Talz"
         }
       ]
     },
