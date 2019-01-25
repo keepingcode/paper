@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>one-page-documentation</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <style type="text/css">
+  
+  body {
+    font-family: "Helvetica Neue", Helvetica, arial, sans;
+    max-width: 900px;
+    margin: auto;
+    color: #515151;
+    padding-bottom: 50px;
+    font-size: 10pt;
+  }
+  
+  h6 { font-size: 10pt; }
+  h5 { font-size: 11pt; }
+  h4 { font-size: 12pt; }
+  h3 { font-size: 13pt; }
+  h2 { font-size: 14pt; }
+  h1 { font-size: 15pt; }
+  
+  p {
+    text-align: justify;
+  }
+  
+  h1 a, h1 a:visited,
+  h2 a, h2 a:visited,
+  h3 a, h3 a:visited,
+  h4 a, h4 a:visited,
+  h5 a, h5 a:visited {
+    color: #515151;
+    text-decoration: none;
+  }
+  
+  blockquote {
+    padding-left: 10px;
+    margin-left: 1px;
+    margin-right: 0px;
+    border: 1px solid lightgray;
+    border-left: 3px solid gray;
+    border-radius: 5px;
+    background-color: beige;
+  }
+  
+  table {
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  colgroup {
+    display: none;
+  }
+  
+  td, th {
+    padding: 4px 8px 4px 8px;
+  }
+  
+  td {
+    border: 1px solid #eee;
+  }
+  
+  li {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+  
+  li>:first-child {
+    margin-top: 0px;
+  }
+  
+  dl {
+    margin-left: 40px;
+  }
+  
+  dt {
+    display: list-item;
+    list-style: square;
+    text-decoration: underline;
+  }
+  
+  dd {
+    margin-left: 0px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+  }
+  
+  dd>:first-child {
+    margin-top: 0px;
+  }
+  
+  code, pre {
+    font-size: .975em;
+  }
+  
+  code {
+  }
+  
+  pre code {
+    padding: 0;
+    border: none;
+  }
+  
+  pre {
+    padding: 10px;
+    background-color: #eee;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  hr {
+    border: 0px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0px;
+    margin-top: 20px;
+  }
+  
+  .figure {
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .vermelho {
+    padding-left: 4px;
+    padding-right: 4px;
+    background-color: #d40000;
+    color: white;
+  }
+  
+  #TOC {
+    margin: 30px 0px 20px 20px;
+    float: right;
+    border: 1px solid #eee;
+    background-color: #f8f8f8;
+  }
+  
+  #TOC li {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  #TOC>ul {
+    padding: 0px;
+  }
+  
+  #TOC>ul>li {
+    display: block;
+  }
+  </style>
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#paper-framework">Paper Framework</a></li>
+<li><a href="#glossário">Glossário</a><ul>
+<li><a href="#entities">Entities</a></li>
+<li><a href="#papers">Papers</a></li>
+<li><a href="#bookshelf">Bookshelf</a></li>
+<li><a href="#catalogs">Catalogs</a></li>
+<li><a href="#pipelines">Pipelines</a></li>
+<li><a href="#paper-browser">Paper Browser</a></li>
+<li><a href="#paper-bookshelf">Paper Bookshelf</a></li>
+<li><a href="#paper-provider">Paper Provider</a></li>
+<li><a href="#paper-provider-api">Paper Provider API</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="paper-framework">Paper Framework</h1>
+<p>Paper Framework é uma plataforma de softwares para automação da interação entre um usuário humano e um sistema.</p>
+<p>A plataforma contém três partes:</p>
+<ol type="1">
+<li>Paper Browser. Uma implementação de aplicativo cliente para uma plataforma qualquer.</li>
+<li>Paper Bookshelf. O servidor do Paper para publicação das páginas interativas.</li>
+<li>Paper Provider API. Uma biblioteca de funções para integração dos sistemas interessados em publicar páginas interativas no Paper Framework.</li>
+</ol>
+<p>Neste documento estão descritos os conceitos e as regras de implementação destas três partes.</p>
+<h1 id="glossário">Glossário</h1>
+<h2 id="entities">Entities</h2>
+<p>Um Entity é um objeto de hipermídia para transporte de dados e metadados entre as partes da plataforma.</p>
+<p>Estrutura geral de um Entity:</p>
+<pre><code>{
+  class: [ ... ] ,
+  rel: [ ... ],
+  title: ... ,
+  properties: [ ... ] ,
+  entities: [ ... ] ,
+  actions: [ ... ] ,
+  links: [ ... ]
+}</code></pre>
+<p>O campo <em>class</em> é uma lista de nomes das classes representadas pelo Entity. É esta classe que determina como as partes da plataforma interpretam o conteúdo do Entity.</p>
+<p>O campo <em>rel</em> é uma lista de nomes dos relacionamentos entre a entidade e outros objetos que compartilham um contexto.</p>
+<p>O campo <em>title</em> é um nome amigável de identificação do Entity.</p>
+<p>O campo <em>properties</em> é uma lista das propriedades do Entity.</p>
+<p>O campo <em>entities</em> é uma lista de instâncias de Entity vinculados ao Entity. Um Entity nesta lista pode representar uma instância de Entity propriamente dita ou uma URI de referência a partir da qual uma instância do Entity pode ser obtida.</p>
+<p>O campo <em>actions</em> é uma lista de ações que se pode exercer em cima do Entity. Um action descreve os parâmetros de execução da ação e os campos de edição com suas regras de comportamento.</p>
+<p>O campo <em>links</em> é uma lista de URIs de referência para descoberta dos recursos relacionados ao Entity.</p>
+<h2 id="papers">Papers</h2>
+<p>Um Paper é um objeto que descreve as propriedades e os comportamentos de uma página interativa.</p>
+<p>O Paper Browser utiliza as informações obtidas do Paper para determinar a melhor forma de apresentar os dados da página e interagir com o usuário do sistema.</p>
+<p>O Paper é trafegado entre as partes da plataforma em uma instância de Entity sob a classe “paper”.</p>
+<p>Exemplo:</p>
+<pre><code>{
+  class: [ &quot;paper&quot;, ... ] ,
+  ...
+}</code></pre>
+<h2 id="bookshelf">Bookshelf</h2>
+<p>Um Bookshelf é um índice de rotas de acesso aos Papers disponíveis no sistema. O Paper Bookshelf expõe o Bookshelf em uma URI de referência usada pelo Paper Browser para navegação entre as instâncias conhecidas de Papers.</p>
+<h2 id="catalogs">Catalogs</h2>
+<p>Um Catalog é um objeto contendo um mapeamento de rotas para instâncias de Paper.</p>
+<p>Quando um Catalog é adicionado a um Bookshelf todas as rotas mapeadas nele são publicadas no índice de navegação do Bookshelf. Quando um Catalog é removido de um Bookshelf todas as rotas mapeadas por ele são removidas do índice de navegação do Bookshelf.</p>
+<p>Os serviços interessados em publicar páginas interativas na plataforma devem registrar suas instâncias de Catalog por meio de um dos métodos de registro disponíveis na API de utilização.</p>
+<p>O Bookshelf checa periodicamente os serviços vinculados às instâncias de Catalog para determinar quais estão realmente online, e portanto, navegáveis.</p>
+<p>A API de utilização mantém uma checagem periódica do registro da instância de Catalog no Bookshelf para garantir que o serviço está sempre accessivel.</p>
+<h2 id="pipelines">Pipelines</h2>
+<p>Um Pipeline é um objeto que implementa uma regra de rederização de Papers.</p>
+<p>Durante uma requisição o Paper Bookshelf identifica uma rota de renderização de Paper e invoca uma instância de Pipeline capaz de renderizar o Paper.</p>
+<p>O algoritmo de renderização do Pipeline pode ainda produzir como resposta uma URI para redirecionamento da requisição ou um onteúdo binário qualquer para download do cliente, como um PDF, uma imagem, um HTML.</p>
+<p>É comum a identificação de vários Pipelines capazes de renderizar uma rota. Estes Pipelines são encadeados em ordem de prioridade e executados em sequência até que um deles produza uma resposta.</p>
+<p>A prioridade do Pipeline é definida pelo tamanho da rota a qual ele atende. Quanto maior o tamanho da rota maior a sua prioridade.</p>
+<p>Por exemplo, o Pipeline que atende a rota <code>/Api/1/Users/1</code> tem prioridade sobre um Pipeline que atende à rota <code>/Api/1</code>, que por sua vez tem prioridade sobre o Pipeline que atende a rota <code>/</code>.</p>
+<h2 id="paper-browser">Paper Browser</h2>
+<p>Uma implementação de aplicativo para navegação entre as páginas interativas.</p>
+<p>Existem diferentes implementações do Paper Browser para atender as diferentes plataformas, dispositivos e tecnologia.</p>
+<p>As implementações suportam um subset básico de recursos do Paper Framework mais um subset particular de funcionalidades suportadas pelo seu ambiente alvo.</p>
+<h2 id="paper-bookshelf">Paper Bookshelf</h2>
+<p>Um serviço de publicação das páginas interativas usadas pelas instâncias de Paper Browser para navegação.</p>
+<h2 id="paper-provider">Paper Provider</h2>
+<p>Um aplicativo qualquer, externo ao Paper Framework, interessado em publicar páginas interativas no Paper Framework.</p>
+<p>O aplicativo monta suas instâncias de Catalog contendo as rotas para os Papers publicados por ele e as registra no Paper Bookshelf utilizando o Paper Provider API.</p>
+<h2 id="paper-provider-api">Paper Provider API</h2>
+<p>Uma biblioteca de funções do Paper Framework para uso de aplicativos externos interessados em publicar páginas interativas na plataforma.</p>
+</body>
+</html>
