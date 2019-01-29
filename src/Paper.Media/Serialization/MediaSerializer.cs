@@ -120,6 +120,12 @@ namespace Paper.Media.Serialization
       Serialize(entity, null, writer);
     }
 
+    public void Serialize(Entity entity, Stream output, Encoding encoding)
+    {
+      var writer = new StreamWriter(output, encoding, 8 * 1024, true);
+      Serialize(entity, null, writer);
+    }
+
     public void Serialize(Entity entity, TextWriter output)
     {
       Serialize(entity, null, output);
@@ -136,7 +142,14 @@ namespace Paper.Media.Serialization
 
     public Entity Deserialize(Stream input)
     {
-      var reader = new StreamReader(input);
+      var reader = new StreamReader(input, Encoding.UTF8);
+      var entity = Deserialize(null, reader);
+      return entity;
+    }
+
+    public Entity Deserialize(Stream input, Encoding encoding)
+    {
+      var reader = new StreamReader(input, encoding);
       var entity = Deserialize(null, reader);
       return entity;
     }
@@ -153,7 +166,12 @@ namespace Paper.Media.Serialization
 
     public void Serialize(Entity entity, string mediaType, Stream output)
     {
-      var writer = new StreamWriter(output, Encoding.UTF8, 8 * 1024, true);
+      Serialize(entity, mediaType, output, Encoding.UTF8);
+    }
+
+    public void Serialize(Entity entity, string mediaType, Stream output, Encoding encoding)
+    {
+      var writer = new StreamWriter(output, encoding, 8 * 1024, true);
       Serialize(entity, mediaType, writer);
     }
 
@@ -167,44 +185,5 @@ namespace Paper.Media.Serialization
     }
 
     #endregion
-
-    #region Implementações de SerializeToXml()
-
-    public void SerializeToXml(Entity entity, Stream output)
-    {
-      Serialize(entity, "xml", output);
-    }
-
-    public void SerializeToXml(Entity entity, TextWriter output)
-    {
-      Serialize(entity, "xml", output);
-    }
-
-    public string SerializeToXml(Entity entity)
-    {
-      return Serialize(entity, "xml");
-    }
-
-    #endregion
-
-    #region Implementações de SerializeToXml()
-
-    public void SerializeToJson(Entity entity, Stream output)
-    {
-      Serialize(entity, "json", output);
-    }
-
-    public void SerializeToJson(Entity entity, TextWriter output)
-    {
-      Serialize(entity, "json", output);
-    }
-
-    public string SerializeToJson(Entity entity)
-    {
-      return Serialize(entity, "json");
-    }
-
-    #endregion
-
   }
 }

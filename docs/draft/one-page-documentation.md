@@ -3,20 +3,6 @@
 Paper Framework é uma plataforma de softwares para automação da interação entre
 um usuário humano e um sistema.
 
-A plataforma contém três partes:
-
-1.  Paper Browser.
-    Uma implementação de aplicativo cliente para uma plataforma qualquer.
-2.  Paper Bookshelf.
-    O servidor do Paper para publicação das páginas interativas.
-3.  Paper Provider API.
-    Uma biblioteca de funções para integração dos sistemas interessados em 
-    publicar páginas interativas no Paper Framework.
-
-Neste documento estão descritos os conceitos e as regras de implementação destas
-três partes.
-
-
 # Glossário
 
 ## Entities
@@ -62,7 +48,7 @@ relacionados ao Entity.
 ## Papers
 
 Um Paper é um objeto que descreve as propriedades e os comportamentos de uma
-página interativa.
+página.
 
 O Paper Browser utiliza as informações obtidas do Paper para determinar a melhor
 forma de apresentar os dados da página e interagir com o usuário do sistema.
@@ -80,7 +66,7 @@ Exemplo:
 ## Bookshelf
 
 Um Bookshelf é um índice de rotas de acesso aos Papers disponíveis no sistema.
-O Paper Bookshelf expõe o Bookshelf em uma URI de referência usada pelo Paper
+O Paper Server expõe o Bookshelf em uma URI de referência usada pelo Paper
 Browser para navegação entre as instâncias conhecidas de Papers.
 
 ## Catalogs
@@ -92,7 +78,7 @@ publicadas no índice de navegação do Bookshelf.
 Quando um Catalog é removido de um Bookshelf todas as rotas mapeadas por ele são
 removidas do índice de navegação do Bookshelf.
 
-Os serviços interessados em publicar páginas interativas na plataforma devem
+Os serviços interessados em publicar páginas na plataforma devem
 registrar suas instâncias de Catalog por meio de um dos métodos de registro
 disponíveis na API de utilização.
 
@@ -108,7 +94,7 @@ está sempre accessivel.
 
 Um Pipeline é um objeto que implementa uma regra de rederização de Papers.
 
-Durante uma requisição o Paper Bookshelf identifica uma rota de renderização de
+Durante uma requisição o Paper Server identifica uma rota de renderização de
 Paper e invoca uma instância de Pipeline capaz
 de renderizar o Paper.
 
@@ -129,7 +115,7 @@ Pipeline que atende a rota `/`.
 
 ## Paper Browser
 
-Uma implementação de aplicativo para navegação entre as páginas interativas.
+Uma implementação de aplicativo para navegação entre as páginas.
 
 Existem diferentes implementações do Paper Browser para atender as diferentes
 plataformas, dispositivos
@@ -138,24 +124,27 @@ e tecnologia.
 As implementações suportam um subset básico de recursos do Paper Framework mais
 um subset particular de funcionalidades suportadas pelo seu ambiente alvo.
 
-## Paper Bookshelf
+## Paper Server
 
-Um serviço de publicação das páginas interativas usadas pelas instâncias de
+Um serviço de publicação das páginas usadas pelas instâncias de
 Paper Browser para navegação.
 
 ## Paper Provider
 
 Um aplicativo qualquer, externo ao Paper Framework, interessado em publicar
-páginas interativas no Paper Framework.
+páginas no Paper Framework.
 
 O aplicativo monta suas instâncias de Catalog contendo as rotas para os Papers
-publicados por ele e as registra no Paper Bookshelf utilizando o
+publicados por ele e as registra no Paper Server utilizando o
 Paper Provider API.
 
 ## Paper Provider API
 
 Uma biblioteca de funções do Paper Framework para uso de aplicativos externos
-interessados em publicar páginas interativas na plataforma.
+interessados em publicar páginas na plataforma.
+
+
+# Implementação
 
 
 

@@ -17,6 +17,7 @@ using System.Runtime.Serialization;
 using Paper.Media.Design;
 using Toolset.Data;
 using Paper.Media.Utilities;
+using System.Text;
 
 namespace Paper.Media.Serialization
 {
@@ -44,7 +45,19 @@ namespace Paper.Media.Serialization
     /// <param name="output">Stream de saída.</param>
     public void Serialize(Entity entity, Stream output)
     {
-      TextWriter writer = new StreamWriter(output);
+      TextWriter writer = new StreamWriter(output, Encoding.UTF8);
+      Serialize(entity, writer);
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="entity">Entidade a ser serializada.</param>
+    /// <param name="output">Stream de saída.</param>
+    /// <param name="encoding">Codificação do texto escrito.</param>
+    public void Serialize(Entity entity, Stream output, Encoding encoding)
+    {
+      TextWriter writer = new StreamWriter(output, encoding);
       Serialize(entity, writer);
     }
 
@@ -85,7 +98,18 @@ namespace Paper.Media.Serialization
     /// <returns>A entidade obtida da serialização.</returns>
     public Entity Deserialize(Stream input)
     {
-      return Deserialize(new StreamReader(input));
+      return Deserialize(new StreamReader(input, Encoding.UTF8));
+    }
+
+    /// <summary>
+    /// Deserializa o texto para uma instância de Entity.
+    /// </summary>
+    /// <param name="input">A entrada para leitura do texto a ser deserializado.</param>
+    /// <param name="encoding">Codificação do texto lido.</param>
+    /// <returns>A entidade obtida da serialização.</returns>
+    public Entity Deserialize(Stream input, Encoding encoding)
+    {
+      return Deserialize(new StreamReader(input, encoding));
     }
 
     /// <summary>

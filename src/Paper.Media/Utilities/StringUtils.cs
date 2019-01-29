@@ -20,6 +20,7 @@ namespace Paper.Media.Utilities
         return false;
 
       return value is string
+          || value is Href
           || value is Uri
           || value is CaseVariantString
           || value is Guid

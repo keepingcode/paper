@@ -24,7 +24,7 @@ namespace Paper.Media.Rendering
       var template = paperSpec.UriTemplate;
       var prefix = ApiPrefix ?? "";
 
-       if (!prefix.StartsWith("/"))
+      if (!prefix.StartsWith("/"))
         prefix = "/" + prefix;
       while (prefix.EndsWith("/"))
         prefix = prefix.Substring(0, prefix.Length - 1);

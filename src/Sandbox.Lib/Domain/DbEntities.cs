@@ -62,7 +62,7 @@ namespace Sandbox.Lib.Domain
         {
           entity.AddLink(new Link
           {
-            Href = MakeDomainRoute(apiBase, fkAttr?.ReferenceTable, propertyValue),
+            Href = (string)MakeDomainRoute(apiBase, fkAttr?.ReferenceTable, propertyValue),
             Rel = new[] { RelNames.DataLink, name },
             Title = $"{title} {propertyValue}"
           });

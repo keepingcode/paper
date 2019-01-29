@@ -15,31 +15,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Server\Demo\Business\**" />
-    <Content Remove="Server\Demo\Business\**" />
-    <EmbeddedResource Remove="Server\Demo\Business\**" />
-    <None Remove="Server\Demo\Business\**" />
+    <Compile Remove="Server\Demo\**" />
+    <Compile Remove="Server\Proxies\**" />
+    <Content Remove="Server\Demo\**" />
+    <Content Remove="Server\Proxies\**" />
+    <EmbeddedResource Remove="Server\Demo\**" />
+    <EmbeddedResource Remove="Server\Proxies\**" />
+    <None Remove="Server\Demo\**" />
+    <None Remove="Server\Proxies\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Server\AspNetCoreExtensions.cs" />
-    <Compile Remove="Server\Demo\BlueprintEntity.cs" />
-    <Compile Remove="Server\Demo\MenuPaper.cs" />
-    <Compile Remove="Server\Demo\PostsPaper.cs" />
-    <Compile Remove="Server\Demo\SampleEntity.cs" />
-    <Compile Remove="Server\Demo\UserPaper.cs" />
-    <Compile Remove="Server\Demo\UsersPaper.cs" />
-    <Compile Remove="Server\Proxies\ProxyRegistryMiddleware.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Server\Demo\Store\data-store.large.txt" />
-    <None Remove="Server\Demo\Store\data-store.small.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Server\Demo\Store\data-store.large.txt" />
-    <EmbeddedResource Include="Server\Demo\Store\data-store.small.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Paper.Core\Paper.Core.csproj" />
     <ProjectReference Include="..\Paper.Media\Paper.Media.csproj" />
     <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj" />
     <ProjectReference Include="..\Toolset.Serialization\Toolset.Serialization.csproj" />

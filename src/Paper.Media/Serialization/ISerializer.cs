@@ -27,6 +27,14 @@ namespace Paper.Media.Serialization
     /// </summary>
     /// <param name="entity">Entidade a ser serializada.</param>
     /// <param name="output">Stream de saída.</param>
+    /// <param name="encoding">Codificação do texto serializado.</param>
+    void Serialize(Entity entity, Stream output, Encoding encoding);
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="entity">Entidade a ser serializada.</param>
+    /// <param name="output">Stream de saída.</param>
     void Serialize(Entity entity, TextWriter output);
 
     /// <summary>
@@ -42,6 +50,14 @@ namespace Paper.Media.Serialization
     /// <param name="input">A entrada para leitura do texto a ser deserializado.</param>
     /// <returns>A entidade obtida da serialização.</returns>
     Entity Deserialize(Stream input);
+
+    /// <summary>
+    /// Deserializa o texto para uma instância de Entity.
+    /// </summary>
+    /// <param name="input">A entrada para leitura do texto a ser deserializado.</param>
+    /// <param name="encoding">Codificação do texto lido.</param>
+    /// <returns>A entidade obtida da serialização.</returns>
+    Entity Deserialize(Stream input, Encoding encoding);
 
     /// <summary>
     /// Deserializa o texto para uma instância de Entity.

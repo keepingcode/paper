@@ -15,7 +15,7 @@ namespace Paper.Media
     /// URL de referência do provedor de dados.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 10)]
-    public string Href { get; set; }
+    public Href Href { get; set; }
 
     /// <summary>
     /// Nome das chaves de relacionamento entre o dado e

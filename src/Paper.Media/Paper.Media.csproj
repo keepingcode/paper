@@ -11,6 +11,35 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Design.Mappings\**" />
+    <Compile Remove="Design.Papers\**" />
+    <Compile Remove="Rendering.Papers\**" />
+    <Compile Remove="Rendering2\**" />
+    <Compile Remove="Routing\**" />
+    <Compile Remove="Utilities.Types\**" />
+    <Compile Remove="Utilities\**" />
+    <EmbeddedResource Remove="Design.Mappings\**" />
+    <EmbeddedResource Remove="Design.Papers\**" />
+    <EmbeddedResource Remove="Rendering.Papers\**" />
+    <EmbeddedResource Remove="Rendering2\**" />
+    <EmbeddedResource Remove="Routing\**" />
+    <EmbeddedResource Remove="Utilities.Types\**" />
+    <EmbeddedResource Remove="Utilities\**" />
+    <None Remove="Design.Mappings\**" />
+    <None Remove="Design.Papers\**" />
+    <None Remove="Rendering.Papers\**" />
+    <None Remove="Rendering2\**" />
+    <None Remove="Routing\**" />
+    <None Remove="Utilities.Types\**" />
+    <None Remove="Utilities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Utilities\ExpressionUtils.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.CodeDom" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.2" />
   </ItemGroup>

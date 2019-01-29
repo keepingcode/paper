@@ -21,9 +21,9 @@ namespace Sandbox.Lib
     {
       ForEachHyperLink(entity, hyperLink =>
       {
-        if (hyperLink.Href?.StartsWith("^/") == true)
+        if (hyperLink.Href?.Value.StartsWith("^/") == true)
         {
-          hyperLink.Href = baseRoute.Combine(hyperLink.Href.Substring(2));
+          hyperLink.Href = (string)baseRoute.Combine(hyperLink.Href.Value.Substring(2));
         }
       });
       return entity;

@@ -9,6 +9,6 @@ namespace Paper.Media
   /// </summary>
   public interface IHyperLink
   {
-    string Href { get; set; }
+    Href Href { get; set; }
   }
 }

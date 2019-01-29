@@ -48,7 +48,7 @@ namespace Paper.Media
     /// URL de referência do link.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 40)]
-    public string Href { get; set; }
+    public Href Href { get; set; }
 
     /// <summary>
     /// Tipo do conteúdo oferecido pelo link.

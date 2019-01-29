@@ -12,14 +12,23 @@ namespace Toolset
 {
   public static class Change
   {
-    public static T To<T>(object value)
-    {
-      var convertedValue = To(value, typeof(T));
-      return (convertedValue == null) ? default(T) : (T)convertedValue;
-    }
-
     public static object To(object value, Type targetType)
     {
+      return To(value, targetType, Default.Of(targetType));
+    }
+
+    public static object To(object value, Type targetType, object defaultValue)
+    {
+      if (defaultValue == null)
+      {
+        defaultValue = Default.Of(targetType);
+      }
+
+      if (value == null || value == DBNull.Value)
+      {
+        return defaultValue;
+      }
+
       if (typeof(IList).IsAssignableFrom(targetType)
        || typeof(IList<>).IsAssignableFrom(targetType))
       {
@@ -66,7 +75,51 @@ namespace Toolset
       }
       else
       {
-        return ConvertTo(value, targetType);
+        return ConvertTo(value, targetType) ?? defaultValue;
+      }
+    }
+
+    public static T To<T>(object value)
+    {
+      return To<T>(value, default(T));
+    }
+
+    public static T To<T>(object value, T defaultValue)
+    {
+      return (T)To(value, typeof(T), defaultValue);
+    }
+
+    public static object ToOrDefault(object value, Type targetType)
+    {
+      return ToOrDefault(value, targetType, Default.Of(targetType));
+    }
+
+    public static object ToOrDefault(object value, Type targetType, object defaultValue)
+    {
+      try
+      {
+        return To(value, targetType, defaultValue);
+      }
+      catch
+      {
+        return defaultValue;
+      }
+    }
+
+    public static T ToOrDefault<T>(object value)
+    {
+      return ToOrDefault<T>(value, default(T));
+    }
+
+    public static T ToOrDefault<T>(object value, T defaultValue)
+    {
+      try
+      {
+        return To<T>(value, defaultValue);
+      }
+      catch
+      {
+        return defaultValue;
       }
     }
 
@@ -77,7 +130,7 @@ namespace Toolset
       {
         if (value == null || value == DBNull.Value)
         {
-          return Default.Of(targetType);
+          return null;
         }
 
         if (targetType.IsAssignableFrom(sourceType))
