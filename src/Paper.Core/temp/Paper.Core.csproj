@@ -11,12 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="temp\**" />
-    <EmbeddedResource Remove="temp\**" />
-    <None Remove="temp\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="System.CodeDom" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />

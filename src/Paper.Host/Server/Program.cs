@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Paper.Core;
 using Paper.Media.Rendering;
 using Toolset;
 
@@ -19,9 +20,7 @@ namespace Paper.Host.Server
       try
       {
         WebHost.CreateDefaultBuilder(args)
-          .UseUrls("http://localhost:8080/")
-          //.UsePaperWebAppSettings()
-          //.UsePaperSettings()
+          .UsePaper("http://localhost:8080/")
           .UseStartup<Startup>()
           .Build()
           .Run();

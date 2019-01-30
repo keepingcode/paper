@@ -17,7 +17,7 @@ using Toolset;
 using Toolset.Xml;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Paper.Host.Server.Api
+namespace Paper.Core
 {
   public class Middleware
   {
@@ -43,7 +43,7 @@ namespace Paper.Host.Server.Api
             "Paper não configurado corretamente. " +
             "A instância de Bookshelf não foi configurada na instância de IServiceProvider."
           );
-          WriteEntity(ctx, entity, status);
+          await WriteEntityAsync(ctx, entity, status);
           return;
         }
 
@@ -53,7 +53,7 @@ namespace Paper.Host.Server.Api
           var entity = HttpEntity.Create(req.GetDisplayUrl(), status,
             $"Não existe uma rota para: {req.PathBase}{req.Path}"
           );
-          WriteEntity(ctx, entity, status);
+          await WriteEntityAsync(ctx, entity, status);
           return;
         }
 
@@ -62,7 +62,7 @@ namespace Paper.Host.Server.Api
           Bookshelf = bookshelf,
           Factory = new Factory(serviceProvider),
           Request = new Request(new HttpRequest(ctx)),
-          Response = new Response(new HttpResponse(ctx))
+          Response = new Response(new HttpRequest(ctx), new HttpResponse(ctx))
         };
 
         var enumerator = papers.GetEnumerator();
@@ -83,7 +83,7 @@ namespace Paper.Host.Server.Api
         {
           var status = HttpStatusCode.InternalServerError;
           var entity = HttpEntity.Create(req.GetDisplayUrl(), status, ex);
-          WriteEntity(ctx, entity, status);
+          await WriteEntityAsync(ctx, entity, status);
         }
         catch (Exception exx)
         {
@@ -96,21 +96,25 @@ namespace Paper.Host.Server.Api
       }
     }
 
-    private void WriteEntity(HttpContext ctx, Entity entity, HttpStatusCode status)
+    private async Task WriteEntityAsync(HttpContext ctx, Entity entity, HttpStatusCode status)
     {
       var req = ctx.Request;
       var res = ctx.Response;
 
       var accept = new AcceptHeader(new Headers(req.Headers), new QueryArgs(req.QueryString.Value));
-
-      var contentType = accept.BestMimeType;
-      var charset = accept.BestEncoding;
+      var mimeType = accept.BestMimeType;
+      var encoding = accept.BestEncoding;
 
       res.StatusCode = (int)status;
-      res.ContentType = $"{contentType}; charset={charset.WebName}";
-
-      var serializer = new MediaSerializer(contentType);
-      serializer.Serialize(entity, res.Body);
+      res.ContentType = $"{mimeType}; charset={encoding.WebName}";
+      
+      var serializer = new MediaSerializer();
+      using (var memory = new MemoryStream())
+      {
+        serializer.Serialize(entity, mimeType, memory, encoding);
+        memory.Position = 0;
+        await memory.CopyToAsync(res.Body);
+      }
     }
   }
 }

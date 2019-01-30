@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -9,18 +10,29 @@ using Paper.Media;
 using Paper.Media.Rendering;
 using Toolset.Collections;
 
-namespace Paper.Host.Server.Api
+namespace Paper.Core
 {
   public class HttpResponse : IHttpResponse
   {
+    private readonly Microsoft.AspNetCore.Http.HttpResponse res;
+
     public HttpResponse(HttpContext context)
     {
+      this.res = context.Response;
       this.Headers = new Headers(context.Response.Headers);
-      this.Body = context.Response.Body;
     }
 
     public IHeaders Headers { get; }
 
-    public Stream Body { get; }
+    public Stream Body
+    {
+      get => res.Body;
+    }
+
+    public HttpStatusCode Status
+    {
+      get => (HttpStatusCode)res.StatusCode;
+      set => res.StatusCode = (int)value;
+    }
   }
 }

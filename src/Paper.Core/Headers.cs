@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Paper.Media.Rendering;
 using Toolset;
 
-namespace Paper.Host.Server.Api
+namespace Paper.Core
 {
   public class Headers : IHeaders
   {

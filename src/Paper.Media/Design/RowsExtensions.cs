@@ -17,7 +17,7 @@ namespace Paper.Media.Design
   /// -   Para cada coluna de registro uma entidade filha correspondente é acrescentada.
   ///     -   A entidade filha contém a propriedade "Name" para vinculação do nome da coluna.
   ///     -   A entidade filha contém a classe <see cref="ClassNames.Header"/>.
-  ///     -   A entidade filha contém a relação <see cref="RelNames.RowHeader"/>.
+  ///     -   A entidade filha contém a relação <see cref="RelNames.Row"/>.
   /// </summary>
   public static class RowsExtensions
   {
@@ -62,7 +62,7 @@ namespace Paper.Media.Design
       var headers =
         from child in entity.Entities
         where child.Class?.Contains(ClassNames.Header) == true
-           && child.Rel?.Contains(RelNames.RowHeader) == true
+           && child.Rel?.Contains(RelNames.Row) == true
         select child;
 
       headers.ForEach(child =>
@@ -282,7 +282,7 @@ namespace Paper.Media.Design
             , header.Name
             , header.Title
             , header.DataType
-            , RelNames.RowHeader
+            , RelNames.Row
             , options => header.CopyToHeaderOptions(options)
           );
         }
@@ -307,7 +307,7 @@ namespace Paper.Media.Design
           , property.Name
           , property.Title
           , DataTypeNames.GetDataTypeName(property.Type)
-          , RelNames.RowHeader
+          , RelNames.Row
           , builder
         );
       }
@@ -331,7 +331,7 @@ namespace Paper.Media.Design
           , property.Name
           , property.Title
           , DataTypeNames.GetDataTypeName(property.Type)
-          , RelNames.RowHeader
+          , RelNames.Row
           , builder
         );
       }
@@ -353,7 +353,7 @@ namespace Paper.Media.Design
         , name
         , null
         , null
-        , RelNames.RowHeader
+        , RelNames.Row
         , builder
       );
       return entity;
@@ -373,7 +373,7 @@ namespace Paper.Media.Design
         , header.Name
         , header.Title
         , header.DataType
-        , RelNames.RowHeader
+        , RelNames.Row
         , options => header.CopyToHeaderOptions(options)
       );
       return entity;
@@ -396,7 +396,7 @@ namespace Paper.Media.Design
         , name
         , title
         , dataType
-        , RelNames.RowHeader
+        , RelNames.Row
         , opt => opt.AddHidden(hidden)
       );
       return entity;
@@ -418,7 +418,7 @@ namespace Paper.Media.Design
         , name
         , title
         , dataType
-        , RelNames.RowHeader
+        , RelNames.Row
         , opt => opt.AddHidden()
       );
       return entity;

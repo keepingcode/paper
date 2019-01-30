@@ -12,7 +12,7 @@ using Paper.Media.Rendering;
 using Toolset;
 using Toolset.Collections;
 
-namespace Paper.Host.Server.Api
+namespace Paper.Core
 {
   public class HttpRequest : IHttpRequest
   {
@@ -22,6 +22,7 @@ namespace Paper.Host.Server.Api
       this.PathBase = context.Request.PathBase;
       this.Path = context.Request.Path;
       this.Headers = new Headers(context.Request.Headers);
+      this.QueryArgs = new QueryArgs(context.Request.QueryString.Value);
       this.Body = context.Request.Body;
     }
 
@@ -32,6 +33,8 @@ namespace Paper.Host.Server.Api
     public string Path { get; }
 
     public IHeaders Headers { get; }
+
+    public IQueryArgs QueryArgs { get; }
 
     public Stream Body { get; }
   }

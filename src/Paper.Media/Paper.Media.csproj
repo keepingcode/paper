@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Design\IPaper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="Utilities\ExpressionUtils.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Paper.Media.Rendering;
 
-namespace Paper.Host.Server.Api
+namespace Paper.Core
 {
   public class Factory : IFactory
   {

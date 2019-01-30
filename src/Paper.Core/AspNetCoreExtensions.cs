@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text;
 using static System.Environment;
 using Paper.Media.Rendering;
+using Microsoft.AspNetCore.Rewrite;
+using System.Net;
 
 namespace Paper.Core
 {
@@ -20,31 +22,9 @@ namespace Paper.Core
   {
     #region IWebHostBuilder
 
-    public static IWebHostBuilder UsePaperSettings(this IWebHostBuilder builder)
+    public static IWebHostBuilder UsePaper(this IWebHostBuilder builder, params string[] urls)
     {
-      return UsePaperSettings(builder, opt => { });
-    }
-
-    public static IWebHostBuilder UsePaperSettings(this IWebHostBuilder builder, Action<PaperSettingsBuilder> action)
-    {
-      var settingsBuilder = new PaperSettingsBuilder();
-
-      action.Invoke(settingsBuilder);
-
-      var settings = (PaperSettings)settingsBuilder.Build();
-
-      var baseUri = builder.GetSetting(WebHostDefaults.ServerUrlsKey);
-      settings.BaseUri = (baseUri != null) ? new Uri(baseUri) : null;
-
-      builder.ConfigureServices(services =>
-        services.AddSingleton<IPaperSettings>(settings)
-      );
-
-      var exePath = typeof(AspNetCoreExtensions).Assembly.Location;
-      var contentPath = Path.GetDirectoryName(exePath);
-      builder.UseContentRoot(contentPath);
-
-      return builder;
+      return builder.UseUrls(urls);
     }
 
     #endregion
@@ -53,41 +33,30 @@ namespace Paper.Core
 
     public static IServiceCollection AddPaperServices(this IServiceCollection services)
     {
-      var catalog = new PaperAggregateCatalog();
-      catalog.AddExposedTypes();
-      catalog.PrintInfo();
-
-      services.AddSingleton<IPaperCatalog>(catalog);
-
       var serviceProvider = services.BuildServiceProvider();
-      var settings = serviceProvider.GetService<IPaperSettings>();
-      if (settings?.RemotePaperServerUris?.Any() == true)
-      {
-        //services.AddHostedService<TimedProxyNotificationService>();
-      }
+      var factory = new Factory(serviceProvider);
+      var bookshelf = new Bookshelf();
+      bookshelf.AddExposedCatalogs(factory);
 
-      return services;
+      return services.AddSingleton(bookshelf);
     }
 
     #endregion
 
     #region IApplicationBuilder
 
-    public static IApplicationBuilder UsePaperMiddlewares(this IApplicationBuilder app)
+    public static IApplicationBuilder UsePaperApi(this IApplicationBuilder app)
     {
-      var settings = app.ApplicationServices.GetService<IPaperSettings>();
-      var pathBase = settings?.PathBase;
-      if (pathBase != null)
-      {
-        app.UsePathBase(pathBase.ToString());
-      }
-      app.Map("/Api/1", PaperPipeline);
-      return app;
+      return UsePaperApi(app, null);
     }
 
-    private static void PaperPipeline(IApplicationBuilder app)
+    public static IApplicationBuilder UsePaperApi(this IApplicationBuilder app, PathString prefix)
     {
-      app.UseMiddleware<PaperMiddleware>();
+      return app
+        .Map($"{prefix}/Api/1", chain => chain
+          .UseRewriter(new RewriteOptions().AddRedirect("^$", "/Bookshelf"))
+          .UseMiddleware<Middleware>()
+        );
     }
 
     #endregion

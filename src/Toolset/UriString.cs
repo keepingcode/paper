@@ -269,7 +269,19 @@ namespace Toolset
           }
           else
           {
-            target.Path = $"{target.Path}/{part.Path}";
+            var path = part.Path;
+            while (part.Path.StartsWith(".."))
+            {
+              var sourceTokens = part.Path.Split('/');
+              part.Path = string.Join("/", sourceTokens.Skip(1));
+
+              var targetTokens = target.Path.Split('/');
+              target.Path = string.Join("/", targetTokens.Take(targetTokens.Length - 1));
+            }
+            if (part.Path != "")
+            {
+              target.Path = $"{target.Path}/{part.Path}";
+            }
           }
         }
         part.Args?.CopyTo(target.Args ?? (target.Args = new HashMap()));
@@ -410,6 +422,29 @@ namespace Toolset
         }
       }
       return clone;
+    }
+
+    public UriString Append(string uri)
+    {
+      while (uri.StartsWith("/"))
+      {
+        uri = uri.Substring(1);
+      }
+      return Combine(uri);
+    }
+
+    public UriString Append(string uriPart, string otherUriPart, params string[] otherUriParts)
+    {
+      while (uriPart.StartsWith("/"))
+      {
+        uriPart = uriPart.Substring(1);
+      }
+      return Combine(uriPart, otherUriPart, otherUriParts);
+    }
+
+    public UriString Append(UriString uri)
+    {
+      return Append(uri.ToString());
     }
 
     public UriString Combine(string uri)

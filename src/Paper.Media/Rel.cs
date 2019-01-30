@@ -96,16 +96,6 @@ namespace Paper.Media
     Cards,
 
     /// <summary>
-    /// Estabelece relacionamento entre o alvo e um cabeçalho de dados.
-    /// </summary>
-    DataHeader,
-
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e um cabeçalho de registro.
-    /// </summary>
-    RowHeader,
-
-    /// <summary>
     /// Relaciona um link a um dado.
     /// </summary>
     DataLink,

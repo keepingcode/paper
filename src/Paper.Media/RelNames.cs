@@ -54,11 +54,11 @@ namespace Paper.Media
     #endregion
 
     #region Personalizados
-
+    
     public const string Blueprint = "blueprint";
 
     public const string Link = "link";
-
+    
     /// <summary>
     /// Relacionamento entre um link e um cabeçalho.
     /// </summary>
@@ -70,7 +70,7 @@ namespace Paper.Media
     public const string Property = "property";
 
     /// <summary>
-    /// Relacionamento entre o registro e a entidade pai.
+    /// Estabelece relacionamento entre o alvo e um registro de uma lista de registros.
     /// </summary>
     public const string Row = "row";
 
@@ -93,16 +93,6 @@ namespace Paper.Media
     /// Estabelece relacionamento entre o alvo e a lista de cartões.
     /// </summary>
     public const string Cards = "cargs";
-
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e um cabeçalho de dados.
-    /// </summary>
-    public const string DataHeader = "dataHeader";
-
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e um cabeçalho de registro.
-    /// </summary>
-    public const string RowHeader = "rowHeader";
 
     /// <summary>
     /// Relaciona um link a um dado.

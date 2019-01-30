@@ -17,8 +17,17 @@ namespace Sandbox.Host
     {
       try
       {
+        var exePath = typeof(Program).Assembly.Location;
+        var contentPath = Path.GetDirectoryName(exePath);
+
         WebHost.CreateDefaultBuilder(args)
+          // .UsePaperHost("http://localhost:8080/")
+          // .UsePaperSettings(opt => opt
+          //   .UsePathBase("/Mlogic")
+          //   .UseRemotePaperServer("http://localhost/Mlogic/Beta")
+          // )
           .UseUrls("http://localhost:8080/")
+          .UseContentRoot(contentPath)
           .UseStartup<Startup>()
           .Build()
           .Run();

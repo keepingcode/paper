@@ -18,15 +18,15 @@ namespace Paper.Media.Rendering
       AddCatalog(catalog.Id.ToString(), catalog);
     }
 
+    public void AddCatalog(string catalogId, params IPaper[] papers)
+    {
+      AddCatalog(catalogId, (IEnumerable<IPaper>)papers);
+    }
+
     public void AddCatalog(string catalogId, IEnumerable<IPaper> papers)
     {
       lock (synclock)
       {
-        if (catalogs.ContainsKey(catalogId))
-        {
-          RemoveCatalog(catalogId);
-        }
-
         var paths = catalogs[catalogId];
         if (paths == null)
         {

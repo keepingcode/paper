@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Paper.Host.Server.Api;
+using Paper.Core;
 using Paper.Media.Rendering;
 
 namespace Paper.Host.Server
@@ -24,15 +24,17 @@ namespace Paper.Host.Server
 
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddSingleton<Bookshelf>();
+      services.AddPaperServices();
     }
 
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
       if (env.IsDevelopment())
+      {
         app.UseDeveloperExceptionPage();
+      }
 
-      app.Map("/Api/1", chain => chain.UseMiddleware<Middleware>());
+      app.UsePaperApi();
 
       app.UseDefaultFiles();
       app.UseStaticFiles();

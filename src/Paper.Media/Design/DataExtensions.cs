@@ -17,7 +17,7 @@ namespace Paper.Media.Design
   /// -   Para cada coluna de dado uma entidade filha correspondente é acrescentada.
   ///     -   A entidade filha contém a propriedade "Name" para vinculação do nome da coluna.
   ///     -   A entidade filha contém a classe <see cref="ClassNames.Header"/>.
-  ///     -   A entidade filha contém a relação <see cref="RelNames.DataHeader"/>.
+  ///     -   A entidade filha contém a relação <see cref="RelNames.Data"/>.
   /// </summary>
   public static class DataExtensions
   {
@@ -39,7 +39,7 @@ namespace Paper.Media.Design
       var headers =
         from child in entity.Entities
         where child.Class?.Contains(ClassNames.Header) == true
-           && child.Rel?.Contains(RelNames.DataHeader) == true
+           && child.Rel?.Contains(RelNames.Data) == true
         select child;
 
       headers.ForEach(child =>
@@ -103,7 +103,7 @@ namespace Paper.Media.Design
             , header.Name
             , header.Title
             , header.DataType
-            , RelNames.DataHeader
+            , RelNames.Data
             , options => header.CopyToHeaderOptions(options)
           );
         }
@@ -128,7 +128,7 @@ namespace Paper.Media.Design
           , property.Name
           , property.Title
           , DataTypeNames.GetDataTypeName(property.Type)
-          , RelNames.DataHeader
+          , RelNames.Data
           , builder
         );
       }
@@ -152,7 +152,7 @@ namespace Paper.Media.Design
           , property.Name
           , property.Title
           , DataTypeNames.GetDataTypeName(property.Type)
-          , RelNames.DataHeader
+          , RelNames.Data
           , builder
         );
       }
@@ -174,7 +174,7 @@ namespace Paper.Media.Design
         , name
         , null
         , null
-        , RelNames.DataHeader
+        , RelNames.Data
         , builder
       );
       return entity;
@@ -197,7 +197,7 @@ namespace Paper.Media.Design
         , name
         , title
         , dataType
-        , RelNames.DataHeader
+        , RelNames.Data
         , opt => opt.AddHidden(hidden)
       );
       return entity;
@@ -217,7 +217,7 @@ namespace Paper.Media.Design
         , header.Name
         , header.Title
         , header.DataType
-        , RelNames.DataHeader
+        , RelNames.Data
         , options => header.CopyToHeaderOptions(options)
       );
       return entity;
@@ -239,7 +239,7 @@ namespace Paper.Media.Design
         , name
         , title
         , dataType
-        , RelNames.DataHeader
+        , RelNames.Data
         , opt => opt.AddHidden()
       );
       return entity;

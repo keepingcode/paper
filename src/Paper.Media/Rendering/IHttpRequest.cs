@@ -20,6 +20,8 @@ namespace Paper.Media.Rendering
 
     IHeaders Headers { get; }
 
+    IQueryArgs QueryArgs { get; }
+
     Stream Body { get; }
   }
 }

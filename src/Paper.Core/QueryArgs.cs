@@ -7,7 +7,7 @@ using Paper.Media.Rendering;
 using Toolset;
 using Toolset.Collections;
 
-namespace Paper.Host.Server.Api
+namespace Paper.Core
 {
   public class QueryArgs : IQueryArgs
   {
