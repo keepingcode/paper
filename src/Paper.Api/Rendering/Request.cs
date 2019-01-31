@@ -36,10 +36,10 @@ namespace Paper.Api.Rendering
       var mimeType = contentHeader.Type;
       var encoding = contentHeader.Encoding;
 
-      var serializer = new MediaSerializer();
+      var serializer = new MediaSerializer(mimeType);
       using (var memory = new MemoryStream())
       {
-        var entity = serializer.Deserialize(mimeType, memory, encoding);
+        var entity = serializer.Deserialize(memory, encoding);
         return await Task.FromResult(entity);
       }
     }

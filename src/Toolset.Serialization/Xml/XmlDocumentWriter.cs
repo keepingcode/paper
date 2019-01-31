@@ -12,8 +12,14 @@ namespace Toolset.Serialization.Xml
   {
     private readonly System.Xml.XmlWriter writer;
     private readonly Stack<NodeType> stack;
-    
+
     #region Construtores extras ...
+
+    public XmlDocumentWriter(Stream textStream)
+      : this(textStream, (SerializationSettings)null)
+    {
+      // nada a fazer aqui. use o outro construtor.
+    }
 
     public XmlDocumentWriter(TextWriter textWriter)
       : this(textWriter, (SerializationSettings)null)
@@ -21,58 +27,50 @@ namespace Toolset.Serialization.Xml
       // nada a fazer aqui. use o outro construtor.
     }
 
-    public XmlDocumentWriter(System.Xml.XmlWriter xmlWriter)
-      : this(xmlWriter, (SerializationSettings)null)
+    public XmlDocumentWriter(XmlWriter textWriter)
+      : this(textWriter, (SerializationSettings)null)
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
-    public XmlDocumentWriter(Stream textStream)
-      : this(new StreamWriter(textStream), (SerializationSettings)null)
-    {
-      // nada a fazer aqui. use o outro construtor.
-    }
+    #endregion
 
     public XmlDocumentWriter(Stream textStream, SerializationSettings settings)
-      : this(new StreamWriter(textStream), settings)
-    {
-      // nada a fazer aqui. use o outro construtor.
-    }
-
-    public XmlDocumentWriter(string filename)
-      : this(File.OpenWrite(filename), (SerializationSettings)null)
-    {
-      // nada a fazer aqui. use o outro construtor.
-    }
-
-    public XmlDocumentWriter(string filename, SerializationSettings settings)
-      : this(File.OpenWrite(filename), settings)
-    {
-      // nada a fazer aqui. use o outro construtor.
-    }
-
-    #endregion 
-
-    public XmlDocumentWriter(TextWriter writer, SerializationSettings settings)
       : base(settings)
     {
-      this.writer = System.Xml.XmlWriter.Create(writer,
+      this.writer = System.Xml.XmlWriter.Create(textStream,
         new XmlWriterSettings
         {
           Indent = this.Settings.Indent,
           IndentChars = this.Settings.IndentChars,
-          Encoding = Encoding.UTF8,
-          OmitXmlDeclaration = true
+          Encoding = this.Settings.Encoding,
+          OmitXmlDeclaration = this.Settings.IsFragment
         }
       );
       this.stack = new Stack<NodeType>();
       base.IsValid = true;
     }
 
-    public XmlDocumentWriter(System.Xml.XmlWriter writer, SerializationSettings settings)
+    public XmlDocumentWriter(TextWriter textWriter, SerializationSettings settings)
       : base(settings)
     {
-      this.writer = writer;
+      this.writer = System.Xml.XmlWriter.Create(textWriter,
+        new XmlWriterSettings
+        {
+          Indent = this.Settings.Indent,
+          IndentChars = this.Settings.IndentChars,
+          Encoding = this.Settings.Encoding,
+          OmitXmlDeclaration = this.Settings.IsFragment
+        }
+      );
+      this.stack = new Stack<NodeType>();
+      base.IsValid = true;
+    }
+
+    public XmlDocumentWriter(XmlWriter textWriter, SerializationSettings settings)
+      : base(settings)
+    {
+      this.writer = textWriter;
       this.stack = new Stack<NodeType>();
       base.IsValid = true;
     }

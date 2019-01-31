@@ -6,7 +6,7 @@ namespace Paper.Media.Serialization
 {
   public class SerializationOptions
   {
-    public bool? Indent { get; set; }
+    public bool Indent { get; set; }
     public string TextCase { get; set; }
   }
 }

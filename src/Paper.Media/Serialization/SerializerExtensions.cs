@@ -12,12 +12,33 @@ namespace Paper.Media.Serialization
     /// </summary>
     /// <param name="serializer">Serializador de documento.</param>
     /// <param name="entity">Entidade a ser serializada.</param>
+    /// <param name="output">Stream de saída.</param>
+    public static void Serialize(this ISerializer serializer, Entity entity, Stream output)
+    {
+      serializer.Serialize(entity, output, Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="serializer">Serializador de documento.</param>
+    /// <param name="input">Stream de entrada.</param>
+    public static Entity Deserialize(this ISerializer serializer, Stream input)
+    {
+      return serializer.Deserialize(input, Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="serializer">Serializador de documento.</param>
+    /// <param name="entity">Entidade a ser serializada.</param>
     /// <param name="writer">Stream de saída.</param>
     public static void Serialize(this ISerializer serializer, Entity entity, TextWriter writer)
     {
       using (var memory = new MemoryStream())
       {
-        serializer.Serialize(entity, memory);
+        serializer.Serialize(entity, memory, writer.Encoding);
         memory.Position = 0;
 
         var reader = new StreamReader(memory);
@@ -41,7 +62,7 @@ namespace Paper.Media.Serialization
     {
       using (var memory = new MemoryStream())
       {
-        var writer = new StreamWriter(memory);
+        var writer = new StreamWriter(memory, Encoding.UTF8);
         var buffer = new char[8 * 1024];
         var len = 0;
 
@@ -52,7 +73,7 @@ namespace Paper.Media.Serialization
         writer.Flush();
 
         memory.Position = 0;
-        return serializer.Deserialize(memory);
+        return serializer.Deserialize(memory, Encoding.UTF8);
       }
     }
   }

@@ -39,21 +39,18 @@ namespace Paper.Core
         if (papers == null)
         {
           var status = HttpStatusCode.ServiceUnavailable;
-          var entity = HttpEntity.Create(req.GetDisplayUrl(), status,
+          var message =
             "Paper não configurado corretamente. " +
-            "A instância de Bookshelf não foi configurada na instância de IServiceProvider."
-          );
-          await WriteEntityAsync(ctx, entity, status);
+            "A instância de Bookshelf não foi configurada na instância de IServiceProvider.";
+          await WriteFaultAsync(ctx, status, message, null);
           return;
         }
 
         if (!papers.Any())
         {
           var status = HttpStatusCode.NotFound;
-          var entity = HttpEntity.Create(req.GetDisplayUrl(), status,
-            $"Não existe uma rota para: {req.PathBase}{req.Path}"
-          );
-          await WriteEntityAsync(ctx, entity, status);
+          var message = $"Não existe uma rota para: {req.PathBase}{req.Path}";
+          await WriteFaultAsync(ctx, status, message, null);
           return;
         }
 
@@ -77,44 +74,64 @@ namespace Paper.Core
       }
       catch (Exception ex)
       {
-        try
-        {
-          var status = HttpStatusCode.InternalServerError;
-          var entity = HttpEntity.Create(req.GetDisplayUrl(), status, ex);
-          await WriteEntityAsync(ctx, entity, status);
-        }
-        catch (Exception exx)
-        {
-          res.StatusCode = (int)HttpStatusCode.InternalServerError;
-          res.ContentType = "text/plain; charset=UTF-8";
-
-          var ln = Environment.NewLine;
-          await res.WriteAsync($"Fault:{ln}{exx.GetStackTrace()}{ln}Caused by:{ln}{ex.GetStackTrace()}");
-        }
+        var status = ex is HttpException http ? http.Status : HttpStatusCode.InternalServerError;
+        await WriteFaultAsync(ctx, status, ex.Message, ex);
       }
     }
 
-    private async Task WriteEntityAsync(HttpContext ctx, Entity entity, HttpStatusCode status)
+    private async Task WriteFaultAsync(HttpContext ctx, HttpStatusCode status, string message, Exception ex)
     {
       var req = ctx.Request;
       var res = ctx.Response;
 
-      var headers = new Headers(new HttpHeaders(req.Headers));
-      var queryString = new QueryArgs(req.QueryString.Value);
-
-      var accept = new AcceptHeader(headers, queryString);
-      var mimeType = accept.BestMimeType;
-      var encoding = accept.BestEncoding;
-
-      res.StatusCode = (int)status;
-      res.ContentType = $"{mimeType}; charset={encoding.WebName}";
-      
-      var serializer = new MediaSerializer();
-      using (var memory = new MemoryStream())
+      try
       {
-        serializer.Serialize(entity, mimeType, memory, encoding);
-        memory.Position = 0;
-        await memory.CopyToAsync(res.Body);
+        var headers = new Headers(new HttpHeaders(req.Headers));
+        var queryString = new QueryArgs(req.QueryString.Value);
+
+        var validMimeTypes = new[] {
+          MediaSerializer.JsonSiren,
+          MediaSerializer.Json,
+          MediaSerializer.XmlSiren,
+          MediaSerializer.Xml
+        };
+
+        var accept = new AcceptHeader(headers, queryString);
+        var mimeType = accept.SelectBestMatch(accept.MimeTypes, validMimeTypes) ?? MediaSerializer.JsonSiren;
+        var encoding = accept.BestEncoding;
+
+        var contentType = mimeType;
+
+        // FIXME:
+        // Por enquanto a resposta desce em forma simples:
+        // -  application/json ou application/xml em vez de application/vnd.siren+json ou application/vnd.siren+xml
+        // No futuro seria bom retornar o tipo especifico, se os clientes em geral suportarem.
+        if (contentType == MediaSerializer.JsonSiren) contentType = MediaSerializer.Json;
+        if (contentType == MediaSerializer.XmlSiren) contentType = MediaSerializer.Xml;
+
+        var serializer = new MediaSerializer(mimeType);
+        using (var memory = new MemoryStream())
+        {
+          var entity = HttpEntity.Create(req.GetDisplayUrl(), status, message);
+          serializer.Serialize(entity, memory, encoding);
+
+          memory.Position = 0;
+
+          res.StatusCode = (int)status;
+          res.ContentType = $"{contentType}; charset={encoding.WebName}";
+
+          await memory.CopyToAsync(res.Body);
+        }
+      }
+      catch (Exception exx)
+      {
+        res.StatusCode = (int)status;
+        res.ContentType = "text/plain; charset=UTF-8";
+
+        var ln = Environment.NewLine;
+        await res.WriteAsync(
+          $"{(int)status} - {status.ToString().ChangeCase(TextCase.ProperCase)}{ln}{message}{ln}Fault:{ln}{exx.GetStackTrace()}{ln}Caused by:{ln}{ex.GetStackTrace()}"
+        );
       }
     }
   }

@@ -74,80 +74,43 @@ namespace Toolset.Serialization.Csv
     public CsvWriter(Stream textStream, SerializationSettings settings)
       : base(settings)
     {
-      var writer = new StreamWriter(textStream, Encoding.UTF8, 1024, true);
+      var writer = new StreamWriter(textStream, settings.Encoding, 1024, true);
       Initialize(writer, true);
     }
 
     public CsvWriter(Stream textStream, SerializationSettings settings, Func<string, bool> fieldFilter)
       : base(settings)
     {
-      var writer = new StreamWriter(textStream, Encoding.UTF8, 1024, true);
+      var writer = new StreamWriter(textStream, settings.Encoding, 1024, true);
       Initialize(writer, true, fieldFilter);
     }
 
     public CsvWriter(Stream textStream, SerializationSettings settings, string[] fields)
       : base(settings)
     {
-      var writer = new StreamWriter(textStream, Encoding.UTF8, 1024, true);
+      var writer = new StreamWriter(textStream, settings.Encoding, 1024, true);
       Initialize(writer, true, fields);
     }
 
     #endregion
 
-    #region Construtores Arquivo ...
-
-    public CsvWriter(string filename)
-    {
-      Initialize(new StreamWriter(filename), false);
-    }
-
-    public CsvWriter(string filename, Func<string, bool> fieldFilter)
-    {
-      Initialize(new StreamWriter(filename), false, fieldFilter);
-    }
-
-    public CsvWriter(string filename, string[] fields)
-    {
-      Initialize(new StreamWriter(filename), false, fields);
-    }
-
-    public CsvWriter(string filename, SerializationSettings settings)
-      : base(settings)
-    {
-      Initialize(new StreamWriter(filename), false);
-    }
-
-    public CsvWriter(string filename, SerializationSettings settings, Func<string, bool> fieldFilter)
-      : base(settings)
-    {
-      Initialize(new StreamWriter(filename), false, fieldFilter);
-    }
-
-    public CsvWriter(string filename, SerializationSettings settings, string[] fields)
-      : base(settings)
-    {
-      Initialize(new StreamWriter(filename), false, fields);
-    }
-
     #endregion
 
-    #endregion
-
-    public void Initialize(TextWriter textWriter, bool keepOpen)
+    private void Initialize(TextWriter textWriter, bool keepOpen)
     {
       var basicCsvWriter = new BasicCsvWriter(textWriter, base.Settings);
       this.writer = new FlatMatrixTransformWriter(basicCsvWriter, base.Settings);
       this.keepOpen = keepOpen;
     }
 
-    public void Initialize(TextWriter textWriter, bool keepOpen, Func<string, bool> fieldFilter)
+    private void Initialize(TextWriter textWriter, bool keepOpen, Func<string, bool> fieldFilter)
     {
       var basicCsvWriter = new BasicCsvWriter(textWriter, base.Settings);
       this.writer = new FlatMatrixTransformWriter(basicCsvWriter, base.Settings, fieldFilter);
       this.keepOpen = keepOpen;
     }
 
-    public void Initialize(TextWriter textWriter, bool keepOpen, string[] fields)
+    private void Initialize(TextWriter textWriter, bool keepOpen, string[] fields)
     {
       var basicCsvWriter = new BasicCsvWriter(textWriter, base.Settings);
       this.writer = new FlatMatrixTransformWriter(basicCsvWriter, base.Settings, fields);

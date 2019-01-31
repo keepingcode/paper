@@ -118,6 +118,12 @@ namespace Toolset.Serialization
       set { Set("DateTimeFormat", value); }
     }
 
+    public virtual Encoding Encoding
+    {
+      get { return Get<Encoding>("Encoding", Encoding.UTF8); }
+      set { Set("Encoding", value); }
+    }
+
     public T As<T>()
       where T : SerializationSettings, new()
     {

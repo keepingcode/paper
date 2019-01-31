@@ -16,6 +16,7 @@
     <Compile Remove="Rendering.Papers\**" />
     <Compile Remove="Rendering2\**" />
     <Compile Remove="Routing\**" />
+    <Compile Remove="Serialization\temp\**" />
     <Compile Remove="Utilities.Types\**" />
     <Compile Remove="Utilities\**" />
     <EmbeddedResource Remove="Design.Mappings\**" />
@@ -23,6 +24,7 @@
     <EmbeddedResource Remove="Rendering.Papers\**" />
     <EmbeddedResource Remove="Rendering2\**" />
     <EmbeddedResource Remove="Routing\**" />
+    <EmbeddedResource Remove="Serialization\temp\**" />
     <EmbeddedResource Remove="Utilities.Types\**" />
     <EmbeddedResource Remove="Utilities\**" />
     <None Remove="Design.Mappings\**" />
@@ -30,6 +32,7 @@
     <None Remove="Rendering.Papers\**" />
     <None Remove="Rendering2\**" />
     <None Remove="Routing\**" />
+    <None Remove="Serialization\temp\**" />
     <None Remove="Utilities.Types\**" />
     <None Remove="Utilities\**" />
   </ItemGroup>

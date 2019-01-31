@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
 
@@ -161,9 +162,7 @@ namespace Paper.Api.Rendering
     public ICollection<string> Compressions { get; set; }
 
     public string BestMimeType
-      => SelectBestMatch(MimeTypes,
-        new[] { "application/vnd.siren+json", "application/json", "text/json", "application/xml", "text/xml" }
-      ) ?? "text/json";
+      => SelectBestMatch(MimeTypes, MediaSerializer.SupportedMimeTypes) ?? MimeTypes.FirstOrDefault();
 
     public Encoding BestEncoding
       => SelectBestMatch(Encodings, new[] { Encoding.UTF8 })
@@ -224,30 +223,24 @@ namespace Paper.Api.Rendering
         var modifier = format.Value.ToString();
 
         var tokens = modifier.Split(';');
-        var type = tokens.First();
+        var mimeType = tokens.First();
         var charset = tokens.Skip(1).FirstOrDefault()?.Split('=').Last();
 
-        if (type.ContainsIgnoreCase("json"))
-        {
-          mimeTypes.Insert(0, "application/vnd.siren+json");
-        }
-        else if (type.ContainsIgnoreCase("xml"))
-        {
-          mimeTypes.Insert(0, "application/xml");
-        }
+        mimeType = MediaSerializer.ParseFormat(mimeType) ?? mimeType;
+        mimeTypes = new List<string> { mimeType };
 
-        if (type.ContainsIgnoreCase(".zip"))
+        if (mimeType.ContainsIgnoreCase(".zip"))
         {
-          compressions.Insert(0, "deflate");
+          compressions = new List<string> { "deflate" };
         }
-        else if (type.ContainsIgnoreCase(".gz"))
+        else if (mimeType.ContainsIgnoreCase(".gz"))
         {
-          compressions.Insert(0, "gzip");
+          compressions = new List<string> { "gzip" };
         }
 
         if (charset != null)
         {
-          encodings.Add(GetEncoding(charset));
+          encodings = new List<Encoding> { GetEncoding(charset) };
         }
       }
 

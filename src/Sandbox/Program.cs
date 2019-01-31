@@ -32,40 +32,53 @@ namespace Sandbox
 
       try
       {
-        var entity = new Entity
-        {
-          Title = "My Title",
-          Class = new[] { ClassNames.Data, ClassNames.Rows, "Users" },
-          //Class = new[] { ClassNames.Rows, "Users" },
-          Rel = new[] { "3rd", "4th" },
-          Properties = new PropertyCollection
-          {
-            new Property("MyEntity", "Talz"),
-            new Property("Info", new
-            {
-              Graph = 14002.01
-            })
-          }
-        };
+        var actives = 0;
+        var onlines = 0;
 
-        foreach (var i in Enumerable.Range(1, 100))
+        var rnd = new Random();
+
+        var users = new EntityCollection();
+        foreach (var id in Enumerable.Range(1, 10))
         {
-          entity.AddEntity(new Entity
+          var active = rnd.Next(2);
+          var online = rnd.Next(2);
+
+          actives += active;
+          onlines += online;
+
+          users.Add(new Entity
           {
-            Title = "My Title",
-            Class = new[] { ClassNames.Row, "User" },
-            Rel = new[] { RelNames.Row },
-            Properties = new PropertyCollection
-            {
-              new Property("Id", i*150),
-              new Property("Graph", new
+            Title = $"Usuário {id}",
+            Class = new[] { ClassNames.Data, ClassNames.Row, "Domain.Db.TBusuario" },
+            Rel = new[] { RelNames.Rows },
+            Properties = PropertyCollection.Create(
+              new
               {
-                Dez = i * 10.01,
-                DhEmi = DateTime.Now
-              })
-            }
+                Id = id,
+                Name = $"Usuário {id}",
+                Ativo = active == 1,
+                Online = online == 1
+              }
+            )
           });
         }
+
+        var entity = new Entity
+        {
+          Title = "Usuários no Período",
+          Class = new[] { ClassNames.Data, ClassNames.Rows },
+          Rel = new[] { "3rd", "4th" },
+          Properties = PropertyCollection.Create(
+            new {
+              Total = users.Count,
+              Ativos = actives,
+              Online = onlines
+            }
+          ),
+          Entities = users
+        };
+
+        
 
         //{
         //  var writer = new StringWriter();
@@ -97,7 +110,7 @@ namespace Sandbox
         {
           using (var stream = File.OpenWrite(@"c:\temp\file.xlsx"))
           {
-            var serializer = new DocumentSerializer(DocumentSerializer.Excel);
+            var serializer = new MediaSerializer(MediaSerializer.Excel);
             serializer.Serialize(entity, stream);
             stream.Flush();
           }
