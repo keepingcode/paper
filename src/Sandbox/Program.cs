@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Paper.Media;
+using Paper.Media.Design;
 using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Data;
@@ -43,41 +45,27 @@ namespace Sandbox
             {
               Graph = 14002.01
             })
-          },
-          Entities = new EntityCollection
-          {
-              new Entity
-              {
-                Title = "My Title",
-                Class = new[] { ClassNames.Row, "User" },
-                Rel = new[] { "3rd", "4th" },
-                Properties = new PropertyCollection
-                {
-                  new Property("Id", 150),
-                  new Property("Graph", new
-                  {
-                    Dez = "10.01",
-                    DhEmi = DateTime.Now
-                  })
-                }
-              },
-              new Entity
-              {
-                Title = "My Title",
-                Class = new[] { ClassNames.Row, "User" },
-                Rel = new[] { "3rd", "4th" },
-                Properties = new PropertyCollection
-                {
-                  new Property("Id", 300),
-                  new Property("Graph", new
-                  {
-                    Dez = "20.02",
-                    DhEmi = DateTime.Today
-                  })
-                }
-              }
           }
         };
+
+        foreach (var i in Enumerable.Range(1, 100))
+        {
+          entity.AddEntity(new Entity
+          {
+            Title = "My Title",
+            Class = new[] { ClassNames.Row, "User" },
+            Rel = new[] { RelNames.Row },
+            Properties = new PropertyCollection
+            {
+              new Property("Id", i*150),
+              new Property("Graph", new
+              {
+                Dez = i * 10.01,
+                DhEmi = DateTime.Now
+              })
+            }
+          });
+        }
 
         //{
         //  var writer = new StringWriter();
