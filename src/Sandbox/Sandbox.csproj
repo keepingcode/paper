@@ -57,13 +57,13 @@
       <Project>{A1463E32-8E17-413B-A32D-EA942C6F1FB8}</Project>
       <Name>Paper.Media</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sandbox.Lib\Sandbox.Lib.csproj">
-      <Project>{E86E558A-3728-4097-BB17-CEF350C603B9}</Project>
-      <Name>Sandbox.Lib</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj">
       <Project>{96270BEA-C95D-4DA6-B415-82065B83A283}</Project>
       <Name>Toolset.Sequel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toolset.Serialization\Toolset.Serialization.csproj">
+      <Project>{82D1F421-1E86-4724-BA07-54D6AFEA8768}</Project>
+      <Name>Toolset.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\Toolset\Toolset.csproj">
       <Project>{EE82245E-2724-4073-947D-A1BBA0955D7F}</Project>

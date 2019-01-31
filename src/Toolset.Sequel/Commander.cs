@@ -67,7 +67,7 @@ namespace Toolset.Sequel
         return DBNull.Value;
       }
 
-      if (value is string || value.GetType().IsPrimitive)
+      if (value is string || value.GetType().IsValueType)
       {
         return value;
       }

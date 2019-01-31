@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
+using Paper.Api.Rendering;
 using Paper.Media;
-using Paper.Media.Rendering;
 using Toolset.Collections;
 
 namespace Paper.Core
@@ -19,10 +19,10 @@ namespace Paper.Core
     public HttpResponse(HttpContext context)
     {
       this.res = context.Response;
-      this.Headers = new Headers(context.Response.Headers);
+      this.Headers = new Headers(new HttpHeaders(context.Response.Headers));
     }
 
-    public IHeaders Headers { get; }
+    public Headers Headers { get; }
 
     public Stream Body
     {

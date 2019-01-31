@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sandbox.Lib", "src\Sandbox.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Widgets", "src\Sandbox.Widgets\Sandbox.Widgets.csproj", "{E10CD80A-5D81-45FC-8757-FAF244BA3C9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paper.Api", "src\Paper.Api\Paper.Api.csproj", "{2C8A4DFE-B8AD-4511-B1E3-6A0BB52EE858}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{E10CD80A-5D81-45FC-8757-FAF244BA3C9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E10CD80A-5D81-45FC-8757-FAF244BA3C9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E10CD80A-5D81-45FC-8757-FAF244BA3C9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8A4DFE-B8AD-4511-B1E3-6A0BB52EE858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C8A4DFE-B8AD-4511-B1E3-6A0BB52EE858}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C8A4DFE-B8AD-4511-B1E3-6A0BB52EE858}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C8A4DFE-B8AD-4511-B1E3-6A0BB52EE858}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +117,7 @@ Global
 		{795D6688-9956-4101-9411-03D672D950E4} = {E1FC95F2-7EE0-439E-84EB-5E96EEA3D97C}
 		{E86E558A-3728-4097-BB17-CEF350C603B9} = {E1FC95F2-7EE0-439E-84EB-5E96EEA3D97C}
 		{E10CD80A-5D81-45FC-8757-FAF244BA3C9B} = {E1FC95F2-7EE0-439E-84EB-5E96EEA3D97C}
+		{2C8A4DFE-B8AD-4511-B1E3-6A0BB52EE858} = {8567891E-FC21-4FA8-8938-9C1C4E0A84D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BFDF9B8E-0286-4B26-BD6B-0213BB8E5A3A}

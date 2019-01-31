@@ -41,5 +41,11 @@ namespace Toolset.Serialization.Json
       get { return Get<bool>("KeepOpen"); }
       set { Set("KeepOpen", value); }
     }
+
+    public Style Style
+    {
+      get { return Get<Style>("Style"); }
+      set { Set("Style", value); }
+    }
   }
 }

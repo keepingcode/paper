@@ -68,7 +68,7 @@ namespace Toolset.Serialization.Json
       {
         writer.WriteLine();
 
-        var depth = stack.Count;
+        var depth = (Settings.Style == Style.Typed) ? stack.Count : stack.Count - 1;
         while (depth-- > 0)
         {
           writer.Write(Settings.IndentChars);
@@ -82,7 +82,6 @@ namespace Toolset.Serialization.Json
       {
         case NodeType.DocumentStart:
           {
-            writer.Write("{");
             stack.Push(new Children { Parent = NodeType.Document });
             break;
           }
@@ -90,8 +89,6 @@ namespace Toolset.Serialization.Json
         case NodeType.DocumentEnd:
           {
             stack.Pop();
-            Indent();
-            writer.Write("}");
             break;
           }
 
@@ -100,9 +97,14 @@ namespace Toolset.Serialization.Json
             if (stack.Any())
             {
               var children = stack.Peek();
+
               if (children.Parent == NodeType.Document)
               {
-                EmitProperty((node.Value ?? "root").ToString());
+                if (Settings.Style == Style.Typed)
+                {
+                  writer.Write("{");
+                  EmitProperty((node.Value ?? "root").ToString());
+                }
               }
               else if (children.Parent == NodeType.Collection)
               {
@@ -129,6 +131,15 @@ namespace Toolset.Serialization.Json
               Indent();
             }
             writer.Write("}");
+
+            if (stack.Count > 0 && stack.Peek().Parent == NodeType.Document)
+            {
+              if (Settings.Style == Style.Typed)
+              {
+                writer.WriteLine();
+                writer.Write("}");
+              }
+            }
             return;
           }
 
@@ -213,6 +224,11 @@ namespace Toolset.Serialization.Json
     private void EmitProperty(string name)
     {
       var propertyName = ValueConventions.CreateName(name, Settings, TextCase.CamelCase);
+
+      if (name.StartsWith("@"))
+      {
+        propertyName = "@" + propertyName;
+      }
 
       Indent();
       writer.Write("\"");

@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 using Toolset.Collections;
 using Toolset.Data;
 
@@ -114,7 +117,14 @@ namespace Toolset.Reflection
     public static IEnumerable<string> _GetPropertyNames(this object typeOrObject)
     {
       var type = (typeOrObject is Type) ? (Type)typeOrObject : typeOrObject.GetType();
-      return type.GetProperties().Select(x => x.Name);
+      var names =
+        from prop in type.GetProperties()
+        let member = prop.GetCustomAttributes(true).OfType<DataMemberAttribute>().FirstOrDefault()
+        let element = prop.GetCustomAttributes(true).OfType<XmlElementAttribute>().FirstOrDefault()
+        let order = member?.Order ?? element?.Order ?? int.MaxValue
+        orderby order
+        select prop.Name;
+      return names;
     }
 
     public static IEnumerable<string> _GetMethodNames(this object typeOrObject)

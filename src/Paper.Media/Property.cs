@@ -64,7 +64,7 @@ namespace Paper.Media
 
       var type = value.GetType();
 
-      if (type.IsPrimitive
+      if (type.IsValueType
       || type.Namespace == "System"
       || type.Namespace?.StartsWith("System.") == true
       || StringUtils.IsStringCompatible(value)

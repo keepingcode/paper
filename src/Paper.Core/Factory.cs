@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Paper.Media.Rendering;
+using Paper.Api.Rendering;
 
 namespace Paper.Core
 {

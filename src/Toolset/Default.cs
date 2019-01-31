@@ -8,7 +8,7 @@ namespace Toolset
   {
     public static object Of(Type type)
     {
-      return type.IsPrimitive ? Activator.CreateInstance(type) : null;
+      return type.IsValueType ? Activator.CreateInstance(type) : null;
     }
   }
 }

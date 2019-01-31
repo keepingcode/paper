@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using static System.Environment;
-using Paper.Media.Rendering;
+using Paper.Api.Rendering;
 using Microsoft.AspNetCore.Rewrite;
 using System.Net;
 
@@ -33,12 +33,10 @@ namespace Paper.Core
 
     public static IServiceCollection AddPaperServices(this IServiceCollection services)
     {
-      var serviceProvider = services.BuildServiceProvider();
-      var factory = new Factory(serviceProvider);
       var bookshelf = new Bookshelf();
-      bookshelf.AddExposedCatalogs(factory);
-
-      return services.AddSingleton(bookshelf);
+      services.AddSingleton(bookshelf);
+      bookshelf.AddExposedCatalogs(new Factory(services.BuildServiceProvider()));
+      return services;
     }
 
     #endregion

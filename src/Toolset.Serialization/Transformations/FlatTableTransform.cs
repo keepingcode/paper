@@ -10,7 +10,7 @@ namespace Toolset.Serialization.Transformations
     private readonly TableTransform tableTransform;
     private readonly Func<string, bool> fieldFilter;
 
-    private string[] fieldNames;
+    private string[] validFieldNames;
     private readonly Dictionary<string, Queue<Node>> fields;
     private Queue<Node> currentField;
     
@@ -19,7 +19,7 @@ namespace Toolset.Serialization.Transformations
       this.tableTransform = new TableTransform();
       this.fieldFilter = field => true;
 
-      this.fieldNames = null;
+      this.validFieldNames = null;
       this.fields = new Dictionary<string, Queue<Node>>();
     }
 
@@ -28,7 +28,7 @@ namespace Toolset.Serialization.Transformations
       this.tableTransform = new TableTransform();
       this.fieldFilter = fieldFilter;
 
-      this.fieldNames = null;
+      this.validFieldNames = null;
       this.fields = new Dictionary<string, Queue<Node>>();
     }
 
@@ -37,7 +37,7 @@ namespace Toolset.Serialization.Transformations
       this.tableTransform = new TableTransform();
       this.fieldFilter = fields.Contains;
 
-      this.fieldNames = fields;
+      this.validFieldNames = fields;
       this.fields = new Dictionary<string, Queue<Node>>();
     }
 
@@ -63,10 +63,7 @@ namespace Toolset.Serialization.Transformations
 
           case NodeType.ObjectEnd:
             {
-              if (fieldNames == null)
-              {
-                fieldNames = fields.Keys.Where(fieldFilter).ToArray();
-              }
+              var fieldNames = validFieldNames ?? fields.Keys.Where(fieldFilter).ToArray();
 
               foreach (var fieldName in fieldNames)
               {

@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Paper.Core;
-using Paper.Media.Rendering;
+using Paper.Api.Rendering;
 
 namespace Paper.Host.Server
 {

@@ -2,21 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using Paper.Media;
 using Paper.Media.Serialization;
-using Sandbox.Lib;
-using Sandbox.Lib.Domain;
-using Sandbox.Lib.Domain.Dbo;
-using Sandbox.Lib.Domain.SmallApi;
 using Toolset;
 using Toolset.Data;
 using Toolset.Reflection;
 using Toolset.Sequel;
+using Toolset.Serialization;
 using Toolset.Xml;
 
 namespace Sandbox
@@ -31,21 +30,90 @@ namespace Sandbox
 
       try
       {
-        SequelSettings.TraceQueries = true;
-
-        using (var db = new Db())
+        var entity = new Entity
         {
-          Table table = TBusuario.Find(1);
-          Filter filter = new TBusuario.Filter();
-          filter.Row = Range.Between(10, 50);
-          Entity entity = new Entity();
-          DbEntities.CopyTable(table, filter, entity);
+          Title = "My Title",
+          Class = new[] { ClassNames.Data, ClassNames.Rows, "Users" },
+          //Class = new[] { ClassNames.Rows, "Users" },
+          Rel = new[] { "3rd", "4th" },
+          Properties = new PropertyCollection
+          {
+            new Property("MyEntity", "Talz"),
+            new Property("Info", new
+            {
+              Graph = 14002.01
+            })
+          },
+          Entities = new EntityCollection
+          {
+              new Entity
+              {
+                Title = "My Title",
+                Class = new[] { ClassNames.Row, "User" },
+                Rel = new[] { "3rd", "4th" },
+                Properties = new PropertyCollection
+                {
+                  new Property("Id", 150),
+                  new Property("Graph", new
+                  {
+                    Dez = "10.01",
+                    DhEmi = DateTime.Now
+                  })
+                }
+              },
+              new Entity
+              {
+                Title = "My Title",
+                Class = new[] { ClassNames.Row, "User" },
+                Rel = new[] { "3rd", "4th" },
+                Properties = new PropertyCollection
+                {
+                  new Property("Id", 300),
+                  new Property("Graph", new
+                  {
+                    Dez = "20.02",
+                    DhEmi = DateTime.Today
+                  })
+                }
+              }
+          }
+        };
 
-          entity.Canonicalize("http://host.com/Api/1?f=json");
+        //{
+        //  var writer = new StringWriter();
 
-          var serializer = new MediaSerializer();
-          var json = serializer.SerializeToJson(entity);
-          Debug.WriteLine(Json.Beautify(json));
+        //  var serializer = new DocumentSerializer(DocumentSerializer.Json, indent: true);
+        //  serializer.Serialize(entity, writer);
+
+        //  Debug.WriteLine(writer);
+        //}
+
+        //{
+        //  var writer = new StringWriter();
+
+        //  var serializer = new DocumentSerializer(DocumentSerializer.Xml, indent: true);
+        //  serializer.Serialize(entity, writer);
+
+        //  Debug.WriteLine(writer);
+        //}
+
+        //{
+        //  var writer = new StringWriter();
+
+        //  var serializer = new DocumentSerializer(DocumentSerializer.Csv);
+        //  serializer.Serialize(entity, writer);
+
+        //  Debug.WriteLine(writer);
+        //}
+
+        {
+          using (var stream = File.OpenWrite(@"c:\temp\file.xlsx"))
+          {
+            var serializer = new DocumentSerializer(DocumentSerializer.Excel);
+            serializer.Serialize(entity, stream);
+            stream.Flush();
+          }
+          Debug.WriteLine(@"Saved c:\temp\file.xlsx");
         }
       }
       catch (Exception ex)

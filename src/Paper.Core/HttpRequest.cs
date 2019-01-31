@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Paper.Media;
-using Paper.Media.Rendering;
+using Paper.Api.Rendering;
 using Toolset;
 using Toolset.Collections;
 
@@ -21,8 +21,7 @@ namespace Paper.Core
       this.RequestUri = context.Request.GetDisplayUrl();
       this.PathBase = context.Request.PathBase;
       this.Path = context.Request.Path;
-      this.Headers = new Headers(context.Request.Headers);
-      this.QueryArgs = new QueryArgs(context.Request.QueryString.Value);
+      this.Headers = new Headers(new HttpHeaders(context.Request.Headers));
       this.Body = context.Request.Body;
     }
 
@@ -32,9 +31,7 @@ namespace Paper.Core
 
     public string Path { get; }
 
-    public IHeaders Headers { get; }
-
-    public IQueryArgs QueryArgs { get; }
+    public Headers Headers { get; }
 
     public Stream Body { get; }
   }

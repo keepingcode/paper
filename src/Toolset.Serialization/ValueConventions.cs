@@ -77,14 +77,7 @@ namespace Toolset.Serialization
       if (value is Enum)
         return ((int)value).ToString();
 
-      if (value is DateTime)
-        return ((DateTime)value).ToString(settings.DateTimeFormat);
-
-      var formatter = value.GetType().GetMethod("ToString", new[] { typeof(IFormatProvider) });
-      if (formatter != null)
-        return (string)formatter.Invoke(value, new[] { settings.CultureInfo });
-
-      return value.ToString();
+      return Change.To<string>(value);
     }
 
     public static object CreateValue(string text, SerializationSettings settings, Func<string, string> unescapeMethod = null)

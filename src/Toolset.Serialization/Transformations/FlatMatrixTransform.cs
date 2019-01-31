@@ -58,6 +58,21 @@ namespace Toolset.Serialization.Transformations
       {
         switch (emittedNode.Type)
         {
+          case NodeType.CollectionStart:
+            {
+              headers.Clear();
+              collectingHeaders = Settings.Get<bool>("HasHeaders");
+              yield return emittedNode;
+              break;
+            }
+
+          case NodeType.CollectionEnd:
+            {
+              collectingHeaders = false;
+              yield return emittedNode;
+              break;
+            }
+
           case NodeType.ObjectStart:
             {
               queue.Clear();

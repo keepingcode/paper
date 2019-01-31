@@ -516,7 +516,7 @@ namespace Toolset
         ).SelectMany();
       }
 
-      if (graph.GetType().IsPrimitive || graph is string || graph is DateTime || graph is TimeSpan)
+      if (graph.GetType().IsValueType || graph is string || graph is DateTime || graph is TimeSpan)
         throw new InvalidOperationException("Era esperado um objeto mas foi encontrado um: " + graph.GetType().FullName);
 
       if (graph is IEnumerable)
@@ -528,7 +528,7 @@ namespace Toolset
       var args = (
         from p in graph.GetType().GetProperties()
         where p.PropertyType.IsArray
-           || p.PropertyType.IsPrimitive
+           || p.PropertyType.IsValueType
            || p.PropertyType == typeof(string)
            || p.PropertyType == typeof(DateTime)
            || p.PropertyType == typeof(TimeSpan)

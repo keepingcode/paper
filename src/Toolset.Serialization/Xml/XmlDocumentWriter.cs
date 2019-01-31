@@ -94,7 +94,7 @@ namespace Toolset.Serialization.Xml
         case NodeType.ObjectStart:
           {
             var parentKind = stack.FirstOrDefault();
-            var parentIsProperty = parentKind == NodeType.Property;
+            var parentIsProperty = parentKind.HasFlag(NodeType.Property);
 
             if (!parentIsProperty)
             {
@@ -113,7 +113,7 @@ namespace Toolset.Serialization.Xml
             stack.Pop();
 
             var parentKind = stack.FirstOrDefault();
-            var parentIsProperty = parentKind == NodeType.Property;
+            var parentIsProperty = parentKind.HasFlag(NodeType.Property);
 
             if (!parentIsProperty)
             {
@@ -125,7 +125,7 @@ namespace Toolset.Serialization.Xml
         case NodeType.CollectionStart:
           {
             var parentKind = stack.FirstOrDefault();
-            var parentIsProperty = parentKind == NodeType.Property;
+            var parentIsProperty = parentKind.HasFlag(NodeType.Property);
 
             if (!parentIsProperty)
             {
@@ -146,7 +146,7 @@ namespace Toolset.Serialization.Xml
             stack.Pop();
 
             var parentKind = stack.FirstOrDefault();
-            var parentIsProperty = parentKind == NodeType.Property;
+            var parentIsProperty = parentKind.HasFlag(NodeType.Property);
 
             if (!parentIsProperty)
             {
@@ -160,21 +160,45 @@ namespace Toolset.Serialization.Xml
           {
             var name = (node.Value ?? "Property").ToString();
             var tagName = ValueConventions.CreateName(name, Settings, TextCase.PascalCase);
-            writer.WriteStartElement(tagName);
 
-            stack.Push(NodeType.Property);
+            var isAttribute = name.StartsWith("@");
+            if (isAttribute)
+            {
+              writer.WriteStartAttribute(tagName);
+              stack.Push(NodeType.Property | (NodeType)0x4000);
+            }
+            else
+            {
+              writer.WriteStartElement(tagName);
+              stack.Push(NodeType.Property);
+            }
+            
             break;
           }
 
         case NodeType.PropertyEnd:
           {
-            writer.WriteEndElement();
+            var isAttribute = stack.Peek().HasFlag((NodeType)0x4000);
+            if (isAttribute)
+            {
+              writer.WriteEndAttribute();
+            }
+            else
+            {
+              writer.WriteEndElement();
+            }
             stack.Pop();
             break;
           }
 
         case NodeType.Value:
           {
+            var isArrayElement = stack.Peek().HasFlag(NodeType.Collection);
+            if (isArrayElement)
+            {
+              writer.WriteStartElement("Item");
+            }
+
             if (node.Value == null)
             {
               writer.WriteValue(null);
@@ -190,6 +214,12 @@ namespace Toolset.Serialization.Xml
               var text = ValueConventions.CreateText(node.Value, Settings);
               writer.WriteValue(text);
             }
+
+            if (isArrayElement)
+            {
+              writer.WriteEndElement();
+            }
+
             break;
           }
 

@@ -11,11 +11,11 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Net.Http.Headers;
 using Paper.Media;
 using Paper.Media.Design;
-using Paper.Media.Rendering;
 using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Xml;
 using Microsoft.Extensions.DependencyInjection;
+using Paper.Api.Rendering;
 
 namespace Paper.Core
 {
@@ -57,14 +57,12 @@ namespace Paper.Core
           return;
         }
 
-        var context = new RenderingContext
-        {
-          Bookshelf = bookshelf,
-          Factory = new Factory(serviceProvider),
-          Request = new Request(new HttpRequest(ctx)),
-          Response = new Response(new HttpRequest(ctx), new HttpResponse(ctx))
-        };
-
+        var context = new RenderingContext();
+        context.Bookshelf = bookshelf;
+        context.Factory = new Factory(serviceProvider);
+        context.Request = new Request(new HttpRequest(ctx));
+        context.Response = new Response(context.Request, new HttpResponse(ctx));
+        
         var enumerator = papers.GetEnumerator();
         NextAsync next = null;
         next = new NextAsync(async () =>
@@ -101,7 +99,10 @@ namespace Paper.Core
       var req = ctx.Request;
       var res = ctx.Response;
 
-      var accept = new AcceptHeader(new Headers(req.Headers), new QueryArgs(req.QueryString.Value));
+      var headers = new Headers(new HttpHeaders(req.Headers));
+      var queryString = new QueryArgs(req.QueryString.Value);
+
+      var accept = new AcceptHeader(headers, queryString);
       var mimeType = accept.BestMimeType;
       var encoding = accept.BestEncoding;
 

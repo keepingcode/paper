@@ -592,7 +592,7 @@ namespace Toolset.Sequel
         }
       }
 
-      if (value.GetType().IsPrimitive)
+      if (value.GetType().IsValueType)
       {
         args[parameter] = value;
         return "{0} = @" + parameter;
