@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Paper.Media
 {
-  public class Href
+  public class Href : IXmlSerializable
   {
     public string Value { get; private set; }
 
@@ -32,5 +35,15 @@ namespace Paper.Media
     {
       return new Href { Value = href.ToString() };
     }
+
+    #region IXmlSerializable
+
+    XmlSchema IXmlSerializable.GetSchema() => null;
+
+    void IXmlSerializable.ReadXml(XmlReader reader) => Value = reader.ReadElementContentAsString();
+
+    void IXmlSerializable.WriteXml(XmlWriter writer) => writer.WriteValue(Value);
+
+    #endregion
   }
 }

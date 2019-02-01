@@ -1,50 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Collections;
-using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using Toolset.Reflection;
 
 namespace Toolset.Serialization.Graph
 {
-  public class GraphWriter<T> : GraphWriter
+  public class GraphWriter2<T> : GraphWriter
+    where T : class
   {
-    public GraphWriter()
+    public GraphWriter2()
       : base(typeof(T))
     {
+      // nada a fazer aqui. use o outro construtor.
     }
 
-    public GraphWriter(SerializationSettings settings)
+    public GraphWriter2(SerializationSettings settings)
       : base(typeof(T), settings)
     {
+      // nada a fazer aqui. use o outro construtor.
     }
 
-    public GraphWriter(IEnumerable<Type> knownTypes, SerializationSettings settings)
+    public GraphWriter2(IEnumerable<Type> knownTypes, SerializationSettings settings)
       : base(typeof(T), knownTypes, settings)
     {
-    }
-
-    public new T TargetObject
-    {
-      get { return (base.TargetObject is T) ? (T)base.TargetObject : default(T); }
     }
   }
 
   public class GraphWriter : Writer
   {
-    private Type type;
-    private IEnumerable<Type> knownTypes;
-
-    private Stack<IHolder> stack;
-    private Stack<Stack<IHolder>> cache;
-    private IHolder typeHolder;
-
-    // Quando Settings.IsLenient é marcado uma propriedade sem correspondencia
-    // no objeto é lida com sucesso do Reader mas não é atribuída ao objeto.
-    // Por padrão, uma exceção seria lançada, mas quando leniente é marcado a
-    // propriedade é simplesmente ignorada se não existir.
-    private readonly NodeSkipper nodeSkipper = new NodeSkipper();
+    private ArrayList graphs = new ArrayList();
+    private Stack<Scope> scopes = new Stack<Scope>();
+    private Stack<NodeType> depth = new Stack<NodeType>();
 
     public GraphWriter(Type type)
       : this(type, null, new SerializationSettings())
@@ -59,203 +49,74 @@ namespace Toolset.Serialization.Graph
     }
 
     public GraphWriter(Type type, IEnumerable<Type> knownTypes, SerializationSettings settings)
-      : base(settings)
+      : base(settings is GraphSerializationSettings ? (GraphSerializationSettings)settings : new GraphSerializationSettings(settings))
     {
-      this.type = type;
-      this.knownTypes = new KnownTypes(type, knownTypes);
-
-      this.stack = new Stack<IHolder>();
-      this.cache = new Stack<Stack<IHolder>>();
-      this.typeHolder = new ValueHolder { HintType = type };
-
-      base.IsValid = true;
+      this.GraphType = type;
     }
 
-    public new GraphSerializationSettings Settings
-    {
-      get { return base.Settings.As<GraphSerializationSettings>(); }
-    }
+    public Type GraphType { get; }
 
-    public object TargetObject
-    {
-      get;
-      private set;
-    }
+    public ICollection Graphs => graphs;
 
-    private IHolder GetHolderParent()
-    {
-      var stackedStack = cache.FirstOrDefault();
-      return (stackedStack != null) ? stackedStack.FirstOrDefault() : typeHolder;
-    }
+    public new GraphSerializationSettings Settings => (GraphSerializationSettings)base.Settings;
 
     protected override void DoWrite(Node node)
     {
-      if (nodeSkipper.ShouldSkip(node))
-        return;
-
       switch (node.Type)
       {
         case NodeType.ObjectStart:
           {
-            Type type = null;
-
-            var name = (node.Value ?? "").ToString();
-            var className = name.ChangeCase(TextCase.PascalCase);
-            
-            var parent = GetHolderParent();
-            if (parent != null)
-              type = parent.HintType;
-            if (type == null)
-              type = knownTypes.First(t => (t.Name.Equals(className)) || (t.FullName.Equals(name)));
-
-            var instance = Activator.CreateInstance(type);
-
-            var holder = new ObjectHolder { Value = instance };
-            stack.Push(holder);
-            cache.Push(stack);
-            stack = new Stack<IHolder>();
+            if (scopes.Count == 0)
+            {
+              var host = Activator.CreateInstance(GraphType);
+              scopes.Push(new Scope(host, null));
+            }
+            else
+            {
+              var current = scopes.Peek();
+              var host = current.NewValue();
+              scopes.Push(new Scope(host, null));
+            }
             break;
           }
 
         case NodeType.ObjectEnd:
           {
-            stack = cache.Pop();
-            break;
-          }
-
-        case NodeType.CollectionStart:
-          {
-            Type type = null;
-
-            var name = (node.Value ?? "").ToString();
-            var className = name.ChangeCase(TextCase.PascalCase);
-
-            var parent = GetHolderParent();
-            if (parent != null)
-              type = parent.HintType;
-            if (type == null)
-              type = knownTypes.First(t => (t.Name.Equals(className)) || (t.FullName.Equals(name)));
-
-            var holder = new CollectionHolder { CollectionType = type };
-            stack.Push(holder);
-            cache.Push(stack);
-            stack = new Stack<IHolder>();
-            break;
-          }
-
-        case NodeType.CollectionEnd:
-          {
-            var items = stack.Reverse().Select(h => h.Value);
-            stack = cache.Pop();
-            var holder = (CollectionHolder)stack.Peek();
-            holder.AddItems(items);
+            var scope = scopes.Pop();
+            if (scopes.Count == 0)
+            {
+              graphs.Add(scope.Host);
+            }
             break;
           }
 
         case NodeType.PropertyStart:
           {
-            var parent = (ObjectHolder)GetHolderParent();
-            var host = parent.Value;
-
-            IHolder holder = null;
-            if (Collections.IsDictionary(host))
-            {
-              var dictionary = (IDictionary)host;
-
-              var name = (node.Value ?? "").ToString();
-              var propertyName = ValueConventions.CreateName(name, Settings, TextCase.KeepOriginal);
-
-              var hintType = 
-                Collections.GetGenericArguments(host).Skip(1).FirstOrDefault()
-                ?? typeof(object);
-
-              holder = new EntryHolder { Host = dictionary, HintType = hintType, Key = propertyName };
-            }
-            else
-            {
-              var name = node.Value.ToString();
-              var propertyName = name.ChangeCase(TextCase.PascalCase);
-
-              var properties = host.GetType().GetProperties();
-              var property = properties.FirstOrDefault(
-                p => p.Name.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
-
-              if (property == null)
-              {
-                if (Settings.IsLenient)
-                {
-                  nodeSkipper.Activate();
-                  nodeSkipper.ShouldSkip(node); // inicia o descarte desta propriedade
-                  break;
-                }
-                else
-                {
-                  throw new Exception(
-                    "Propriedade não encontrada: " + propertyName + " em " + host.GetType().FullName);
-                }
-              }
-
-              holder = new PropertyHolder { Host = host, Property = property };
-            }
-
-            stack.Push(holder);
-            cache.Push(stack);
-            stack = new Stack<IHolder>();
+            var current = scopes.Peek();
+            current.AddProperty(Change.To<string>(node.Value));
             break;
           }
 
-        case NodeType.PropertyEnd:
+        case NodeType.CollectionStart:
           {
-            var valueHolder = stack.SingleOrDefault();
-            var value = (valueHolder != null) ? valueHolder.Value : null;
+            var current = scopes.Peek();
+            var bag = current.NewBag();
+            scopes.Push(new Scope(null, bag));
+            break;
+          }
 
-            stack = cache.Pop();
-            var holder = stack.Peek();
-            if (holder is EntryHolder)
-            {
-              var entryHoder = (EntryHolder)holder;
-              var host = entryHoder.Host;
-              var key = entryHoder.Key;
-              var type = entryHoder.HintType;
-              var changedValue = Castings.Cast(value, type);
-              host.Add(key, changedValue);
-            }
-            else
-            {
-              var propertyHoder = (PropertyHolder)holder;
-              var host = propertyHoder.Host;
-              var property = propertyHoder.Property;
-              var changedValue = Castings.Cast(value, property.PropertyType);
-              property.SetValue(host, changedValue, null);
-            }
-
+        case NodeType.CollectionEnd:
+          {
+            var scope = scopes.Pop();
+            var current = scopes.Peek();
+            current.SetValue(scope.Bag);
             break;
           }
 
         case NodeType.Value:
           {
-            var parent = GetHolderParent();
-
-            if (parent.HintType == typeof(XElement))
-            {
-              var text = (string)node.Value;
-              var xml = XElement.Parse(text);
-              stack.Push(new ValueHolder { Value = xml });
-            }
-            else if (parent.HintType == typeof(XDocument))
-            {
-              var text = (string)node.Value;
-              var xml = XDocument.Parse(text);
-              stack.Push(new ValueHolder { Value = xml });
-            }
-            else
-            
-            {
-              var type = parent.HintType ?? typeof(object);
-              var changedValue = Castings.Cast(node.Value, type);
-              stack.Push(new ValueHolder { Value = changedValue });
-            }
-
+            var current = scopes.Peek();
+            current.SetValue(node.Value);
             break;
           }
       }
@@ -263,113 +124,112 @@ namespace Toolset.Serialization.Graph
 
     protected override void DoWriteComplete()
     {
-      var rootStack = cache.LastOrDefault() ?? stack;
-      var rootHolder = (rootStack != null) ? rootStack.LastOrDefault() : null;
-      TargetObject = (rootHolder != null) ? rootHolder.Value : null;
+      // nada a fazer
     }
 
     protected override void DoFlush()
     {
-      // nada a fazer...
+      // nada a fazer
     }
 
     protected override void DoClose()
     {
-      // nada a fazer...
+      // nada a fazer
     }
 
-    #region Classes auxiliares...
-
-    private interface IHolder
+    private class Scope
     {
-      Type HintType { get; }
-      object Value { get; }
-    }
+      private readonly List<string> properties = new List<string>();
+      private readonly MethodInfo[] adders;
 
-    private struct ValueHolder : IHolder
-    {
-      public Type HintType { get; set; }
-      public object Value { get; set; }
-    }
-
-    private struct ObjectHolder : IHolder
-    {
-      public Type HintType { get { throw new NotImplementedException(); } }
-      public Object Value { get; set; }
-    }
-
-    private class PropertyHolder : IHolder
-    {
-      public Type HintType { get { return Property.PropertyType; } }
-      public Object Value { get { return Property.GetValue(Host, null); } }
-      public object Host { get; set; }
-      public PropertyInfo Property { get; set; }
-    }
-
-    private class EntryHolder : IHolder
-    {
-      public Type HintType { get; set; }
-      public IDictionary Host { get; set; }
-      public string Key { get; set; }
-      public Object Value { get { return Host.Contains(Key) ? Host[Key] : null; } }
-    }
-
-    private class CollectionHolder : IHolder
-    {
-      public object Value { get; private set; }
-
-      public Type HintType
+      public Scope(object host, Bag bag)
       {
-        get
+        this.Host = host;
+        this.Bag = bag;
+        if (host != null)
         {
-          return 
-            CollectionType.GetElementType()
-            ?? Collections.GetGenericArguments(CollectionType).FirstOrDefault()
-            ?? CollectionType;
+          this.adders = (
+            from method in host.GetType().GetMethods()
+            let parameters = method.GetParameters()
+            where method.Name == "Add"
+               && parameters.Length == 2
+               && typeof(string).IsAssignableFrom(parameters.First().ParameterType)
+            select method
+          ).ToArray();
         }
       }
 
-      public Type CollectionType
-      {
-        get;
-        set;
-      }
+      public object Host { get; }
 
-      public void AddItems(IEnumerable items)
-      {
-        var collection = ConvertToCollection(items.Cast<object>(), CollectionType);
-        Value = collection;
-      }
+      public Bag Bag { get; }
 
-      private object ConvertToCollection(IEnumerable<object> items, Type collectionType)
+      public void AddProperty(string name)
       {
-        if (collectionType.IsArray)
+        if (name == null)
         {
-          var itemType = collectionType.GetElementType();
-          var targetArray = Array.CreateInstance(itemType, items.Count());
-          var sourceArray = items.Select(x => Castings.Cast(x, itemType)).ToArray();
-          Array.Copy(sourceArray, targetArray, targetArray.Length);
-          return targetArray;
+          do
+          {
+            name = $"Field{properties.Count + 1}";
+          } while (properties.Contains(name));
+        }
+        properties.Add(name);
+      }
+
+      public void SetValue(object value)
+      {
+        if (Bag != null)
+        {
+          Bag.Add(value);
+          return;
+        }
+
+        var property = properties.Last();
+
+        if (adders != null)
+        {
+          object key, val;
+          foreach (var adder in adders)
+          {
+            var keyType = adder.GetParameters().First().ParameterType;
+            var valType = adder.GetParameters().Last().ParameterType;
+            if (Change.TryTo(property, keyType, out key) && Change.TryTo(value, valType, out val))
+            {
+              Host._Call("Add", key, val);
+              return;
+            }
+          }
+        }
+
+        Host._Set(property, value);
+      }
+
+      public object NewValue()
+      {
+        if (Bag != null)
+        {
+          var value = Activator.CreateInstance(Bag.ElementType);
+          Bag.Add(value);
+          return value;
         }
         else
         {
-          var targetCollection = (ICollection)Activator.CreateInstance(collectionType);
-          
-          var itemType = Collections.GetGenericArguments(collectionType).FirstOrDefault() ?? typeof(object);
-          var targetAppender = collectionType.GetMethod("Add", new[] { itemType });
-
-          foreach (var item in items)
-          {
-            var itemValue = Castings.Cast(item, itemType);
-            targetAppender.Invoke(targetCollection, new[] { itemValue });
-          }
-                               
-          return targetCollection;
+          var property = properties.LastOrDefault();
+          return Host._SetNew(property);
         }
+      }
+
+      public Bag NewBag()
+      {
+        var property = properties.LastOrDefault();
+        var propertyType = Host._GetPropertyType(property);
+        var elementType = TypeOf.CollectionElement(propertyType);
+        return new Bag { ElementType = elementType };
       }
     }
 
-    #endregion
-
+    private class Bag : ArrayList
+    {
+      public Type ElementType { get; set; }
+    }
   }
 }

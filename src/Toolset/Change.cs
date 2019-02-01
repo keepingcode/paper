@@ -14,10 +14,101 @@ namespace Toolset
   {
     public static object To(object value, Type targetType)
     {
-      return To(value, targetType, Default.Of(targetType));
+      return ConvertAny(value, targetType, Default.Of(targetType));
     }
 
     public static object To(object value, Type targetType, object defaultValue)
+    {
+      return ConvertAny(value, targetType, defaultValue);
+    }
+
+    public static T To<T>(object value)
+    {
+      return (T)ConvertAny(value, typeof(T), default(T));
+    }
+
+    public static T To<T>(object value, T defaultValue)
+    {
+      return (T)ConvertAny(value, typeof(T), defaultValue);
+    }
+
+    public static object ToOrDefault(object value, Type targetType)
+    {
+      try
+      {
+        return ConvertAny(value, targetType, Default.Of(targetType));
+      }
+      catch
+      {
+        return Default.Of(targetType);
+      }
+    }
+
+    public static object ToOrDefault(object value, Type targetType, object defaultValue)
+    {
+      try
+      {
+        return ConvertAny(value, targetType, defaultValue);
+      }
+      catch
+      {
+        return defaultValue;
+      }
+    }
+
+    public static T ToOrDefault<T>(object value)
+    {
+      try
+      {
+        return (T)ConvertAny(value, typeof(T), default(T));
+      }
+      catch
+      {
+        return default(T);
+      }
+    }
+
+    public static T ToOrDefault<T>(object value, T defaultValue)
+    {
+      try
+      {
+        return (T)ConvertAny(value, typeof(T), defaultValue);
+      }
+      catch
+      {
+        return defaultValue;
+      }
+    }
+
+    public static bool TryTo(object value, Type targetType, out object result)
+    {
+      try
+      {
+        result = ConvertAny(value, targetType, Default.Of(targetType));
+        return true;
+      }
+      catch
+      {
+        result = Default.Of(targetType);
+        return false;
+      }
+    }
+
+    public static bool TryTo<T>(object value, out T result)
+    {
+      try
+      {
+        result = (T)ConvertAny(value, typeof(T), default(T));
+        return true;
+      }
+      catch
+      {
+        result = default(T);
+        return false;
+      }
+    }
+
+    private static object ConvertAny(object value, Type targetType, object defaultValue)
     {
       if (defaultValue == null)
       {
@@ -29,101 +120,38 @@ namespace Toolset
         return defaultValue;
       }
 
-      if (typeof(IList).IsAssignableFrom(targetType)
-       || typeof(IList<>).IsAssignableFrom(targetType))
+      if (Is.Collection(targetType))
       {
-        var genericListType = (
-          from type in targetType.GetInterfaces()
-          where type.IsGenericType
-             && type.GetGenericTypeDefinition() == typeof(IList<>)
-          select type
-        ).FirstOrDefault();
-
+        var elementType = TypeOf.CollectionElement(targetType);
         if (targetType.IsArray)
         {
-          var elementType = targetType.GetElementType();
           var sourceList = value as IList ?? new[] { value };
           var targetList = (IList)Activator.CreateInstance(targetType, sourceList.Count);
           for (int i = 0; i < sourceList.Count; i++)
           {
-            targetList[i] = ConvertTo(sourceList[i], elementType);
-          }
-          return targetList;
-        }
-        else if (genericListType != null)
-        {
-          var elementType = genericListType.GetGenericArguments().First();
-          var sourceList = value as IList ?? new[] { value };
-          var targetList = (IList)Activator.CreateInstance(targetType);
-          foreach (var sourceElement in sourceList)
-          {
-            var targetElement = ConvertTo(sourceElement, elementType);
-            targetList.Add(targetElement);
+            targetList[i] = ConvertSingleValue(sourceList[i], elementType);
           }
           return targetList;
         }
         else
         {
           var sourceList = value as IList ?? new[] { value };
-          var targetList = (IList)Activator.CreateInstance(targetType, sourceList.Count);
-          for (int i = 0; i < sourceList.Count; i++)
+          var targetList = (IList)Activator.CreateInstance(targetType);
+          foreach (var sourceElement in sourceList)
           {
-            targetList[i] = sourceList[i];
+            var targetElement = ConvertSingleValue(sourceElement, elementType);
+            targetList.Add(targetElement);
           }
           return targetList;
         }
       }
       else
       {
-        return ConvertTo(value, targetType) ?? defaultValue;
+        return ConvertSingleValue(value, targetType) ?? defaultValue;
       }
     }
 
-    public static T To<T>(object value)
-    {
-      return To<T>(value, default(T));
-    }
-
-    public static T To<T>(object value, T defaultValue)
-    {
-      return (T)To(value, typeof(T), defaultValue);
-    }
-
-    public static object ToOrDefault(object value, Type targetType)
-    {
-      return ToOrDefault(value, targetType, Default.Of(targetType));
-    }
-
-    public static object ToOrDefault(object value, Type targetType, object defaultValue)
-    {
-      try
-      {
-        return To(value, targetType, defaultValue);
-      }
-      catch
-      {
-        return defaultValue;
-      }
-    }
-
-    public static T ToOrDefault<T>(object value)
-    {
-      return ToOrDefault<T>(value, default(T));
-    }
-
-    public static T ToOrDefault<T>(object value, T defaultValue)
-    {
-      try
-      {
-        return To<T>(value, defaultValue);
-      }
-      catch
-      {
-        return defaultValue;
-      }
-    }
-
-    private static object ConvertTo(object value, Type targetType)
+    private static object ConvertSingleValue(object value, Type targetType)
     {
       Type sourceType = value?.GetType();
       try
@@ -144,15 +172,15 @@ namespace Toolset
           {
             return text == "1"
                 || text.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+                || text.Equals("y", StringComparison.InvariantCultureIgnoreCase)
                 || text.Equals("yes", StringComparison.InvariantCultureIgnoreCase)
                 || text.Equals("on", StringComparison.InvariantCultureIgnoreCase)
                 || text.Equals("ok", StringComparison.InvariantCultureIgnoreCase)
                 || text.Equals("sim", StringComparison.InvariantCultureIgnoreCase);
           }
-          else if (value is IConvertible convertible)
+          else if (sourceType.IsValueType)
           {
-            var number = convertible.ToDecimal(CultureInfo.InvariantCulture);
-            return number.CompareTo(0M) != 0;
+            return !value.Equals(Default.Of(sourceType));
           }
           else
           {
@@ -207,11 +235,15 @@ namespace Toolset
           }
         }
 
-        if (targetType == typeof(TimeSpan) && value is string timeSpan)
+        if (targetType == typeof(TimeSpan))
         {
-          if (Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
+          if (value is string timeSpan && Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
           {
             return DateTime.Parse(timeSpan);
+          }
+          if (value is long ticks)
+          {
+            return TimeSpan.FromTicks(ticks);
           }
         }
 

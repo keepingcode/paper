@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using Toolset.Serialization.Csv;
@@ -131,21 +132,51 @@ namespace Toolset.Serialization
     }
 
     #region CreateReader
-    
+
+    public static Reader CreateReader(Stream input, SerializationSettings settings)
+    {
+      var documentReader = SupportedDocumentTextReader.Create(input, settings.Encoding);
+      switch (documentReader.DocumentFormat)
+      {
+        case SupportedDocumentTextReader.XmlFormat:
+          return new XmlDocumentReader(documentReader, settings);
+
+        case SupportedDocumentTextReader.JsonFormat:
+          return new JsonReader(documentReader, settings);
+
+        case SupportedDocumentTextReader.CsvFormat:
+          return new CsvReader(documentReader, settings);
+
+        default:
+          throw new HttpException(HttpStatusCode.NotAcceptable);
+      }
+    }
+
     public static Reader CreateReader(TextReader reader, SerializationSettings settings)
     {
       var documentReader = SupportedDocumentTextReader.Create(reader);
-      
-      if (documentReader.DocumentFormat == SupportedDocumentTextReader.XmlFormat)
-        return new XmlDocumentReader(documentReader, settings);
-      
-      if (documentReader.DocumentFormat == SupportedDocumentTextReader.JsonFormat)
-        return new JsonReader(documentReader, settings);
+      switch (documentReader.DocumentFormat)
+      {
+        case SupportedDocumentTextReader.XmlFormat:
+          return new XmlDocumentReader(documentReader, settings);
 
-      return new CsvReader(documentReader, settings);
+        case SupportedDocumentTextReader.JsonFormat:
+          return new JsonReader(documentReader, settings);
+
+        case SupportedDocumentTextReader.CsvFormat:
+          return new CsvReader(documentReader, settings);
+
+        default:
+          throw new HttpException(HttpStatusCode.NotAcceptable);
+      }
     }
 
     #region Fábricas extras...
+
+    public static Reader CreateReader(Stream input)
+    {
+      return CreateReader(input, new SerializationSettings());
+    }
 
     public static Reader CreateReader(TextReader reader)
     {

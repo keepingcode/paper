@@ -32,21 +32,27 @@ namespace Paper.Media
 
     protected override void OnCommitAdd(ItemStore store, IEnumerable<string> items, int index = -1)
     {
-      items = ParseNames2(items).ToArray();
-      if (index > -1)
-      {
-        base.OnCommitAdd(store, items, index);
-      }
-      else
-      {
-        var camelItems = items.Where(item => char.IsLower(item.FirstOrDefault()));
-        var otherItems = items.Except(camelItems);
+      var groups =
+        from item in ParseNames2(items)
+        let isCamelCase = char.IsLower(item.FirstOrDefault())
+        group item by isCamelCase into g
+        select new { isCamelCase = g.Key, items = g };
 
-        camelItems = camelItems.Except(store);
-        otherItems = otherItems.Except(store);
+      var divider =
+         store.TakeWhile(item => !char.IsUpper(item.FirstOrDefault())).Select((item, i) => i + 1).LastOrDefault();
 
-        base.OnCommitAdd(store, camelItems, 0);
-        base.OnCommitAdd(store, otherItems, -1);
+      foreach (var group in groups)
+      {
+        if (group.isCamelCase)
+        {
+          var position = (index == -1 || index > divider) ? divider : index;
+          base.OnCommitAdd(store, group.items, position);
+        }
+        else
+        {
+          var position = (index == -1) ? -1 : index + divider;
+          base.OnCommitAdd(store, group.items, position);
+        }
       }
     }
 

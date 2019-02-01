@@ -118,26 +118,36 @@ namespace Toolset.Serialization.Json
                 var name = ValueConventions.CreateName("document", Settings, TextCase.CamelCase);
                 yield return new Node { Type = NodeType.DocumentStart, Value = name };
 
-                //
-                // a proxima propriedade deve ser tratada como o nome do objeto ou coleção
-                // exemplo:
-                //   {
-                //     "tipo": { ... }
-                //   }
-                //
+                if (Settings.Style == Style.Typed)
+                {
+                  //
+                  // a proxima propriedade deve ser tratada como o nome do objeto ou coleção
+                  // exemplo:
+                  //   {
+                  //     "tipo": { ... }
+                  //   }
+                  //
 
-                // nome da propriedade
-                ready = tokenEnumerator.MoveNext();
-                if (!ready) throw new SerializationException("Fim inesperado de arquivo.");
-                var propertyName = tokenEnumerator.Current;
-                
-                // dois pontos
-                ready = tokenEnumerator.MoveNext();
-                if (!ready) throw new SerializationException("Fim inesperado de arquivo.");
-                var delimiter = tokenEnumerator.Current;
-                if (delimiter != ":") throw new SerializationException("Token não esperado: " + delimiter);
+                  // nome da propriedade
+                  ready = tokenEnumerator.MoveNext();
+                  if (!ready) throw new SerializationException("Fim inesperado de arquivo.");
+                  var propertyName = tokenEnumerator.Current;
 
-                suggestedName = propertyName;
+                  // dois pontos
+                  ready = tokenEnumerator.MoveNext();
+                  if (!ready) throw new SerializationException("Fim inesperado de arquivo.");
+                  var delimiter = tokenEnumerator.Current;
+                  if (delimiter != ":") throw new SerializationException("Token não esperado: " + delimiter);
+
+                  suggestedName = propertyName;
+                }
+                else
+                {
+                  stack.Push(NodeType.Object);
+                  name = ValueConventions.CreateName(suggestedName ?? "object", Settings, TextCase.CamelCase);
+                  yield return new Node { Type = NodeType.ObjectStart, Value = name };
+                  suggestedName = null;
+                }
               }
               else
               {
@@ -181,6 +191,11 @@ namespace Toolset.Serialization.Json
               {
                 stack.Pop();
                 yield return new Node { Type = NodeType.PropertyEnd };
+              }
+              else if (type == NodeType.Document)
+              {
+                stack.Pop();
+                yield return new Node { Type = NodeType.DocumentEnd };
               }
 
               ready = tokenEnumerator.MoveNext();

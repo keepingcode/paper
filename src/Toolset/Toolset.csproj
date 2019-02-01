@@ -11,6 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Collections\IKeyValueCollection.cs" />
+    <Compile Remove="Collections\IKeyValueCollection`1.cs" />
     <Compile Remove="Data\Date.cs" />
     <Compile Remove="Data\IVar.cs" />
     <Compile Remove="Data\Range.cs" />

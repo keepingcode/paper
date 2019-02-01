@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,7 @@ using Toolset.Reflection;
 using Toolset.Serialization;
 using Toolset.Serialization.Csv;
 using Toolset.Serialization.Excel;
+using Toolset.Serialization.Graph;
 using Toolset.Serialization.Json;
 using Toolset.Serialization.Transformations;
 using Toolset.Serialization.Xml;
@@ -79,6 +81,8 @@ namespace Paper.Media.Serialization
       return null;
     }
 
+    #region Writers
+
     public void Serialize(Entity entity, Stream output, Encoding encoding)
     {
       using (var writer = CreateWriter(output, encoding))
@@ -93,55 +97,6 @@ namespace Paper.Media.Serialization
           WriteHypermedia(writer, entity);
         }
         writer.Flush();
-      }
-    }
-
-    private Writer CreateWriter(Stream output, Encoding encoding)
-    {
-      switch (MimeType)
-      {
-        case Xml:
-        case XmlSiren:
-          return new XmlDocumentWriter(output,
-            new XmlSerializationSettings
-            { 
-              Encoding = encoding,
-              KeepOpen = true,
-              Indent = options.Indent,
-              IndentChars = options.TextCase
-            }
-          );
-
-        case Csv:
-          return new CsvWriter(output,
-            new CsvSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true,
-              HasHeaders = true
-            }
-          );
-
-        case Excel:
-          return new ExcelWriter(output,
-            new ExcelSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true,
-              HasHeaders = true
-            }
-          );
-
-        default:
-          return new JsonWriter(output,
-            new JsonSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true,
-              Indent = options.Indent,
-              IndentChars = options.TextCase
-            }
-          );
       }
     }
 
@@ -316,9 +271,146 @@ namespace Paper.Media.Serialization
       writer.WriteObjectEnd();
     }
 
+    private Writer CreateWriter(Stream output, Encoding encoding)
+    {
+      switch (MimeType)
+      {
+        case Xml:
+        case XmlSiren:
+          return new XmlDocumentWriter(output,
+            new XmlSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true,
+              Indent = options.Indent,
+              IndentChars = options.TextCase
+            }
+          );
+
+        case Csv:
+          return new CsvWriter(output,
+            new CsvSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true,
+              HasHeaders = true
+            }
+          );
+
+        case Excel:
+          return new ExcelWriter(output,
+            new ExcelSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true,
+              HasHeaders = true
+            }
+          );
+
+        default:
+          return new JsonWriter(output,
+            new JsonSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true,
+              Indent = options.Indent,
+              IndentChars = options.TextCase
+            }
+          );
+      }
+    }
+
+    #endregion
+
+    #region Readers
+
     public Entity Deserialize(Stream input, Encoding encoding)
     {
+      Entity entity;
+      using (var reader = CreateReader(input, encoding))
+      {
+        var isPayloadOnly = !MimeType.Contains("siren");
+        if (isPayloadOnly)
+        {
+          entity = ReadPayload(reader);
+        }
+        else
+        {
+          entity = ReaderHypermedia(reader);
+        }
+      }
+      return entity;
+    }
+
+    private Entity ReadPayload(Reader reader)
+    {
+      using (var writer = new TraceWriter())
+      {
+        reader.CopyTo(writer);
+      }
       return null;
     }
+
+    private Entity ReaderHypermedia(Reader reader)
+    {
+      using (var writer = new GraphWriter2<Entity>())
+      {
+        reader.CopyTo(writer);
+
+        Debug.WriteLine(writer);
+      }
+      return null;
+    }
+
+    private Reader CreateReader(Stream input, Encoding encoding)
+    {
+      switch (MimeType)
+      {
+        case Json:
+        case JsonSiren:
+          return new JsonReader(input,
+            new JsonSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true
+            }
+          );
+
+        case Xml:
+        case XmlSiren:
+          return new XmlDocumentReader(input,
+            new XmlSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true
+            }
+          );
+
+        case Csv:
+          return new CsvReader(input,
+            new CsvSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true,
+              HasHeaders = true
+            }
+          );
+
+        case Excel:
+          throw new MediaException(HttpStatusCode.NotAcceptable);
+
+        default:
+          return Reader.CreateReader(input,
+            new CsvSerializationSettings
+            {
+              Encoding = encoding,
+              KeepOpen = true,
+              HasHeaders = true
+            }
+          );
+      }
+    }
+
+    #endregion
   }
 }

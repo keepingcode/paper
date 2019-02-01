@@ -7,6 +7,7 @@ using Toolset.Collections;
 using Toolset;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Collections;
 
 namespace Paper.Media
 {
@@ -132,5 +133,35 @@ namespace Paper.Media
     {
       return string.Join(",", this);
     }
+
+    //#region Implementação de IKeyValueCollection
+
+    //int IKeyValueCollection.Count { get; }
+
+    //ICollection<string> IKeyValueCollection<string, object>.Keys => this.PropertyNames;
+
+    //ICollection IKeyValueCollection.Keys => this.PropertyNames;
+
+    //object IKeyValueCollection<string, object>.this[string key]
+    //{
+    //  get => this[key]?.Value;
+    //  set => this[key].Value = value;
+    //}
+
+    //object IKeyValueCollection.this[object key]
+    //{
+    //  get => this[(string)key]?.Value;
+    //  set => this[(string)key].Value = value;
+    //}
+
+    //void IKeyValueCollection<string, object>.Add(string key, object value) => this.Add(key, value);
+
+    //void IKeyValueCollection.Add(object key, object value) => this.Add((string)key, value);
+
+    //void IKeyValueCollection<string, object>.Remove(string key) => this.Remove(key);
+
+    //void IKeyValueCollection.Remove(object key) => this.Remove((string)key);
+
+    //#endregion
   }
 }

@@ -28,7 +28,13 @@ namespace Toolset.Serialization
 
     public static SupportedDocumentTextReader Create(Stream stream)
     {
-      var reader = new StreamReader(stream, true);
+      var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
+      return Create(reader);
+    }
+
+    public static SupportedDocumentTextReader Create(Stream stream, Encoding encoding)
+    {
+      var reader = new StreamReader(stream, encoding ?? Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
       return Create(reader);
     }
 

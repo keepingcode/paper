@@ -12,20 +12,28 @@ namespace Paper.Media.Serialization
     /// </summary>
     /// <param name="serializer">Serializador de documento.</param>
     /// <param name="entity">Entidade a ser serializada.</param>
-    /// <param name="output">Stream de saída.</param>
-    public static void Serialize(this ISerializer serializer, Entity entity, Stream output)
+    /// <returns>O resultado da serializacao.</returns>
+    public static string Serialize(this ISerializer serializer, Entity entity)
     {
-      serializer.Serialize(entity, output, Encoding.UTF8);
+      using (var memory = new MemoryStream())
+      using (var reader = new StreamReader(memory))
+      {
+        serializer.Serialize(entity, memory, Encoding.UTF8);
+        memory.Position = 0;
+        var text = reader.ReadToEnd();
+        return text;
+      }
     }
 
     /// <summary>
     /// Serializa a entidade para a saída indicada.
     /// </summary>
     /// <param name="serializer">Serializador de documento.</param>
-    /// <param name="input">Stream de entrada.</param>
-    public static Entity Deserialize(this ISerializer serializer, Stream input)
+    /// <param name="entity">Entidade a ser serializada.</param>
+    /// <param name="output">Stream de saída.</param>
+    public static void Serialize(this ISerializer serializer, Entity entity, Stream output)
     {
-      return serializer.Deserialize(input, Encoding.UTF8);
+      serializer.Serialize(entity, output, Encoding.UTF8);
     }
 
     /// <summary>
@@ -51,6 +59,35 @@ namespace Paper.Media.Serialization
         }
         writer.Flush();
       }
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="serializer">Serializador de documento.</param>
+    /// <param name="input">O texto contendo a entidade serializada.</param>
+    public static Entity Deserialize(this ISerializer serializer, string input)
+    {
+      using (var memory = new MemoryStream())
+      using (var writer = new StreamWriter(memory, Encoding.UTF8))
+      {
+        writer.Write(input);
+        writer.Flush();
+        memory.Position = 0;
+
+        var entity = serializer.Deserialize(memory, Encoding.UTF8);
+        return entity;
+      }
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="serializer">Serializador de documento.</param>
+    /// <param name="input">Stream de entrada.</param>
+    public static Entity Deserialize(this ISerializer serializer, Stream input)
+    {
+      return serializer.Deserialize(input, Encoding.UTF8);
     }
 
     /// <summary>

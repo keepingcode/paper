@@ -74,7 +74,7 @@ namespace Toolset.Reflection
       var attr = member.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
       return attr;
     }
-    
+
     public static T _GetAttribute<T>(this object typeOrObject, string propertyOrMethodName)
       where T : Attribute
     {
@@ -232,9 +232,6 @@ namespace Toolset.Reflection
         return;
       }
 
-
-
-
       /// TODO: REVER
       //// Tratamento especial para o tipo Any do Toolset.
       //if (typeof(IVar).IsAssignableFrom(property.PropertyType))
@@ -244,11 +241,6 @@ namespace Toolset.Reflection
       //    value = Activator.CreateInstance(property.PropertyType, value);
       //  }
       //}
-
-
-
-
-
 
       if (property.PropertyType.IsAssignableFrom(value.GetType()))
       {
@@ -307,8 +299,11 @@ namespace Toolset.Reflection
       var type = target.GetType();
       var argTypes = args.Select(x => x?.GetType() ?? typeof(object)).ToArray();
       var method = LocateMethod(type, methodName, CaseInsensitiveFlags, argTypes, leniente: true);
+
       if (method == null)
-        return null;
+        throw new FormatException(
+          $"Não existe uma versão do método {type.FullName.Split(',').First()}.{methodName} compatível com os parâmetros indicados compatível: {string.Join(", ", argTypes.Select(x => x.FullName))}"
+        );
 
       args = args.Take(method.GetParameters().Length).ToArray();
       var result = method.Invoke(target, args);
