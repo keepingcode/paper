@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using Paper.Media.Utilities;
 using Toolset;
@@ -34,6 +35,7 @@ namespace Paper.Media.Serialization
     public static string[] SupportedMimeTypes { get; } = { JsonSiren, Json, XmlSiren, Xml, Csv, Excel };
 
     private readonly SerializationOptions options;
+    public readonly string mimeType;
 
     public MediaSerializer()
       : this(null, null)
@@ -47,14 +49,10 @@ namespace Paper.Media.Serialization
 
     public MediaSerializer(string mimeType, SerializationOptions options)
     {
-      var validMimeType = ParseFormat(mimeType)
-        ?? throw new MediaException(HttpStatusCode.NotAcceptable, "Formato não suportado: " + mimeType);
-      
-      this.MimeType = validMimeType;
+      var validMimeType = ParseFormat(mimeType);
+      this.mimeType = validMimeType;
       this.options = options ?? new SerializationOptions();
     }
-
-    public string MimeType { get; }
 
     public static bool IsSupportedFormat(string mimeType)
     {
@@ -64,7 +62,7 @@ namespace Paper.Media.Serialization
     public static string ParseFormat(string mimeType)
     {
       if (string.IsNullOrEmpty(mimeType))
-        return JsonSiren;
+        return null;
       if (mimeType.Contains("siren") && mimeType.Contains("xml"))
         return XmlSiren;
       if (mimeType.Contains("siren"))
@@ -87,120 +85,25 @@ namespace Paper.Media.Serialization
     {
       using (var writer = CreateWriter(output, encoding))
       {
-        var isPayloadOnly = !MimeType.Contains("siren");
-        if (isPayloadOnly)
+        writer.WriteDocumentStart(entity.Title ?? entity.GetType().Name);
+        if (entity != null)
         {
-          WritePayload(writer, entity);
+          var isPayloadOnly = !mimeType.Contains("siren");
+          if (isPayloadOnly)
+          {
+            Write(writer, Payload.FromEntity(entity));
+          }
+          else
+          {
+            Write(writer, entity);
+          }
         }
-        else
-        {
-          WriteHypermedia(writer, entity);
-        }
+        writer.WriteDocumentEnd();
         writer.Flush();
       }
     }
 
-    private void WritePayload(Writer writer, Entity entity)
-    {
-      writer.WriteDocumentStart(entity.Title ?? "Payload");
-      writer.WriteObjectStart("Payload");
-
-      WritePayloadData(writer, entity);
-      WritePayloadRows(writer, entity);
-
-      writer.WriteObjectEnd();
-      writer.WriteDocumentEnd();
-    }
-
-    private void WritePayloadData(Writer writer, Entity entity)
-    {
-      var hasData = entity.Class?.Contains(ClassNames.Data) == true;
-      if (!hasData)
-        return;
-      
-      var type = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First()));
-
-      writer.WritePropertyStart(type ?? "Data");
-      writer.WriteCollectionStart(type ?? entity.Title);
-
-      WritePayloadProperties(writer, entity);
-
-      writer.WriteCollectionEnd();
-      writer.WritePropertyEnd();
-    }
-
-    private void WritePayloadRows(Writer writer, Entity entity)
-    {
-      var hasRows = entity.Entities?.Any(e => e.Class.Contains(ClassNames.Data)) == true;
-      if (!hasRows)
-        return;
-
-      var groups =
-        from child in entity.Entities.Where(e => e.Class.Contains(ClassNames.Data))
-        let type = child.Class?.FirstOrDefault(x => char.IsUpper(x.First()))
-        group child by type into g
-        select new
-        {
-          type = g.Key,
-          rows = g
-        };
-
-      foreach (var group in groups)
-      {
-        var type = group.type;
-        var rows = group.rows;
-
-        writer.WritePropertyStart(type ?? "Rows");
-        writer.WriteCollectionStart(type ?? entity.Title);
-
-        foreach (var row in rows)
-        {
-          WritePayloadProperties(writer, row);
-        }
-
-        writer.WriteCollectionEnd();
-        writer.WritePropertyEnd();
-      }
-    }
-
-    private void WritePayloadProperties(Writer writer, Entity entity)
-    {
-      if (entity.Properties is PropertyCollection properties)
-      {
-        writer.WriteObjectStart("Row");
-
-        if (!(writer is ExcelWriter))
-        {
-          var type = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First()));
-          if (type != null)
-          {
-            writer.WriteProperty("@Type", type);
-          }
-        }
-
-        foreach (var property in properties)
-        {
-          if (!property.Name.StartsWith("_"))
-          {
-            Write(writer, property);
-          }
-        }
-
-        writer.WriteObjectEnd();
-      }
-    }
-
-    private void WriteHypermedia(Writer writer, Entity entity)
-    {
-      writer.WriteDocumentStart(entity.Title ?? entity.GetType().Name);
-      if (entity != null)
-      {
-        Write(writer, entity);
-      }
-      writer.WriteDocumentEnd();
-    }
-
-    private void Write(Writer writer, object element)
+    private void Write(Writer writer, object element, string elementName = null)
     {
       if (element == null)
       {
@@ -229,7 +132,7 @@ namespace Paper.Media.Serialization
 
       if (element is PropertyCollection properties)
       {
-        writer.WriteObjectStart(element.GetType().Name);
+        writer.WriteObjectStart(elementName ?? element.GetType().Name);
         foreach (var item in properties)
         {
           Write(writer, item);
@@ -248,10 +151,13 @@ namespace Paper.Media.Serialization
 
       if (element is IEnumerable list)
       {
+        var attr = element._GetAttribute<CollectionDataContractAttribute>();
+        var suggestedName = attr?.ItemName;
+
         writer.WriteCollectionStart(element.GetType().Name);
         foreach (var item in list)
         {
-          Write(writer, item);
+          Write(writer, item, suggestedName);
         }
         writer.WriteCollectionEnd();
         return;
@@ -273,7 +179,7 @@ namespace Paper.Media.Serialization
 
     private Writer CreateWriter(Stream output, Encoding encoding)
     {
-      switch (MimeType)
+      switch (mimeType)
       {
         case Xml:
         case XmlSiren:
@@ -326,88 +232,103 @@ namespace Paper.Media.Serialization
 
     public Entity Deserialize(Stream input, Encoding encoding)
     {
-      Entity entity;
-      using (var reader = CreateReader(input, encoding))
+      bool forceHypermedia;
+      using (var reader = CreateReader(input, encoding, out forceHypermedia))
       {
-        var isPayloadOnly = !MimeType.Contains("siren");
-        if (isPayloadOnly)
+        GraphWriter graphWriter = null;
+
+        using (var writer = new DelayedWriter())
         {
-          entity = ReadPayload(reader);
+          writer.Intercept += (o, e) =>
+          {
+            if (e.Node.Type.HasFlag(NodeType.Property))
+            {
+              var isPayload =
+                   "data".EqualsIgnoreCase(e.Node.Value as string)
+                || "rows".EqualsIgnoreCase(e.Node.Value as string);
+
+              graphWriter = isPayload ? new GraphWriter(typeof(Payload)) : new GraphWriter(typeof(Entity));
+              writer.SetWriter(graphWriter);
+            }
+          };
+
+          reader.CopyTo(writer);
         }
-        else
-        {
-          entity = ReaderHypermedia(reader);
-        }
+
+        var graph = graphWriter?.Graphs.Cast<object>().FirstOrDefault();
+        var entity = graph is Payload payload ? payload.ToEntity() : (Entity)graph;
+        return entity;
       }
-      return entity;
     }
 
-    private Entity ReadPayload(Reader reader)
+    private T Read<T>(Reader reader)
+      where T : class, new()
     {
-      using (var writer = new TraceWriter())
+      using (var writer = new GraphWriter<T>())
       {
         reader.CopyTo(writer);
+        return writer.Graphs.FirstOrDefault();
       }
-      return null;
     }
 
-    private Entity ReaderHypermedia(Reader reader)
+    private Reader CreateReader(Stream input, Encoding encoding, out bool forceHypermedia)
     {
-      using (var writer = new GraphWriter2<Entity>())
-      {
-        reader.CopyTo(writer);
+      forceHypermedia = false;
 
-        Debug.WriteLine(writer);
-      }
-      return null;
-    }
-
-    private Reader CreateReader(Stream input, Encoding encoding)
-    {
-      switch (MimeType)
+      switch (mimeType)
       {
         case Json:
         case JsonSiren:
-          return new JsonReader(input,
-            new JsonSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true
-            }
-          );
+          {
+            return new JsonReader(input,
+              new JsonSerializationSettings
+              {
+                Encoding = encoding,
+                KeepOpen = true
+              }
+            );
+          }
 
         case Xml:
         case XmlSiren:
-          return new XmlDocumentReader(input,
-            new XmlSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true
-            }
-          );
+          {
+            return new XmlDocumentReader(input,
+              new XmlSerializationSettings
+              {
+                Encoding = encoding,
+                KeepOpen = true
+              }
+            );
+          }
 
         case Csv:
-          return new CsvReader(input,
-            new CsvSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true,
-              HasHeaders = true
-            }
-          );
+          {
+            return new CsvReader(input,
+              new CsvSerializationSettings
+              {
+                Encoding = encoding,
+                KeepOpen = true,
+                HasHeaders = true
+              }
+            );
+          }
 
         case Excel:
-          throw new MediaException(HttpStatusCode.NotAcceptable);
+          {
+            throw new MediaException(HttpStatusCode.NotAcceptable);
+          }
 
         default:
-          return Reader.CreateReader(input,
-            new CsvSerializationSettings
-            {
-              Encoding = encoding,
-              KeepOpen = true,
-              HasHeaders = true
-            }
-          );
+          {
+            return Reader.CreateReader(input,
+              new CsvSerializationSettings
+              {
+                Encoding = encoding,
+                KeepOpen = true,
+                HasHeaders = true
+              }
+            );
+          }
       }
     }
 

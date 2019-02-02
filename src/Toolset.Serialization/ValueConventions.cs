@@ -151,7 +151,8 @@ namespace Toolset.Serialization
         text = text.Substring(1, text.Length - 2);
 
       var textCase = (settings.TextCase == TextCase.Default) ? defaultCase : settings.TextCase;
-      return text.ChangeCase(textCase);
+      text = $"{(text.StartsWith("@") ? "@" : "")}{text.ChangeCase(textCase)}";
+      return text;
     }
 
   }

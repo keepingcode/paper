@@ -1,291 +1,294 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
+using Toolset.Collections;
 
 namespace Toolset.Serialization.Xml
 {
-  public sealed class XmlDocumentReader : Reader
+  public class XmlDocumentReader : Reader, sArray
   {
-    private readonly System.Xml.XmlReader reader;
-    private readonly Stack<NodeType> stack;
+    private readonly XmlReader reader;
     private readonly IEnumerator<Node> enumerator;
 
-    private Node currentNode;
+    private Scope scope;
+
+    public override Node Current => enumerator.Current;
 
     #region Construtores extras ...
 
     public XmlDocumentReader(TextReader textReader)
-      : this(textReader, (SerializationSettings)null)
+      : this(textReader, GetXmlSerializationSettings(null))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
-    public XmlDocumentReader(System.Xml.XmlReader xmlReader)
-      : this(xmlReader, (SerializationSettings)null)
+    public XmlDocumentReader(TextReader textReader, SerializationSettings settings)
+      : this((XmlReader)XmlTextReader.Create(textReader), GetXmlSerializationSettings(settings))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
     public XmlDocumentReader(Stream textStream)
-      : this(new StreamReader(textStream), (SerializationSettings)null)
+      : this(new StreamReader(textStream), GetXmlSerializationSettings(null))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
     public XmlDocumentReader(Stream textStream, SerializationSettings settings)
-      : this(new StreamReader(textStream), settings)
+      : this(new StreamReader(textStream), GetXmlSerializationSettings(settings))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
     public XmlDocumentReader(string filename)
-      : this(File.OpenRead(filename), (SerializationSettings)null)
+      : this(new StreamReader(filename), GetXmlSerializationSettings(null))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
     public XmlDocumentReader(string filename, SerializationSettings settings)
-      : this(File.OpenRead(filename), settings)
+      : this(new StreamReader(filename), GetXmlSerializationSettings(settings))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
-    #endregion 
+    #endregion
 
-    public XmlDocumentReader(TextReader reader, SerializationSettings settings)
-      : base(settings)
+    public XmlDocumentReader(XmlReader xmlReader)
+      : this(xmlReader, GetXmlSerializationSettings(null))
     {
-      this.reader = System.Xml.XmlReader.Create(reader);
-      this.stack = new Stack<NodeType>();
-      this.enumerator = EnumerateNodes().GetEnumerator();
-      base.IsValid = true;
+      // nada a fazer aqui. use o outro construtor.
     }
 
-    public XmlDocumentReader(System.Xml.XmlReader reader, SerializationSettings settings)
+    public XmlDocumentReader(XmlReader reader, XmlSerializationSettings settings)
       : base(settings)
     {
       this.reader = reader;
-      this.stack = new Stack<NodeType>();
-      this.enumerator = EnumerateNodes().GetEnumerator();
-      base.IsValid = true;
+      this.enumerator = EmitNodes().NonNull().GetEnumerator();
+      this.scope = new Scope { Type = NodeType.Unknown };
     }
 
-    public new XmlSerializationSettings Settings
+    private static XmlSerializationSettings GetXmlSerializationSettings(SerializationSettings settings)
     {
-      get { return base.Settings.As<XmlSerializationSettings>(); }
+      return settings is XmlSerializationSettings
+        ? (XmlSerializationSettings)settings : new XmlSerializationSettings(settings);
     }
 
-    public override Node Current
-    {
-      get { return currentNode; }
-    }
+    public new XmlSerializationSettings Settings => (XmlSerializationSettings)base.Settings;
+
+    private int depth;
 
     protected override bool DoRead()
     {
-      var ready = this.enumerator.MoveNext();
-      currentNode = ready ? this.enumerator.Current : null;
-      return ready;
+      return enumerator.MoveNext();
     }
 
-    private IEnumerable<Node> EnumerateNodes()
+    private IEnumerable<Node> EmitNodes()
     {
-      if (!Settings.IsFragment)
+      var ok = reader.Read();
+      if (!ok)
+        yield break;
+
+      foreach (var node in EmitNodes(NodeType.DocumentStart)) yield return Settings.IsFragment ? null : node;
+
+      do
       {
-        yield return new Node { Type = NodeType.DocumentStart };
-      }
-
-      var nodes = EmitNodes(reader);
-      foreach (var node in nodes)
-      {
-        yield return node;
-      }
-
-      if (!Settings.IsFragment)
-      {
-        yield return new Node { Type = NodeType.DocumentEnd };
-      }
-    }
-
-    private IEnumerable<Node> EmitNodes(XmlReader reader)
-    {
-      // Propriedade sem EndElement é considerada nula: <tag/>
-      // Propriedade com EndElement e sem conteúdo é considerada vazia: <tag></tag>
-      // Tag nula é identificada por IsEmptyElement.
-      // Tag vazia é identificada por esta variável, que estoca o último tipo de nodo encontrdo.
-      // Se este último nodo foi um abre propriedade e estamos fechando esta propriedade então
-      // não vimos valor algum.
-      Node emitted = null;
-
-      while (reader.Read())
-      {
-
-        var nodeType = reader.NodeType;
-        var nodeName = reader.Name;
-        var nodeValue = reader.Value;
-        var isEmptyElement = reader.IsEmptyElement;
-
-        switch (nodeType)
+        switch (reader.NodeType)
         {
-          case XmlNodeType.Element:
-            {
-              var isCollection = IsCollection();
-
-              var parentKind = stack.FirstOrDefault();
-              var parentIsProperty = (parentKind == NodeType.Property);
-              if (parentIsProperty)
-              {
-                var name = "Object";
-                var conventionName = ValueConventions.CreateName(name, Settings, TextCase.KeepOriginal);
-                stack.Push(NodeType.Object);
-                yield return emitted = new Node { Type = NodeType.ObjectStart, Value = conventionName };
-
-                parentKind = stack.FirstOrDefault();
-              }
-
-              var isProperty = (parentKind == NodeType.Object);
-              if (isProperty)
-              {
-                var name = nodeName ?? "Property";
-                var conventionName = ValueConventions.CreateName(name, Settings, TextCase.KeepOriginal);
-
-                yield return emitted = new Node { Type = NodeType.PropertyStart, Value = conventionName };
-
-                if (reader.IsEmptyElement)
-                {
-                  // tags vazias não tem um EndElement correspondente, como em: <tag/>
-                  // por isto vamos emitir um aqui e com um valor padrao.
-                  if (isCollection)
-                  {
-                    yield return emitted = new Node { Type = NodeType.CollectionStart, Value = "Collection" };
-                    yield return emitted = new Node { Type = NodeType.CollectionEnd };
-
-                    // Como estamos fechando a coleção para forçar uma coleção vazia como
-                    // valor padrão vamos também abortar a interpretação da coleção na continuidade.
-                    // A propriedade foi detectada em uma tag vazia como <Xml IsArray="true"/> e
-                    // portanto não há realmente coleção para interpretar
-                    isCollection = false;
-                  }
-                  else
-                  {
-                    yield return emitted = new Node { Type = NodeType.Value, Value = null };
-                  }
-
-                  yield return emitted = new Node { Type = NodeType.PropertyEnd };
-                }
-                else
-                {
-                  stack.Push(NodeType.Property);
-                }
-              }
-
-              if (isCollection)
-              {
-                var name = nodeName ?? "Collection";
-                var conventionName = ValueConventions.CreateName(name, Settings, TextCase.KeepOriginal);
-                stack.Push(NodeType.Collection);
-                yield return emitted = new Node { Type = NodeType.CollectionStart, Value = conventionName };
-                if (reader.IsEmptyElement)
-                {
-                  yield return emitted = new Node { Type = NodeType.CollectionEnd };
-                }
-              }
-
-              else if (!isProperty && !isCollection)
-              {
-                var name = nodeName ?? "Object";
-                var conventionName = ValueConventions.CreateName(name, Settings, TextCase.KeepOriginal);
-                stack.Push(NodeType.Object);
-                yield return emitted = new Node { Type = NodeType.ObjectStart, Value = conventionName };
-                if (reader.IsEmptyElement)
-                {
-                  yield return emitted = new Node { Type = NodeType.ObjectEnd };
-                }
-              }
-
-              break;
-            }
-
-          case XmlNodeType.EndElement:
-            {
-              var kind = stack.Pop();
-              var parentKind = stack.FirstOrDefault();
-
-              if (kind == NodeType.Property)
-              {
-                // se o nodo emitido anteriormente tiver sido abre propriedade então não vimos
-                // um valor e devemos tratar a propriedade como vazia
-                if (emitted.Type == NodeType.PropertyStart)
-                  yield return emitted = new Node { Type = NodeType.Value, Value = string.Empty };
-              }
-
-              yield return emitted = new Node { Type = kind | NodeType.End };
-
-              if (kind == NodeType.Collection)
-              {
-                var isProperty = (parentKind == NodeType.Property);
-                if (isProperty)
-                {
-                  kind = stack.Pop();
-                  yield return emitted = new Node { Type = kind | NodeType.End };
-                }
-              }
-              else if (parentKind == NodeType.Property)
-              {
-                kind = stack.Pop();
-                yield return emitted = new Node { Type = kind | NodeType.End };
-              }
-
-              break;
-            }
-
-          case XmlNodeType.CDATA:
           case XmlNodeType.Text:
             {
-              var value = ValueConventions.CreateValue(nodeValue, Settings);
-              yield return emitted = new Node { Type = NodeType.Value, Value = value };
+              foreach (var node in EmitNodes(NodeType.Value, value: reader.Value)) yield return node;
+              break;
+            }
+          case XmlNodeType.Element:
+            {
+              switch (scope.Type)
+              {
+                case NodeType.Document:
+                  {
+                    foreach (var node in EmitNodes(NodeType.ObjectStart)) yield return node;
+                    break;
+                  }
+                case NodeType.Collection:
+                case NodeType.Object:
+                  {
+                    if (scope.Type == NodeType.Object)
+                    {
+                      foreach (var node in EmitNodes(NodeType.PropertyStart, fallback: true)) yield return node;
+                    }
+
+                    if (IsArray())
+                    {
+                      foreach (var node in EmitNodes(NodeType.CollectionStart)) yield return node;
+                    }
+                    else if (reader.HasAttributes)
+                    {
+                      foreach (var node in EmitNodes(NodeType.ObjectStart)) yield return node;
+
+                      for (int i = 0; i < reader.AttributeCount; i++)
+                      {
+                        reader.MoveToAttribute(i);
+
+                        var name = $"@{reader.Name}";
+                        var value = reader.Value;
+
+                        foreach (var node in EmitNodes(NodeType.PropertyStart, name: name)) yield return node;
+                        foreach (var node in EmitNodes(NodeType.Value, value: value)) yield return node;
+                        foreach (var node in EmitNodes(NodeType.PropertyEnd)) yield return node;
+                      }
+
+                      reader.MoveToElement();
+                    }
+                    else if (reader.IsEmptyElement)
+                    {
+                      foreach (var node in EmitNodes(NodeType.Value, value: null)) yield return node;
+
+                      if (scope.Type == NodeType.Collection)
+                      {
+                        break;
+                      }
+                    }
+                    else
+                    {
+                      foreach (var node in EmitNodes(NodeType.ObjectStart, imaginary: true)) yield return node;
+                    }
+
+                    if (reader.IsEmptyElement)
+                    {
+                      foreach (var node in EmitNodes(scope.Type | NodeType.End)) yield return node;
+                    }
+                    break;
+                  }
+                //case NodeType.Collection:
+                //  {
+                //    if (IsArray())
+                //    {
+                //      foreach (var node in EmitNodes(NodeType.CollectionStart)) yield return node;
+                //      if (reader.IsEmptyElement)
+                //      {
+                //        foreach (var node in EmitNodes(NodeType.CollectionEnd)) yield return node;
+                //      }
+                //    }
+                //    else if (reader.IsEmptyElement && !reader.HasAttributes)
+                //    {
+                //      foreach (var node in EmitNodes(NodeType.Value, value: null)) yield return node;
+                //    }
+                //    else
+                //    {
+                //      foreach (var node in EmitNodes(NodeType.ObjectStart, imaginary: true)) yield return node;
+                //    }
+                //    break;
+                //  }
+              }
+              break;
+            }
+          case XmlNodeType.EndElement:
+            {
+              foreach (var node in EmitNodes(scope.Type | NodeType.End)) yield return node;
               break;
             }
         }
+      } while (reader.Read());
 
-      } // while (reader.Read())
+      foreach (var node in EmitNodes(NodeType.DocumentEnd)) yield return Settings.IsFragment ? null : node;
     }
 
-    private bool IsCollection()
+    private IEnumerable<Node> EmitNodes(NodeType type, string name = null, string value = null, bool fallback = false, bool imaginary = false)
     {
-      var isCollection = false;
-
-      if (reader.HasAttributes)
+      if (scope.Imaginary)
       {
-        var ok = reader.MoveToFirstAttribute();
-        while (ok)
+        scope.Imaginary = false;
+        if (type == NodeType.Value)
         {
-          var name = reader.Name;
-          var attName = name.ChangeCase(TextCase.PascalCase);
-          if (attName.Equals("IsArray"))
-          {
-            isCollection = (reader.Value == "true") || (reader.Value == "1");
-            break;
-          }
-          ok = reader.MoveToNextAttribute();
+          scope.Discarded = true;
+        }
+        else if (type == NodeType.Value || type.HasFlag(NodeType.End))
+        {
+          scope.Discarded = true;
+          yield return new Node(NodeType.Value, null);
+        }
+        else
+        {
+          yield return new Node(scope.Type | NodeType.Start, scope.Name);
         }
       }
 
+      if (type.HasFlag(NodeType.Start))
+      {
+        scope = new Scope
+        {
+          Parent = scope,
+          Name = name ?? reader.Name,
+          Type = type & ~NodeType.Start,
+          Imaginary = imaginary,
+          Fallback = fallback
+        };
+        if (!scope.Imaginary)
+        {
+          yield return new Node(scope.Type | NodeType.Start, scope.Name);
+        }
+      }
+      else if (type.HasFlag(NodeType.End))
+      {
+        if (!scope.Discarded)
+        {
+          yield return new Node(type);
+        }
+        scope = scope.Parent;
+
+        while (scope.Fallback)
+        {
+          yield return new Node(scope.Type | NodeType.End);
+          scope = scope.Parent;
+        }
+      }
+      else
+      {
+        yield return new Node(type, value?.Trim());
+      }
+    }
+
+    private bool IsArray()
+    {
+      bool isArray = false;
+      for (int i = 0; i < reader.AttributeCount; i++)
+      {
+        reader.MoveToAttribute(i);
+        if (reader.Name.EqualsIgnoreCase("IsArray"))
+        {
+          var value = reader.Value;
+          isArray = Change.To<bool>(value);
+          break;
+        }
+      }
       reader.MoveToElement();
-      return isCollection;
+      return isArray;
     }
 
     public override void Close()
     {
       if (!Settings.KeepOpen)
       {
-        if (reader != null)
-        {
-          reader.Close();
-        }
+        reader?.Close();
       }
+    }
+
+    private class Scope
+    {
+      public Scope Parent { get; set; }
+
+      public NodeType Type { get; set; }
+
+      public string Name { get; set; }
+
+      public bool Imaginary { get; set; }
+
+      public bool Fallback { get; set; }
+
+      public bool Discarded { get; set; }
     }
   }
 }

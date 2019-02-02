@@ -10,7 +10,7 @@ namespace Toolset.Serialization.Xml
 {
   public sealed class XmlDocumentWriter : Writer
   {
-    private readonly System.Xml.XmlWriter writer;
+    private readonly XmlWriter writer;
     private readonly Stack<NodeType> stack;
 
     #region Construtores extras ...
@@ -38,7 +38,7 @@ namespace Toolset.Serialization.Xml
     public XmlDocumentWriter(Stream textStream, SerializationSettings settings)
       : base(settings)
     {
-      this.writer = System.Xml.XmlWriter.Create(textStream,
+      this.writer = XmlWriter.Create(textStream,
         new XmlWriterSettings
         {
           Indent = this.Settings.Indent,
@@ -54,7 +54,7 @@ namespace Toolset.Serialization.Xml
     public XmlDocumentWriter(TextWriter textWriter, SerializationSettings settings)
       : base(settings)
     {
-      this.writer = System.Xml.XmlWriter.Create(textWriter,
+      this.writer = XmlWriter.Create(textWriter,
         new XmlWriterSettings
         {
           Indent = this.Settings.Indent,
@@ -162,7 +162,7 @@ namespace Toolset.Serialization.Xml
             var isAttribute = name.StartsWith("@");
             if (isAttribute)
             {
-              writer.WriteStartAttribute(tagName);
+              writer.WriteStartAttribute(tagName.Substring(1));
               stack.Push(NodeType.Property | (NodeType)0x4000);
             }
             else

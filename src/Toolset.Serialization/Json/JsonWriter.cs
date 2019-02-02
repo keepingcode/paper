@@ -225,11 +225,6 @@ namespace Toolset.Serialization.Json
     {
       var propertyName = ValueConventions.CreateName(name, Settings, TextCase.CamelCase);
 
-      if (name.StartsWith("@"))
-      {
-        propertyName = "@" + propertyName;
-      }
-
       Indent();
       writer.Write("\"");
       writer.Write(propertyName);

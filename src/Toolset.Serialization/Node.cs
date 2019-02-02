@@ -17,8 +17,25 @@ namespace Toolset.Serialization
     private NodeType RawTypeMask =
       NodeType.Document | NodeType.Collection | NodeType.Object | NodeType.Property | NodeType.Value;
 
+    public Node()
+    {
+    }
+
+    public Node(NodeType type)
+    {
+      this.Type = type;
+    }
+
+    public Node(NodeType type, object value)
+    {
+      this.Type = type;
+      this.Value = value;
+    }
+
     public NodeType RawType { get { return Type & RawTypeMask; } }
+
     public NodeType Type { get; set; }
+
     public object Value { get; set; }
 
     public Node Clone()

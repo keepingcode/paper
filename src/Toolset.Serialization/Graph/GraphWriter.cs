@@ -9,32 +9,33 @@ using Toolset.Reflection;
 
 namespace Toolset.Serialization.Graph
 {
-  public class GraphWriter2<T> : GraphWriter
-    where T : class
+  public class GraphWriter<T> : GraphWriter
+    where T : class, new()
   {
-    public GraphWriter2()
+    public GraphWriter()
       : base(typeof(T))
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
-    public GraphWriter2(SerializationSettings settings)
+    public GraphWriter(SerializationSettings settings)
       : base(typeof(T), settings)
     {
       // nada a fazer aqui. use o outro construtor.
     }
 
-    public GraphWriter2(IEnumerable<Type> knownTypes, SerializationSettings settings)
+    public GraphWriter(IEnumerable<Type> knownTypes, SerializationSettings settings)
       : base(typeof(T), knownTypes, settings)
     {
     }
+
+    public new ICollection<T> Graphs => (ICollection<T>)base.Graphs;
   }
 
   public class GraphWriter : Writer
   {
-    private ArrayList graphs = new ArrayList();
-    private Stack<Scope> scopes = new Stack<Scope>();
-    private Stack<NodeType> depth = new Stack<NodeType>();
+    private readonly IList graphs;
+    private readonly Stack<Scope> scopes;
 
     public GraphWriter(Type type)
       : this(type, null, new SerializationSettings())
@@ -52,6 +53,8 @@ namespace Toolset.Serialization.Graph
       : base(settings is GraphSerializationSettings ? (GraphSerializationSettings)settings : new GraphSerializationSettings(settings))
     {
       this.GraphType = type;
+      this.graphs = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
+      this.scopes = new Stack<Scope>();
     }
 
     public Type GraphType { get; }
@@ -183,7 +186,7 @@ namespace Toolset.Serialization.Graph
           return;
         }
 
-        var property = properties.Last();
+        var realName = properties.Last();
 
         if (adders != null)
         {
@@ -192,7 +195,7 @@ namespace Toolset.Serialization.Graph
           {
             var keyType = adder.GetParameters().First().ParameterType;
             var valType = adder.GetParameters().Last().ParameterType;
-            if (Change.TryTo(property, keyType, out key) && Change.TryTo(value, valType, out val))
+            if (Change.TryTo(realName, keyType, out key) && Change.TryTo(value, valType, out val))
             {
               Host._Call("Add", key, val);
               return;
@@ -200,7 +203,8 @@ namespace Toolset.Serialization.Graph
           }
         }
 
-        Host._Set(property, value);
+        var propName = realName.Replace("@", "");
+        Host._Set(propName, value);
       }
 
       public object NewValue()

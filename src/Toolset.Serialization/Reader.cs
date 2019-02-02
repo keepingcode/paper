@@ -135,16 +135,16 @@ namespace Toolset.Serialization
 
     public static Reader CreateReader(Stream input, SerializationSettings settings)
     {
-      var documentReader = SupportedDocumentTextReader.Create(input, settings.Encoding);
+      var documentReader = FormattedTextReader.Create(input, settings.Encoding);
       switch (documentReader.DocumentFormat)
       {
-        case SupportedDocumentTextReader.XmlFormat:
+        case FormattedTextReader.XmlFormat:
           return new XmlDocumentReader(documentReader, settings);
 
-        case SupportedDocumentTextReader.JsonFormat:
+        case FormattedTextReader.JsonFormat:
           return new JsonReader(documentReader, settings);
 
-        case SupportedDocumentTextReader.CsvFormat:
+        case FormattedTextReader.CsvFormat:
           return new CsvReader(documentReader, settings);
 
         default:
@@ -154,16 +154,16 @@ namespace Toolset.Serialization
 
     public static Reader CreateReader(TextReader reader, SerializationSettings settings)
     {
-      var documentReader = SupportedDocumentTextReader.Create(reader);
+      var documentReader = FormattedTextReader.CreateReader(reader);
       switch (documentReader.DocumentFormat)
       {
-        case SupportedDocumentTextReader.XmlFormat:
+        case FormattedTextReader.XmlFormat:
           return new XmlDocumentReader(documentReader, settings);
 
-        case SupportedDocumentTextReader.JsonFormat:
+        case FormattedTextReader.JsonFormat:
           return new JsonReader(documentReader, settings);
 
-        case SupportedDocumentTextReader.CsvFormat:
+        case FormattedTextReader.CsvFormat:
           return new CsvReader(documentReader, settings);
 
         default:
