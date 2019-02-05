@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using Paper.Media.Design;
+using Toolset;
 using Toolset.Collections;
 
 namespace Paper.Media
@@ -17,6 +18,10 @@ namespace Paper.Media
     [DataMember]
     public RowCollection Rows { get; set; }
 
+    // TODO: Ainda nao suportado.
+    [DataMember]
+    public PropertyCollection Form { get; set; }
+
     public Entity ToEntity()
     {
       var entity = new Entity();
@@ -26,7 +31,7 @@ namespace Paper.Media
         var @class = Data["@class"];
         var properties = Data.Except(@class);
         entity.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
-        entity.Properties = new PropertyCollection(properties);
+        entity.AddProperties(properties);
       }
 
       if (Rows != null)
@@ -38,10 +43,18 @@ namespace Paper.Media
 
           var child = new Entity();
           child.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
-          child.Properties = new PropertyCollection(properties);
+          child.AddProperties(properties);
 
           entity.AddEntity(child);
         }
+      }
+
+      if (Form != null)
+      {
+        var @action = Form["@action"];
+        var properties = Form.Except(@action);
+        entity.AddClass(ClassNames.Form);
+        entity.AddProperties(properties);
       }
 
       return entity;
@@ -52,21 +65,23 @@ namespace Paper.Media
       var payload = new Payload();
 
       var hasData = entity.Class?.Contains(ClassNames.Data) == true;
-      if (hasData && entity.Properties is PropertyCollection properties)
+      if (hasData)
       {
         payload.Data = new PropertyCollection();
-
-        var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "data";
-        if (@class != null)
+        if (entity.Properties is PropertyCollection properties)
         {
-          payload.Data.Add(new Property("@class", @class));
-        }
-
-        foreach (var property in properties)
-        {
-          if (!property.Name.StartsWith("_"))
+          var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "data";
+          if (@class != null)
           {
-            payload.Data.Add(new Property(property.Name, property.Value));
+            payload.Data.Add(new Property("@class", @class));
+          }
+
+          foreach (var property in properties)
+          {
+            if (!property.Name.StartsWith("_"))
+            {
+              payload.Data.Add(new Property(property.Name, property.Value));
+            }
           }
         }
       }
@@ -79,11 +94,11 @@ namespace Paper.Media
         var children = entity.Entities.Where(e => e.Class.Contains(ClassNames.Data) && e.Properties != null);
         foreach (var child in children)
         {
-          var row = new PropertyCollection(); 
+          var row = new PropertyCollection();
 
           var @class = child.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "row";
           row.Add(new Property("@class", @class));
-          
+
           foreach (var property in child.Properties)
           {
             if (!property.Name.StartsWith("_"))
@@ -93,6 +108,22 @@ namespace Paper.Media
           }
 
           payload.Rows.Add(row);
+        }
+      }
+
+      var hasForm = entity.Class?.Contains(ClassNames.Form) == true;
+      if (hasForm)
+      {
+        payload.Form = new PropertyCollection();
+        if (entity.Properties is PropertyCollection properties)
+        {
+          foreach (var property in properties)
+          {
+            if (!property.Name.StartsWith("_"))
+            {
+              payload.Form.Add(new Property(property.Name, property.Value));
+            }
+          }
         }
       }
 

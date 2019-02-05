@@ -6,14 +6,14 @@ using System.Text;
 
 namespace Toolset.Serialization.Transformations
 {
-  public sealed class MergeTableTransformWriter : TransformWriter
+  public sealed class MergeTableWriter : TransformWriter
   {
-    public MergeTableTransformWriter(Writer writer)
+    public MergeTableWriter(Writer writer)
       : base(writer, new MergeTableTransform())
     {
     }
 
-    public MergeTableTransformWriter(Writer writer, SerializationSettings settings)
+    public MergeTableWriter(Writer writer, SerializationSettings settings)
       : base(writer, new MergeTableTransform(), settings)
     {
     }

@@ -21,13 +21,13 @@ namespace Toolset.Serialization.Transformations
     
     public TableCreator(Writer writer)
     {
-      this.tableWriter = new TableTransformWriter(writer);
+      this.tableWriter = new TableWriter(writer);
       this.row = new List<Field>();
     }
 
     public TableCreator(Writer writer, string[] fields)
     {
-      this.tableWriter = new TableTransformWriter(writer);
+      this.tableWriter = new TableWriter(writer);
       this.row = new List<Field>();
       this.Fields = fields;
     }

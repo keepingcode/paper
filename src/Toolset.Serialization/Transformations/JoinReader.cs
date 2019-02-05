@@ -6,7 +6,7 @@ using Toolset.Serialization.Excel;
 
 namespace Toolset.Serialization.Transformations
 {
-  public sealed class JoinTransformReader : Reader
+  public sealed class JoinReader : Reader
   {
     private readonly SerializationSettings settings;
     private readonly Reader[] readers;
@@ -17,20 +17,20 @@ namespace Toolset.Serialization.Transformations
 
     #region Construtores extras...
 
-    public JoinTransformReader(IEnumerable<Reader> readers)
+    public JoinReader(IEnumerable<Reader> readers)
       : this(null, readers)
     {
       // nada a fazer aqui. use o outro construtor...
     }
 
-    public JoinTransformReader(Reader reader, params Reader[] others)
+    public JoinReader(Reader reader, params Reader[] others)
       : this(null, reader, others)
     {
       // nada a fazer aqui. use o outro construtor...
     }
     #endregion
 
-    public JoinTransformReader(SerializationSettings settings, IEnumerable<Reader> readers)
+    public JoinReader(SerializationSettings settings, IEnumerable<Reader> readers)
       : base(settings ?? new SerializationSettings())
     {
       this.settings = settings;
@@ -38,7 +38,7 @@ namespace Toolset.Serialization.Transformations
       this.enumerator = EnumerateNodes().GetEnumerator();
     }
 
-    public JoinTransformReader(SerializationSettings settings, Reader reader, params Reader[] others)
+    public JoinReader(SerializationSettings settings, Reader reader, params Reader[] others)
       : base(settings ?? new SerializationSettings())
     {
       this.readers = (new[] { reader }.Union(others)).ToArray();

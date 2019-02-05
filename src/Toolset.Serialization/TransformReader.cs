@@ -53,7 +53,10 @@ namespace Toolset.Serialization
         var nodes = transform.TransformNode(reader.Current);
         foreach (var node in nodes)
         {
-          yield return node;
+          if (node != null)
+          {
+            yield return node;
+          }
         }
       }
 

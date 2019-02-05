@@ -6,14 +6,14 @@ using System.Text;
 
 namespace Toolset.Serialization.Transformations
 {
-  public sealed class ForkTransformWriter : TransformWriter
+  public sealed class ForkWriter : TransformWriter
   {
-    public ForkTransformWriter(IEnumerable<Writer> writers)
+    public ForkWriter(IEnumerable<Writer> writers)
       : base(writers.First(), new ForkTransform(writers.Skip(1)))
     {
     }
 
-    public ForkTransformWriter(Writer writer, params Writer[] others)
+    public ForkWriter(Writer writer, params Writer[] others)
       : base(writer, new ForkTransform(others))
     {
     }

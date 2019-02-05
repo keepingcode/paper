@@ -8,57 +8,240 @@ Um Action contém:
 1.  Um form para a coleta de dados;
 2.  O algoritmo de envio dos dados coletados para um rota via POST.
 
-Os dados enviados contém duas partes:
 
-1.  Os dados coletados do form;
-2.  A entidade afetada pela action.
+Formato dos Dados: Edição Mista
+-------------------------------
 
-Exemplo dos dados envidados para o servidor via POST:
+Na edição mista o provedor mescla a entidade afetada com campos de edição e trata os campos como campos de edição.
 
+Neste formato temos:
+
+-   Campos de edição estruturados com a classe: form
+
+Exemplo:
+
+    // entity
     {
-      "data": {
-        "active": true
-      },
-      "target": {
-        "login": "fulano"
+      class: [ "form" ],
+      properties: {
+        form: {
+          formField: value,
+          ...
+        }
+      }
+    }
+
+    // payload
+    {
+      form: {
+        formField: value,
         ...
       }
     }
 
+    // form-data
+    form[formField]=value
+    ...
 
-Edição em bloco
----------------
 
-Em uma lista uma action é acionada para vários itens selecionados da seguinte forma:
+Formato dos Dados: Edição em Linha
+----------------------------------
 
-1.  Primeiro seleciona-se vários itens na lista.
-    -   As actions disponíveis são exibidas na barra de topo do app.
-2.  Em seguida aciona-se a ação desejada na barra de topo.
-3.  O form da action é exibido para coleta de dados.
-4.  Os dados coletados no form mais as entidades afetadas são enviadas para o servidor via POST.
+Na edição em linha o provedor evidencia a entidade afetada e os campos de edição.
 
-Exemplo dos dados envidados para o servidor via POST:
+Neste formato temos:
 
+-   Campos de edição estruturados com a classe: form
+-   Campos da entidade estruturados com a classe: data
+
+Exemplo:
+
+    // entity
     {
-      "data": {
-        "active": true
-      },
-      "target": [
-        {
-          "login": "fulano"
-          ...
-        },
-        {
-          "login": "beltrano"
-          ...
-        },
+      class: [ form, data, Class ],
+      properties: {
+        dataField: value,
         ...
+        form: {
+          formField: value,
+          ...
+        }
+      }
+    }
+
+    // payload
+    {
+      form: {
+        formField: value,
+        ...
+      },
+      data: {
+        @class: Class,
+        dataField: value,
+        ...
+      }
+    }
+
+    // form-data
+    form[formField]=value
+    ...
+    data[@class]=Class
+    data[dataField]=value
+    ...
+
+Formato dos Dados: Edição em Lote
+---------------------------------
+
+Na edição em lote o provedor evidencia as entidades afetadas e os campos de edição.
+Essa forma de edição permite a aplicação de uma mesma alteração às várias entidades afetadas.
+
+Neste formato temos:
+
+-   Campos de edição estruturados com a classe: form
+-   Campos das entidades estruturados com a classe: rows
+
+Exemplo:
+
+    // entity
+    {
+      class: [ form, rows ],
+      properties: {
+        form: {
+          formField: value,
+          ...
+        }
+      },
+      entities: [
+        {
+          class: [ data, Class ]
+          properties: {
+            dataField: value,
+            ...,
+          }
+        }
       ]
     }
+
+    // payload
+    {
+      form: {
+        formField: value,
+        ...
+      },
+      rows: [
+        {
+          @class: Class,
+          dataField: value,
+          ...
+        }
+      ]
+    }
+
+    // form-data
+    form[formField]=value
+    ...
+    rows[0][@class]=Class
+    rows[0][dataField]=value
+    ...
+    
+Formato dos Dados: Edição em Linha Alternativa
+----------------------------------------------
+
+Na edição em linha alternativa o provedir mescla a entidade afetada com os campos de edição e trata os campos como campos de dados.
+
+Neste formato temos:
+
+-   Campos de dados estruturados com a classe: data
+
+Exemplo:
+
+    // entity
+    {
+      class: [ data, Class ],
+      properties: {
+        dataField: value,
+        ...
+      }
+    }
+
+    // payload
+    {
+      data: {
+        @class: Class,
+        dataField: value,
+        ...
+      }
+    }
+
+    // form-data
+    data[@class]=Class
+    data[dataField]=value
+    ...
+    
+Formato dos Dados: Edição em Bloco
+----------------------------------
+
+Na edição em bloco o provedor mescla as entidades afetadas com os campos de edição.
+Essa forma de edição permite a aplicação de alterações diferentes para cada entidade afetada.
+
+Neste formato temos:
+
+-   Campos de dados estruturados com a classe: rows
+
+Exemplo:
+
+    // entity
+    {
+      class: [ rows, Class ],
+      entities: [
+        {
+          class: [ data ]
+          properties: {
+            dataOrFormField: value,
+            ...
+          }
+        }
+      ]
+    }
+
+    // payload
+    {
+      rows: [
+        {
+          @class: Class,
+          dataField: value,
+          ...
+        }
+      ]
+    }
+
+    // form-data
+    rows[0][@class]=value
+    rows[0][dataField]=value
+    ...
+
+
+
+Mimetypes
+---------
+
+Mimetypes suportados no envio de dados:
+
+-   text/json
+-   text/xml
+-   text/csv
+-   application/json
+-   application/xml
+-   application/vnd.siren+json
+-   application/vnd.siren+xml
+-   application/x-www-form-urlencoded
+-   multipart/form-data
 
 
 Roteamento
 ----------
+
+(OBSOLETO: NAO SERA DESSA FORMA)
 
 Action é identificada na rota na forma:
 
@@ -73,8 +256,9 @@ Um POST na rota da ação produz a execução da ação correspondente.
 
 Portanto:
 
--   "GET /user/:edit" se torna "GET /user"
--   "POST /user/:edit"" executa a ação de edição do usuário.
+-   provedorGET /user/:editprovedor se torna provedorGET /userprovedor
+-   provedorPOST /user/:editprovedorprovedor executa a ação de edição do usuário.
+
 
 Roteamento no PaperBot
 ----------------------
@@ -91,19 +275,19 @@ OpenRoute deve interpretar a porção da ação na rota e carregar o form corres
 
 Por exemplo:
 
--   OpenRoute("/user")
+-   OpenRoute(provedor/userprovedor)
     Baixa e renderiza os dados do usuário
 
--   OpenRoute("/user", { ... })
+-   OpenRoute(provedor/userprovedor, { ... })
     Renderiza os dados do usuário indicado.
 
--   OpenRoute("/user/:edit")
+-   OpenRoute(provedor/user/:editprovedor)
     Baixa e renderiza o form de edição do usuário
 
--   OpenRoute("/user/:edit", { ... })
+-   OpenRoute(provedor/user/:editprovedor, { ... })
     Renderiza o form de edição do usuário indicado.
 
--   OpenRoute("/users/:edit", [{ ... }, { ... }, ...])
+-   OpenRoute(provedor/users/:editprovedor, [{ ... }, { ... }, ...])
     Renderiza o form de edição dos usuários indicados.
 
 A edição em lote geralmente depende dos itens selecionados previamente numa grade ou numa

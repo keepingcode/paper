@@ -124,6 +124,12 @@ namespace Toolset.Serialization
       set { Set("Encoding", value); }
     }
 
+    public bool KeepOpen
+    {
+      get { return Get<bool>("KeepOpen"); }
+      set { Set("KeepOpen", value); }
+    }
+
     public T As<T>()
       where T : SerializationSettings, new()
     {

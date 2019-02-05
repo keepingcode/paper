@@ -17,6 +17,11 @@ namespace Paper.Media
     public const string Blueprint = "blueprint";
 
     /// <summary>
+    /// Nome de classe que representa dados de um formulário de edição.
+    /// </summary>
+    public const string Form = "form";
+
+    /// <summary>
     /// Nome de classe para ume entidade que se comporta como dados.
     /// </summary>
     public const string Data = "data";

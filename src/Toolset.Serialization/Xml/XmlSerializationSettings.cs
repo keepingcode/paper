@@ -42,11 +42,5 @@ namespace Toolset.Serialization.Xml
       get { return Get<string>("IndentChars", "  "); }
       set { Set("IndentChars", value); }
     }
-
-    public bool KeepOpen
-    {
-      get { return Get<bool>("KeepOpen"); }
-      set { Set("KeepOpen", value); }
-    }
   }
 }

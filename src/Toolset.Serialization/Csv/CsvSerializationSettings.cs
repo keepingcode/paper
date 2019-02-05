@@ -36,11 +36,5 @@ namespace Toolset.Serialization.Csv
       set { Set("FieldDelimiter", value); }
     }
 
-    public bool KeepOpen
-    {
-      get { return Get<bool>("KeepOpen"); }
-      set { Set("KeepOpen", value); }
-    }
-
   }
 }

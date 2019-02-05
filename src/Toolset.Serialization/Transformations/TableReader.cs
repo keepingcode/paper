@@ -6,14 +6,14 @@ using System.Text;
 
 namespace Toolset.Serialization.Transformations
 {
-  public sealed class TableTransformReader : TransformReader
+  public sealed class TableReader : TransformReader
   {
-    public TableTransformReader(Reader reader)
+    public TableReader(Reader reader)
       : base(reader, new TableTransform())
     {
     }
 
-    public TableTransformReader(Reader reader, SerializationSettings settings)
+    public TableReader(Reader reader, SerializationSettings settings)
       : base(reader, new TableTransform(), settings)
     {
     }

@@ -74,7 +74,7 @@ namespace Paper.Media
       || value is NameCollection)
         return value;
 
-      var properties = UnwrapPropertyValues(value);
+      var properties = UnwrapProperties(value);
       return new PropertyCollection(properties);
     }
 
@@ -111,7 +111,7 @@ namespace Paper.Media
       }
     }
 
-    public static IEnumerable<Property> UnwrapPropertyValues(object value)
+    public static IEnumerable<Property> UnwrapProperties(object value)
     {
       if (value == null)
         yield break;

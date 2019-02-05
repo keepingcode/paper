@@ -6,14 +6,14 @@ using System.Text;
 
 namespace Toolset.Serialization.Transformations
 {
-  public sealed class MergeMatrixTransformReader : TransformReader
+  public sealed class MergeMatrixReader : TransformReader
   {
-    public MergeMatrixTransformReader(Reader reader)
+    public MergeMatrixReader(Reader reader)
       : base(reader, new MergeMatrixTransform())
     {
     }
 
-    public MergeMatrixTransformReader(Reader reader, SerializationSettings settings)
+    public MergeMatrixReader(Reader reader, SerializationSettings settings)
       : base(reader, new MergeMatrixTransform(), settings)
     {
     }

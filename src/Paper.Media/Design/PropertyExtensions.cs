@@ -106,7 +106,7 @@ namespace Paper.Media.Design
       {
         entity.Properties = new PropertyCollection();
       }
-      var properties = Property.UnwrapPropertyValues(graph);
+      var properties = graph as IEnumerable<Property> ?? Property.UnwrapProperties(graph);
       entity.Properties.AddMany(properties);
       return entity;
     }

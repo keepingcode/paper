@@ -14,6 +14,7 @@ namespace Toolset.Serialization.Csv
     private readonly Queue<Node> queue;
 
     private IEnumerable<string> colNamesAlgorithm;
+    private readonly Regex fieldNamePattern = new Regex(@"^field(\d+)$", RegexOptions.IgnoreCase);
 
     private Node currentNode;
     private IEnumerator<string> rows;
@@ -98,8 +99,7 @@ namespace Toolset.Serialization.Csv
             return true;
           }
 
-          var colNames = EnumerateCols(rows.Current).ToArray();
-          this.colNamesAlgorithm = colNames;
+          this.colNamesAlgorithm = EnumerateCols(rows.Current).ToArray();
         }
 
         EmitRowCollectionStart();
@@ -118,7 +118,7 @@ namespace Toolset.Serialization.Csv
         }
 
         cols = EnumerateCols(rows.Current).GetEnumerator();
-        colNames = this.colNamesAlgorithm.GetEnumerator();
+        colNames = EmitColName(this.colNamesAlgorithm).GetEnumerator();
 
         EmitRowStart();
         return true;
@@ -136,7 +136,7 @@ namespace Toolset.Serialization.Csv
       EmitCol(colValue);
       return true;
     }
-    
+
     #region Emissores de nodos...
 
     private void EmitRowCollectionStart()
@@ -170,12 +170,40 @@ namespace Toolset.Serialization.Csv
 
     private void EmitCol(object value)
     {
-      colNames.MoveNext();
-      var colName = colNames.Current;
+      try
+      {
+        //var colName = colNames.MoveNext() ? colNames.Current : "Field".ChangeCase(Settings.TextCase);
 
-      queue.Enqueue(new Node { Type = NodeType.PropertyStart, Value = colName });
-      queue.Enqueue(new Node { Type = NodeType.Value, Value = value });
-      queue.Enqueue(new Node { Type = NodeType.PropertyEnd });
+        colNames.MoveNext();
+        var colName = colNames.Current;
+
+        queue.Enqueue(new Node { Type = NodeType.PropertyStart, Value = colName });
+        queue.Enqueue(new Node { Type = NodeType.Value, Value = value });
+        queue.Enqueue(new Node { Type = NodeType.PropertyEnd });
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+        throw;
+      }
+    }
+
+    private IEnumerable<string> EmitColName(IEnumerable<string> colNames)
+    {
+      int index = 0;
+      foreach (var colName in colNames)
+      {
+        var match = fieldNamePattern.Match(colName);
+        if (match.Success)
+        {
+          index = int.Parse(match.Groups[1].Value);
+        }
+        yield return colName;
+      }
+      while (true)
+      {
+        yield return $"field{++index}";
+      }
     }
 
     #endregion

@@ -136,21 +136,21 @@ namespace Toolset.Serialization.Csv
     private void Initialize(TextReader textReader, bool keepOpen)
     {
       var csvReader = new BasicCsvReader(textReader, base.Settings);
-      this.reader = new FlatTableTransformReader(csvReader, base.Settings);
+      this.reader = new FlatTableReader(csvReader, base.Settings);
       this.keepOpen = keepOpen;
     }
 
     private void Initialize(TextReader textReader, bool keepOpen, Func<string, bool> fieldFilter)
     {
       var csvReader = new BasicCsvReader(textReader, base.Settings);
-      this.reader = new FlatTableTransformReader(csvReader, base.Settings, fieldFilter);
+      this.reader = new FlatTableReader(csvReader, base.Settings, fieldFilter);
       this.keepOpen = keepOpen;
     }
 
     private void Initialize(TextReader textReader, bool keepOpen, string[] fields)
     {
       var csvReader = new BasicCsvReader(textReader, base.Settings);
-      this.reader = new FlatTableTransformReader(csvReader, base.Settings, fields);
+      this.reader = new FlatTableReader(csvReader, base.Settings, fields);
       this.keepOpen = keepOpen;
     }
 

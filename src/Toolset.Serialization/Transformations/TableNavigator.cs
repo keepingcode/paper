@@ -19,7 +19,7 @@ namespace Toolset.Serialization.Transformations
 
     public TableNavigator(Reader reader)
     {
-      this.tableReader = new TableTransformReader(reader);
+      this.tableReader = new TableReader(reader);
       this.rows = EnumerateRows(this.tableReader).GetEnumerator();
     }
 

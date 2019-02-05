@@ -15,7 +15,7 @@ namespace Toolset.Serialization.Transformations
 
     public MatrixNavigator(Reader reader)
     {
-      this.tableReader = new MatrixTransformReader(reader);
+      this.tableReader = new MatrixReader(reader);
       this.rows = EnumerateRows(this.tableReader).GetEnumerator();
     }
 

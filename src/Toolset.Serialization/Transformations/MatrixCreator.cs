@@ -15,13 +15,13 @@ namespace Toolset.Serialization.Transformations
 
     public MatrixCreator(Writer writer)
     {
-      this.tableWriter = new MatrixTransformWriter(writer);
+      this.tableWriter = new MatrixWriter(writer);
       this.row = new List<object>();
     }
 
     public MatrixCreator(Writer writer, string[] fields)
     {
-      this.tableWriter = new TableTransformWriter(writer);
+      this.tableWriter = new TableWriter(writer);
       this.row = new List<object>();
     }
 

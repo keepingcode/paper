@@ -99,21 +99,21 @@ namespace Toolset.Serialization.Csv
     private void Initialize(TextWriter textWriter, bool keepOpen)
     {
       var basicCsvWriter = new BasicCsvWriter(textWriter, base.Settings);
-      this.writer = new FlatMatrixTransformWriter(basicCsvWriter, base.Settings);
+      this.writer = new FlatMatrixWriter(basicCsvWriter, base.Settings);
       this.keepOpen = keepOpen;
     }
 
     private void Initialize(TextWriter textWriter, bool keepOpen, Func<string, bool> fieldFilter)
     {
       var basicCsvWriter = new BasicCsvWriter(textWriter, base.Settings);
-      this.writer = new FlatMatrixTransformWriter(basicCsvWriter, base.Settings, fieldFilter);
+      this.writer = new FlatMatrixWriter(basicCsvWriter, base.Settings, fieldFilter);
       this.keepOpen = keepOpen;
     }
 
     private void Initialize(TextWriter textWriter, bool keepOpen, string[] fields)
     {
       var basicCsvWriter = new BasicCsvWriter(textWriter, base.Settings);
-      this.writer = new FlatMatrixTransformWriter(basicCsvWriter, base.Settings, fields);
+      this.writer = new FlatMatrixWriter(basicCsvWriter, base.Settings, fields);
       this.keepOpen = keepOpen;
     }
 

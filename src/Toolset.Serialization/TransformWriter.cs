@@ -31,7 +31,10 @@ namespace Toolset.Serialization
       var emittedNodes = transform.TransformNode(node);
       foreach (var emittedNode in emittedNodes)
       {
-        writer.Write(emittedNode);
+        if (emittedNode != null)
+        {
+          writer.Write(emittedNode);
+        }
       }
     }
 

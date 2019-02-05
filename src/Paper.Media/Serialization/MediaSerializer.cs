@@ -88,10 +88,11 @@ namespace Paper.Media.Serialization
         writer.WriteDocumentStart(entity.Title ?? entity.GetType().Name);
         if (entity != null)
         {
-          var isPayloadOnly = !mimeType.Contains("siren");
-          if (isPayloadOnly)
+          var isPayload = !mimeType.Contains("siren");
+          if (isPayload)
           {
-            Write(writer, Payload.FromEntity(entity));
+            var payload = Payload.FromEntity(entity);
+            Write(writer, payload);
           }
           else
           {
@@ -245,7 +246,8 @@ namespace Paper.Media.Serialization
             {
               var isPayload =
                    "data".EqualsIgnoreCase(e.Node.Value as string)
-                || "rows".EqualsIgnoreCase(e.Node.Value as string);
+                || "rows".EqualsIgnoreCase(e.Node.Value as string)
+                || "form".EqualsIgnoreCase(e.Node.Value as string);
 
               graphWriter = isPayload ? new GraphWriter(typeof(Payload)) : new GraphWriter(typeof(Entity));
               writer.SetWriter(graphWriter);
@@ -273,44 +275,32 @@ namespace Paper.Media.Serialization
 
     private Reader CreateReader(Stream input, Encoding encoding, out bool forceHypermedia)
     {
+      Reader reader;
+
       forceHypermedia = false;
+
+      var settings = new SerializationSettings { Encoding = encoding, KeepOpen = true };
 
       switch (mimeType)
       {
         case Json:
         case JsonSiren:
           {
-            return new JsonReader(input,
-              new JsonSerializationSettings
-              {
-                Encoding = encoding,
-                KeepOpen = true
-              }
-            );
+            reader = new JsonReader(input, settings);
+            break;
           }
 
         case Xml:
         case XmlSiren:
           {
-            return new XmlDocumentReader(input,
-              new XmlSerializationSettings
-              {
-                Encoding = encoding,
-                KeepOpen = true
-              }
-            );
+            reader = new XmlDocumentReader(input, settings);
+            break;
           }
 
         case Csv:
           {
-            return new CsvReader(input,
-              new CsvSerializationSettings
-              {
-                Encoding = encoding,
-                KeepOpen = true,
-                HasHeaders = true
-              }
-            );
+            reader = new CsvReader(input, settings);
+            break;
           }
 
         case Excel:
@@ -320,16 +310,17 @@ namespace Paper.Media.Serialization
 
         default:
           {
-            return Reader.CreateReader(input,
-              new CsvSerializationSettings
-              {
-                Encoding = encoding,
-                KeepOpen = true,
-                HasHeaders = true
-              }
-            );
+            reader = Reader.CreateReader(input, settings);
+            break;
           }
       }
+
+      if (reader is CsvReader)
+      {
+        reader = new TransformReader(reader, new CsvRowsTransform());
+      }
+
+      return reader;
     }
 
     #endregion

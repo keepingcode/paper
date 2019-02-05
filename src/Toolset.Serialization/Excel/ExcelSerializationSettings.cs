@@ -49,11 +49,5 @@ namespace Toolset.Serialization.Excel
       get { return Get<bool>("HasHeaders"); }
       set { Set("HasHeaders", value); }
     }
-
-    public bool KeepOpen
-    {
-      get { return Get<bool>("KeepOpen"); }
-      set { Set("KeepOpen", value); }
-    }
   }
 }

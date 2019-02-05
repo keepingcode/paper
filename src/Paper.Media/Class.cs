@@ -15,6 +15,11 @@ namespace Paper.Media
     Blueprint,
 
     /// <summary>
+    /// Nome de classe que representa dados de um formulário de edição.
+    /// </summary>
+    Form,
+
+    /// <summary>
     /// Nome de classe para ume entidade que se comporta como dados.
     /// </summary>
     Data,

@@ -83,21 +83,21 @@ namespace Toolset.Serialization.Excel
       : base(settings)
     {
       var basicExcelWriter = new BasicExcelWriter(streamWriter, base.Settings);
-      writer = new FlatMatrixTransformWriter(basicExcelWriter, base.Settings);
+      writer = new FlatMatrixWriter(basicExcelWriter, base.Settings);
     }
 
     public ExcelWriter(Stream streamWriter, SerializationSettings settings, Func<string, bool> fieldFilter)
       : base(settings)
     {
       var basicExcelWriter = new BasicExcelWriter(streamWriter, base.Settings);
-      writer = new FlatMatrixTransformWriter(basicExcelWriter, base.Settings, fieldFilter);
+      writer = new FlatMatrixWriter(basicExcelWriter, base.Settings, fieldFilter);
     }
 
     public ExcelWriter(Stream streamWriter, SerializationSettings settings, string[] fields)
       : base(settings)
     {
       var basicExcelWriter = new BasicExcelWriter(streamWriter, base.Settings);
-      writer = new FlatMatrixTransformWriter(basicExcelWriter, base.Settings, fields);
+      writer = new FlatMatrixWriter(basicExcelWriter, base.Settings, fields);
     }
 
     public new ExcelSerializationSettings Settings
