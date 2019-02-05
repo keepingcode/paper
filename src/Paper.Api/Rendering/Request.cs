@@ -37,11 +37,8 @@ namespace Paper.Api.Rendering
       var encoding = contentHeader.Encoding;
 
       var serializer = new MediaSerializer(mimeType);
-      using (var memory = new MemoryStream())
-      {
-        var entity = serializer.Deserialize(memory, encoding);
-        return await Task.FromResult(entity);
-      }
+      var entity = serializer.Deserialize(Body, encoding);
+      return await Task.FromResult(entity);
     }
   }
 }
