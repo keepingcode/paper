@@ -24,6 +24,30 @@ namespace Paper.Media.Design
     public const string HeaderNamesProperty = "__RowHeaders";
     public const string PaginationProperty = "__RowsPage";
 
+    #region GetRows
+
+    public static ICollection<T> GetRows<T>(this Entity entity)
+      where T : new()
+    {
+      var items = new List<T>();
+      if (entity.Entities != null)
+      {
+        var records =
+          from item in entity.Entities
+          where item.Class.Has(ClassNames.Data)
+          where item.Class.Has(typeof(T).FullName)
+          select item;
+        foreach (var record in records)
+        {
+          var item = record.GetData<T>();
+          items.Add(item);
+        }
+      }
+      return items;
+    }
+
+    #endregion
+
     #region ForEach...
 
     /// <summary>
@@ -78,7 +102,7 @@ namespace Paper.Media.Design
 
     #endregion
 
-    #region AddRow
+    #region AddRow e AddRows
 
     /// <summary>
     /// Adiciona a entidade como um registro da entidade principal.
@@ -100,18 +124,6 @@ namespace Paper.Media.Design
     public static Entity AddRow(this Entity entity, Action<Entity> builder)
     {
       return DoAddRows(entity, new Entity().AsSingle(), builder);
-    }
-
-    /// <summary>
-    /// Adiciona o registro como entidade filha da entidade indicada.
-    /// </summary>
-    /// <param name="entity">A entidade modificada.</param>
-    /// <param name="graph">Os dados do registro adicionado à entidade.</param>
-    /// <param name="builder">O construtor do registro.</param>
-    /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRow(this Entity entity, object graph, Action<Entity> builder = null)
-    {
-      return DoAddRows(entity, new Entity().AddProperties(graph).AsSingle(), builder);
     }
 
     /// <summary>
@@ -154,77 +166,6 @@ namespace Paper.Media.Design
     }
 
     /// <summary>
-    /// Adiciona o registro como entidade filha da entidade indicada.
-    /// </summary>
-    /// <param name="entity">A entidade modificada.</param>
-    /// <param name="rows">Os registros adicionados.</param>
-    /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRows(this Entity entity, params object[] rows)
-    {
-      return AddRows(entity, null, (IEnumerable<object>)rows);
-    }
-
-    /// <summary>
-    /// Adiciona o registro como entidade filha da entidade indicada.
-    /// </summary>
-    /// <param name="entity">A entidade modificada.</param>
-    /// <param name="rows">Os registros adicionados.</param>
-    /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRows(this Entity entity, IEnumerable<object> rows)
-    {
-      return AddRows(entity, null, (IEnumerable<object>)rows);
-    }
-
-    /// <summary>
-    /// Adiciona o registro como entidade filha da entidade indicada.
-    /// </summary>
-    /// <param name="entity">A entidade modificada.</param>
-    /// <param name="rowBuilder">
-    /// O construtor dos registros.
-    /// O método é invocado para cada registro criado.
-    /// </param>
-    /// <param name="rows">Os registros adicionados.</param>
-    /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRows(this Entity entity, Action<Entity> rowBuilder, params object[] rows)
-    {
-      return AddRows(entity, rowBuilder, (IEnumerable<object>)rows);
-    }
-
-    /// <summary>
-    /// Adiciona o registro como entidade filha da entidade indicada.
-    /// </summary>
-    /// <param name="entity">A entidade modificada.</param>
-    /// <param name="rowBuilder">
-    /// O construtor dos registros.
-    /// O método é invocado para cada registro criado.
-    /// </param>
-    /// <param name="rows">Os registros adicionados.</param>
-    /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRows(this Entity entity, Action<Entity> rowBuilder, IEnumerable<object> rows)
-    {
-      var rowsFactory = rows.Select(row =>
-      {
-        var child = new Entity();
-        child.AddProperties(row);
-        return child;
-      });
-
-      var hasHeaders = (entity?.Properties["_RowHeaders"]?.Value != null);
-      if (!hasHeaders)
-      {
-        var first = rows.FirstOrDefault();
-        if (first != null)
-        {
-          entity.AddRowHeadersFrom(first);
-        }
-      }
-
-      DoAddRows(entity, rowsFactory, rowBuilder);
-
-      return entity;
-    }
-
-    /// <summary>
     /// Adiciona os registros à entidade.
     /// </summary>
     /// <param name="entity">A entidade modificada.</param>
@@ -262,7 +203,99 @@ namespace Paper.Media.Design
 
     #endregion
 
-    #region AddRowHeader
+    #region AddRow e AddRows by Graph
+
+    /// <summary>
+    /// Adiciona o registro como entidade filha da entidade indicada.
+    /// </summary>
+    /// <param name="entity">A entidade modificada.</param>
+    /// <param name="graph">Os dados do registro adicionado à entidade.</param>
+    /// <param name="builder">O construtor do registro.</param>
+    /// <returns>A própria entidade modificada.</returns>
+    public static Entity AddRow<T>(this Entity entity, T graph, Action<Entity> builder)
+    {
+      DoAddGraphs(entity, graph.AsSingle(), (e, x) => builder.Invoke(e));
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona o registro como entidade filha da entidade indicada.
+    /// </summary>
+    /// <param name="entity">A entidade modificada.</param>
+    /// <param name="graph">Os dados do registro adicionado à entidade.</param>
+    /// <param name="builder">O construtor do registro.</param>
+    /// <returns>A própria entidade modificada.</returns>
+    public static Entity AddRow<T>(this Entity entity, T graph, Action<Entity, T> builder = null)
+    {
+      DoAddGraphs(entity, graph.AsSingle(), builder);
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona o registro como entidade filha da entidade indicada.
+    /// </summary>
+    /// <param name="entity">A entidade modificada.</param>
+    /// <param name="builder">
+    /// O construtor dos registros.
+    /// O método é invocado para cada registro criado.
+    /// </param>
+    /// <param name="rows">Os registros adicionados.</param>
+    /// <returns>A própria entidade modificada.</returns>
+    public static Entity AddRows<T>(this Entity entity, IEnumerable<T> rows, Action<Entity> builder)
+    {
+      DoAddGraphs(entity, rows, (e, x) => builder.Invoke(e));
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona o registro como entidade filha da entidade indicada.
+    /// </summary>
+    /// <param name="entity">A entidade modificada.</param>
+    /// <param name="builder">
+    /// O construtor dos registros.
+    /// O método é invocado para cada registro criado.
+    /// </param>
+    /// <param name="rows">Os registros adicionados.</param>
+    /// <returns>A própria entidade modificada.</returns>
+    public static Entity AddRows<T>(this Entity entity, IEnumerable<T> rows, Action<Entity, T> builder = null)
+    {
+      DoAddGraphs(entity, rows, builder);
+      return entity;
+    }
+
+    private static void DoAddGraphs<T>(Entity entity, IEnumerable<T> rows, Action<Entity, T> builder)
+    {
+      if (entity.Entities == null)
+      {
+        entity.Entities = new EntityCollection();
+      }
+      if (entity.Properties == null)
+      {
+        entity.Properties = new PropertyCollection();
+      }
+
+      entity.AddClass(Class.Rows);
+
+      if (entity.Properties["__rowHeaders"] == null)
+      {
+        entity.AddRowHeadersFrom<T>();
+      }
+
+      foreach (var row in rows)
+      {
+        var item = new Entity();
+        item.AddData(row);
+        item.AddRel(Rel.Rows);
+        item.AddClass(Class.Row);
+        entity.Entities.Add(item);
+
+        builder?.Invoke(item, row);
+      }
+    }
+
+    #endregion
+
+    #region AddRowHeader 
 
     /// <summary>
     /// Adiciona informações sobre campos.

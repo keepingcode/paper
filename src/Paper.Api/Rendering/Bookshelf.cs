@@ -6,12 +6,23 @@ using Toolset.Collections;
 
 namespace Paper.Api.Rendering
 {
-  public class Bookshelf
+  public class Bookshelf : IBookshelf
   {
     private readonly object synclock = new object();
 
     private PathIndex<List<Entry>> index = new PathIndex<List<Entry>>();
     private Map<string, List<string>> paperCollections = new Map<string, List<string>>();
+
+    public ICollection<string> CollectionNames
+    {
+      get
+      {
+        lock (synclock)
+        {
+          return paperCollections.Keys;
+        }
+      }
+    }
 
     public void AddCollection(PaperCollection collection)
     {
@@ -95,15 +106,19 @@ namespace Paper.Api.Rendering
       }
     }
 
-    public ICollection<string> GetCollectionNames()
+    public IEnumerable<IPaper> FindPapers(string path)
     {
       lock (synclock)
       {
-        return paperCollections.Keys;
+        var papers =
+          from entries in index.Find(path)
+          from entry in entries
+          select entry.Paper;
+        return papers.Reverse().ToArray();
       }
     }
 
-    public IEnumerable<IPaper> GetCollectionPapers(string collectionName)
+    public IEnumerable<IPaper> FindPapersInCollection(string collectionName)
     {
       lock (synclock)
       {
@@ -122,19 +137,7 @@ namespace Paper.Api.Rendering
       }
     }
 
-    public IEnumerable<IPaper> FindPaper(string path)
-    {
-      lock (synclock)
-      {
-        var papers =
-          from entries in index.Find(path)
-          from entry in entries
-          select entry.Paper;
-        return papers.Reverse().ToArray();
-      }
-    }
-
-    public IEnumerable<IPaper> FindPaper(string path, string collectionName)
+    public IEnumerable<IPaper> FindPapersInCollection(string collectionName, string path)
     {
       lock (synclock)
       {

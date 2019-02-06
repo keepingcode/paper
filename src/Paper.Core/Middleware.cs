@@ -34,8 +34,8 @@ namespace Paper.Core
       var res = ctx.Response;
       try
       {
-        var bookshelf = serviceProvider.GetService<Bookshelf>();
-        var papers = bookshelf?.FindPaper(req.Path);
+        var bookshelf = serviceProvider.GetService<IBookshelf>();
+        var papers = bookshelf?.FindPapers(req.Path);
         if (papers == null)
         {
           var status = HttpStatusCode.ServiceUnavailable;

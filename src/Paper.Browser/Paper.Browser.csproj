@@ -65,6 +65,12 @@
     <Compile Include="Base\Forms\WindowForm.Designer.cs">
       <DependentUpon>WindowForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Base\Pages\DataPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Base\Pages\DataPage.Designer.cs">
+      <DependentUpon>DataPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Base\Pages\ErrorPage.cs">
       <SubType>UserControl</SubType>
     </Compile>

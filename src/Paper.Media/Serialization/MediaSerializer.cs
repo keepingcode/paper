@@ -40,11 +40,13 @@ namespace Paper.Media.Serialization
     public MediaSerializer()
       : this(null, null)
     {
+      // Use o outro construtor.
     }
 
     public MediaSerializer(string mimeType)
       : this(mimeType, null)
     {
+      // Use o outro construtor.
     }
 
     public MediaSerializer(string mimeType, SerializationOptions options)
@@ -180,6 +182,8 @@ namespace Paper.Media.Serialization
 
     private Writer CreateWriter(Stream output, Encoding encoding)
     {
+      var textCase = this.mimeType.Contains("json") ? TextCase.CamelCase : TextCase.PascalCase;
+
       switch (mimeType)
       {
         case Xml:
@@ -189,8 +193,9 @@ namespace Paper.Media.Serialization
             {
               Encoding = encoding,
               KeepOpen = true,
+              TextCase = textCase,
               Indent = options.Indent,
-              IndentChars = options.TextCase
+              IndentChars = options.IndentChars
             }
           );
 
@@ -200,7 +205,8 @@ namespace Paper.Media.Serialization
             {
               Encoding = encoding,
               KeepOpen = true,
-              HasHeaders = true
+              HasHeaders = true,
+              TextCase = textCase
             }
           );
 
@@ -210,7 +216,8 @@ namespace Paper.Media.Serialization
             {
               Encoding = encoding,
               KeepOpen = true,
-              HasHeaders = true
+              HasHeaders = true,
+              TextCase = textCase
             }
           );
 
@@ -220,8 +227,9 @@ namespace Paper.Media.Serialization
             {
               Encoding = encoding,
               KeepOpen = true,
+              TextCase = textCase,
               Indent = options.Indent,
-              IndentChars = options.TextCase
+              IndentChars = options.IndentChars
             }
           );
       }

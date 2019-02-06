@@ -6,7 +6,7 @@ namespace Paper.Api.Rendering
 {
   public class RenderingContext
   {
-    public Bookshelf Bookshelf { get; set; }
+    public IBookshelf Bookshelf { get; set; }
 
     public IFactory Factory { get; set; }
 

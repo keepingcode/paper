@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Reflection;
 
 namespace Paper.Media.Design
 {
@@ -74,11 +75,44 @@ namespace Paper.Media.Design
         entity.Properties = new PropertyCollection();
       }
 
-      entity.AddClass(Class.Data);
+      entity.AddClass(ClassNames.Data, Conventions.MakeName(data));
       entity.AddDataHeadersFrom(data);
       entity.AddProperties(data);
 
       return entity;
+    }
+
+    public static T GetData<T>(this Entity entity)
+      where T : new()
+    {
+      var target = new T();
+      ExpandProperties(entity.Properties, target);
+      return target;
+    }
+
+    private static void ExpandProperties(PropertyCollection properties, object target)
+    {
+      if (properties == null)
+        return;
+
+      foreach (var property in properties)
+      {
+        if (!target._Has(property.Name))
+          continue;
+
+        if (property.Value is PropertyCollection collection)
+        {
+          if (target._CanWrite(property.Name))
+          {
+            var instance = target._SetNew(property.Name);
+            ExpandProperties(collection, instance);
+          }
+        }
+        else
+        {
+          target._Set(property.Name, property.Value);
+        }
+      }
     }
 
     #endregion

@@ -9,14 +9,14 @@ namespace Paper.Api.Rendering
 {
   public static class BookshelfExtensions
   {
-    public static void AddExposedPaperCollections(this Bookshelf bookshelf, IFactory factory)
+    public static void AddExposedPaperCollections(this IBookshelf bookshelf, IFactory factory)
     {
       FindPaperCollectionFatories(bookshelf, factory);
       FindPapereCollection(bookshelf, factory);
       FindPapers(bookshelf, factory);
     }
 
-    private static void FindPaperCollectionFatories(Bookshelf bookshelf, IFactory factory)
+    private static void FindPaperCollectionFatories(IBookshelf bookshelf, IFactory factory)
     {
       var types = ExposedTypes.GetTypes<IPaperCollectionFatory>();
       foreach (var type in types)
@@ -34,7 +34,7 @@ namespace Paper.Api.Rendering
       }
     }
 
-    private static void FindPapereCollection(Bookshelf bookshelf, IFactory factory)
+    private static void FindPapereCollection(IBookshelf bookshelf, IFactory factory)
     {
       var types = ExposedTypes.GetTypes<PaperCollection>();
       foreach (var type in types)
@@ -51,7 +51,7 @@ namespace Paper.Api.Rendering
       }
     }
 
-    private static void FindPapers(Bookshelf bookshelf, IFactory factory)
+    private static void FindPapers(IBookshelf bookshelf, IFactory factory)
     {
       var types = ExposedTypes.GetTypes<IPaper>();
       foreach (var type in types)

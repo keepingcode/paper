@@ -15,6 +15,7 @@ using static System.Environment;
 using Paper.Api.Rendering;
 using Microsoft.AspNetCore.Rewrite;
 using System.Net;
+using Paper.Api.Site;
 
 namespace Paper.Core
 {
@@ -34,8 +35,11 @@ namespace Paper.Core
     public static IServiceCollection AddPaperServices(this IServiceCollection services)
     {
       var bookshelf = new Bookshelf();
-      services.AddSingleton(bookshelf);
+      services.AddSingleton<IBookshelf>(bookshelf);
       bookshelf.AddExposedPaperCollections(new Factory(services.BuildServiceProvider()));
+
+      services.AddSingleton<ICatalog>(new Catalog());
+
       return services;
     }
 
