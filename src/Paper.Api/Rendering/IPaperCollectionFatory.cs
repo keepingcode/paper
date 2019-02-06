@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Paper.Api.Rendering
 {
-  public interface ICatalogFatory
+  public interface IPaperCollectionFatory
   {
-    Catalog CreateCatalog();
+    PaperCollection CreateCollection();
   }
 }

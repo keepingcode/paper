@@ -5,9 +5,9 @@ using System.Text;
 namespace Paper.Api.Rendering
 {
   [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-  public class CatalogAttribute : Attribute
+  public class PaperCollectionAttribute : Attribute
   {
-    public CatalogAttribute(string name)
+    public PaperCollectionAttribute(string name)
     {
       this.Name = name;
     }

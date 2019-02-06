@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{298D802E-E00E-4DAB-9523-E6FBABBEB6AB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Paper.Browser</RootNamespace>
+    <AssemblyName>Paper.Browser</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base\Forms\NavigatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Base\Forms\NavigatorForm.Designer.cs">
+      <DependentUpon>NavigatorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Base\Forms\SettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Base\Forms\SettingsDialog.Designer.cs">
+      <DependentUpon>SettingsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Base\Forms\WindowForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Base\Forms\WindowForm.Designer.cs">
+      <DependentUpon>WindowForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Base\Pages\ErrorPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Base\Pages\ErrorPage.Designer.cs">
+      <DependentUpon>ErrorPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Base\Pages\IPage.cs" />
+    <Compile Include="Base\Pages\PageFactory.cs" />
+    <Compile Include="Base\Pages\RowsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Base\Pages\RowsPage.Designer.cs">
+      <DependentUpon>RowsPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Base\Navigator.cs" />
+    <Compile Include="Base\Window.cs" />
+    <Compile Include="Commons\Http.cs" />
+    <Compile Include="Commons\SessionStore.cs" />
+    <Compile Include="Commons\WindowsFormsExtensions.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="Base\Forms\NavigatorForm.resx">
+      <DependentUpon>NavigatorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Base\Forms\SettingsDialog.resx">
+      <DependentUpon>SettingsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Base\Forms\WindowForm.resx">
+      <DependentUpon>WindowForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Base\Pages\ErrorPage.resx">
+      <DependentUpon>ErrorPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Base\Pages\RowsPage.resx">
+      <DependentUpon>RowsPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Paper.Media\Paper.Media.csproj">
+      <Project>{A1463E32-8E17-413B-A32D-EA942C6F1FB8}</Project>
+      <Name>Paper.Media</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Toolset\Toolset.csproj">
+      <Project>{ee82245e-2724-4073-947d-a1bba0955d7f}</Project>
+      <Name>Toolset</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

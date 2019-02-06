@@ -9,23 +9,23 @@ namespace Paper.Api.Rendering
 {
   public static class BookshelfExtensions
   {
-    public static void AddExposedCatalogs(this Bookshelf bookshelf, IFactory factory)
+    public static void AddExposedPaperCollections(this Bookshelf bookshelf, IFactory factory)
     {
-      FindCatalogFatories(bookshelf, factory);
-      FindCatalogs(bookshelf, factory);
+      FindPaperCollectionFatories(bookshelf, factory);
+      FindPapereCollection(bookshelf, factory);
       FindPapers(bookshelf, factory);
     }
 
-    private static void FindCatalogFatories(Bookshelf bookshelf, IFactory factory)
+    private static void FindPaperCollectionFatories(Bookshelf bookshelf, IFactory factory)
     {
-      var types = ExposedTypes.GetTypes<ICatalogFatory>();
+      var types = ExposedTypes.GetTypes<IPaperCollectionFatory>();
       foreach (var type in types)
       {
         try
         {
-          var catalogFactory = (ICatalogFatory)factory.CreateObject(type, bookshelf);
-          var catalog = catalogFactory.CreateCatalog();
-          bookshelf.AddCatalog(catalog);
+          var collectionFactory = (IPaperCollectionFatory)factory.CreateObject(type, bookshelf);
+          var collection = collectionFactory.CreateCollection();
+          bookshelf.AddCollection(collection);
         }
         catch (Exception ex)
         {
@@ -34,15 +34,15 @@ namespace Paper.Api.Rendering
       }
     }
 
-    private static void FindCatalogs(Bookshelf bookshelf, IFactory factory)
+    private static void FindPapereCollection(Bookshelf bookshelf, IFactory factory)
     {
-      var types = ExposedTypes.GetTypes<Catalog>();
+      var types = ExposedTypes.GetTypes<PaperCollection>();
       foreach (var type in types)
       {
         try
         {
-          var catalog = (Catalog)factory.CreateObject(type, bookshelf);
-          bookshelf.AddCatalog(catalog);
+          var collection = (PaperCollection)factory.CreateObject(type, bookshelf);
+          bookshelf.AddCollection(collection);
         }
         catch (Exception ex)
         {
@@ -59,9 +59,9 @@ namespace Paper.Api.Rendering
         try
         {
           var paper = (IPaper)factory.CreateObject(type);
-          var catalog = paper._GetAttribute<CatalogAttribute>();
-          var calalogName = catalog?.Name ?? type.Assembly.FullName.Split(',').First();
-          bookshelf.AddCatalog(calalogName, paper);
+          var collection = paper._GetAttribute<PaperCollectionAttribute>();
+          var collectionName = collection?.Name ?? type.Assembly.FullName.Split(',').First();
+          bookshelf.AddCollection(collectionName, paper);
         }
         catch (Exception ex)
         {

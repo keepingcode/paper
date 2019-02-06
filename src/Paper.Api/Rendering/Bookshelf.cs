@@ -11,26 +11,26 @@ namespace Paper.Api.Rendering
     private readonly object synclock = new object();
 
     private PathIndex<List<Entry>> index = new PathIndex<List<Entry>>();
-    private Map<string, List<string>> catalogs = new Map<string, List<string>>();
+    private Map<string, List<string>> paperCollections = new Map<string, List<string>>();
 
-    public void AddCatalog(Catalog catalog)
+    public void AddCollection(PaperCollection collection)
     {
-      AddCatalog(catalog.Name, catalog.Papers);
+      AddCollection(collection.Name, collection.Papers);
     }
 
-    public void AddCatalog(string catalog, params IPaper[] papers)
+    public void AddCollection(string collectionName, params IPaper[] papers)
     {
-      AddCatalog(catalog, (IEnumerable<IPaper>)papers);
+      AddCollection(collectionName, (IEnumerable<IPaper>)papers);
     }
 
-    public void AddCatalog(string catalog, IEnumerable<IPaper> papers)
+    public void AddCollection(string collectionName, IEnumerable<IPaper> papers)
     {
       lock (synclock)
       {
-        var paths = catalogs[catalog];
+        var paths = paperCollections[collectionName];
         if (paths == null)
         {
-          catalogs[catalog] = paths = new List<string>();
+          paperCollections[collectionName] = paths = new List<string>();
         }
 
         foreach (var paper in papers)
@@ -44,7 +44,7 @@ namespace Paper.Api.Rendering
 
           entries.Add(new Entry
           {
-            Catalog = catalog,
+            CollectionName = collectionName,
             Paper = paper
           });
 
@@ -53,20 +53,20 @@ namespace Paper.Api.Rendering
       }
     }
 
-    public void RemoveCatalog(Catalog catalog)
+    public void RemoveCollection(PaperCollection collection)
     {
-      RemoveCatalog(catalog.Name);
+      RemoveCollection(collection.Name);
     }
 
-    public void RemoveCatalog(string catalog)
+    public void RemoveCollection(string collectionName)
     {
       lock (synclock)
       {
-        var paths = catalogs[catalog];
+        var paths = paperCollections[collectionName];
         if (paths == null)
           return;
 
-        catalogs[catalog] = null;
+        paperCollections[collectionName] = null;
 
         foreach (var path in paths)
         {
@@ -74,47 +74,47 @@ namespace Paper.Api.Rendering
           if (entries == null)
             continue;
 
-          entries.RemoveAll(x => x.Catalog == catalog);
+          entries.RemoveAll(x => x.CollectionName == collectionName);
         }
       }
     }
 
-    public bool HasCatalog(Catalog catalog)
+    public bool HasCollection(PaperCollection collection)
     {
       lock (synclock)
       {
-        return HasCatalog(catalog.Name);
+        return HasCollection(collection.Name);
       }
     }
 
-    public bool HasCatalog(string catalog)
+    public bool HasCollection(string collectionName)
     {
       lock (synclock)
       {
-        return catalogs.ContainsKey(catalog);
+        return paperCollections.ContainsKey(collectionName);
       }
     }
 
-    public ICollection<string> GetCatalogNames()
+    public ICollection<string> GetCollectionNames()
     {
       lock (synclock)
       {
-        return catalogs.Keys;
+        return paperCollections.Keys;
       }
     }
 
-    public IEnumerable<IPaper> GetCatalogPapers(string catalog)
+    public IEnumerable<IPaper> GetCollectionPapers(string collectionName)
     {
       lock (synclock)
       {
-        var paths = catalogs[catalog];
+        var paths = paperCollections[collectionName];
         if (paths == null)
           yield break;
 
         foreach (var path in paths)
         {
           var entries = index.Get(path);
-          foreach (var entry in entries.Where(x => x.Catalog == catalog))
+          foreach (var entry in entries.Where(x => x.CollectionName == collectionName))
           {
             yield return entry.Paper;
           }
@@ -134,14 +134,14 @@ namespace Paper.Api.Rendering
       }
     }
 
-    public IEnumerable<IPaper> FindPaper(string path, string catalog)
+    public IEnumerable<IPaper> FindPaper(string path, string collectionName)
     {
       lock (synclock)
       {
         var papers =
           from entries in index.Find(path)
           from entry in entries
-          where entry.Catalog == catalog
+          where entry.CollectionName == collectionName
           select entry.Paper;
         return papers.Reverse().ToArray();
       }
@@ -149,7 +149,7 @@ namespace Paper.Api.Rendering
 
     private class Entry
     {
-      public string Catalog { get; set; }
+      public string CollectionName { get; set; }
 
       public IPaper Paper { get; set; }
     }

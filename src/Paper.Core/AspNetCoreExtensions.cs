@@ -35,7 +35,7 @@ namespace Paper.Core
     {
       var bookshelf = new Bookshelf();
       services.AddSingleton(bookshelf);
-      bookshelf.AddExposedCatalogs(new Factory(services.BuildServiceProvider()));
+      bookshelf.AddExposedPaperCollections(new Factory(services.BuildServiceProvider()));
       return services;
     }
 

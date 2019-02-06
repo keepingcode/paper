@@ -8,11 +8,11 @@ using System.Text;
 namespace Paper.Api.Rendering
 {
   [DataContract(Namespace = "")]
-  public class Catalog
+  public class PaperCollection
   {
     private List<IPaper> _papers;
 
-    public Catalog(string name)
+    public PaperCollection(string name)
     {
       this.Name = name;
     }
