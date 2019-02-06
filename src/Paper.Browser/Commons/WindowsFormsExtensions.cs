@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Toolset;
 
 namespace Paper.Browser.Commons
 {
@@ -36,20 +37,43 @@ namespace Paper.Browser.Commons
 
     public static void Expand(this Form form)
     {
-      form.Call(() =>
+      try
       {
-        var mdiClient = GetMdiClient(form.MdiParent);
-        if (mdiClient != null)
+        form.Call(() =>
         {
-          form.Location = Point.Empty;
-          form.Size = new Size(mdiClient.Size.Width - 5, mdiClient.Size.Height - 5);
-        }
-      });
+          var screen = Screen.FromControl(form);
+          var area = screen.WorkingArea;
+
+          var bounds = new Rectangle(area.Location, area.Size);
+          bounds.Inflate(-50, -50);
+
+          form.Bounds = bounds;
+          form.WindowState = FormWindowState.Normal;
+        });
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+      }
     }
 
-    private static MdiClient GetMdiClient(Form form)
+    public static void Reduce(this Form form)
     {
-      return form.Controls.OfType<MdiClient>().FirstOrDefault();
+      try
+      {
+        form.Call(() =>
+        {
+          if (form.MinimumSize != Size.Empty)
+          {
+            form.Size = form.MinimumSize;
+            form.WindowState = FormWindowState.Normal;
+          }
+        });
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+      }
     }
   }
 }

@@ -29,13 +29,21 @@
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WindowForm));
       this.Timer = new System.Windows.Forms.Timer(this.components);
       this.PageContainer = new System.Windows.Forms.Panel();
-      this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.StatusBar = new System.Windows.Forms.StatusStrip();
       this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
       this.ProgressBar = new System.Windows.Forms.ToolStripProgressBar();
       this.ToolBar = new System.Windows.Forms.ToolStrip();
-      this.statusStrip1.SuspendLayout();
+      this.btExpand = new System.Windows.Forms.ToolStripButton();
+      this.btReduce = new System.Windows.Forms.ToolStripButton();
+      this.pnOverlay = new System.Windows.Forms.Panel();
+      this.pgProgress = new System.Windows.Forms.ProgressBar();
+      this.lbStatus = new System.Windows.Forms.Label();
+      this.StatusBar.SuspendLayout();
+      this.ToolBar.SuspendLayout();
+      this.pnOverlay.SuspendLayout();
       this.SuspendLayout();
       // 
       // PageContainer
@@ -45,24 +53,24 @@
       this.PageContainer.Dock = System.Windows.Forms.DockStyle.Fill;
       this.PageContainer.Location = new System.Drawing.Point(0, 25);
       this.PageContainer.Name = "PageContainer";
-      this.PageContainer.Size = new System.Drawing.Size(322, 148);
+      this.PageContainer.Size = new System.Drawing.Size(322, 71);
       this.PageContainer.TabIndex = 1;
       // 
-      // statusStrip1
+      // StatusBar
       // 
-      this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+      this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel,
             this.ProgressBar});
-      this.statusStrip1.Location = new System.Drawing.Point(0, 173);
-      this.statusStrip1.Name = "statusStrip1";
-      this.statusStrip1.Size = new System.Drawing.Size(322, 22);
-      this.statusStrip1.TabIndex = 1;
-      this.statusStrip1.Text = "statusStrip1";
+      this.StatusBar.Location = new System.Drawing.Point(0, 96);
+      this.StatusBar.Name = "StatusBar";
+      this.StatusBar.Size = new System.Drawing.Size(322, 22);
+      this.StatusBar.TabIndex = 1;
+      this.StatusBar.Text = "statusStrip1";
       // 
       // StatusLabel
       // 
       this.StatusLabel.Name = "StatusLabel";
-      this.StatusLabel.Size = new System.Drawing.Size(219, 17);
+      this.StatusLabel.Size = new System.Drawing.Size(205, 17);
       this.StatusLabel.Spring = true;
       this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -74,6 +82,9 @@
       // ToolBar
       // 
       this.ToolBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+      this.ToolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btExpand,
+            this.btReduce});
       this.ToolBar.Location = new System.Drawing.Point(0, 0);
       this.ToolBar.Name = "ToolBar";
       this.ToolBar.Size = new System.Drawing.Size(322, 25);
@@ -81,24 +92,78 @@
       this.ToolBar.TabIndex = 2;
       this.ToolBar.Text = "toolStrip1";
       // 
+      // btExpand
+      // 
+      this.btExpand.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.btExpand.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.btExpand.Image = ((System.Drawing.Image)(resources.GetObject("btExpand.Image")));
+      this.btExpand.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.btExpand.Name = "btExpand";
+      this.btExpand.Size = new System.Drawing.Size(56, 22);
+      this.btExpand.Text = "Expandir";
+      this.btExpand.Click += new System.EventHandler(this.btExpand_Click);
+      // 
+      // btReduce
+      // 
+      this.btReduce.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.btReduce.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.btReduce.Image = ((System.Drawing.Image)(resources.GetObject("btReduce.Image")));
+      this.btReduce.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.btReduce.Name = "btReduce";
+      this.btReduce.Size = new System.Drawing.Size(50, 22);
+      this.btReduce.Text = "Reduzir";
+      this.btReduce.Click += new System.EventHandler(this.btReduce_Click);
+      // 
+      // pnOverlay
+      // 
+      this.pnOverlay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.pnOverlay.Controls.Add(this.pgProgress);
+      this.pnOverlay.Controls.Add(this.lbStatus);
+      this.pnOverlay.Location = new System.Drawing.Point(12, 12);
+      this.pnOverlay.Name = "pnOverlay";
+      this.pnOverlay.Size = new System.Drawing.Size(298, 81);
+      this.pnOverlay.TabIndex = 3;
+      this.pnOverlay.Visible = false;
+      // 
+      // pgProgress
+      // 
+      this.pgProgress.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.pgProgress.Location = new System.Drawing.Point(0, 51);
+      this.pgProgress.Name = "pgProgress";
+      this.pgProgress.Size = new System.Drawing.Size(298, 10);
+      this.pgProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+      this.pgProgress.TabIndex = 2;
+      // 
+      // lbStatus
+      // 
+      this.lbStatus.Anchor = System.Windows.Forms.AnchorStyles.Top;
+      this.lbStatus.Location = new System.Drawing.Point(-3, 35);
+      this.lbStatus.Name = "lbStatus";
+      this.lbStatus.Size = new System.Drawing.Size(301, 13);
+      this.lbStatus.TabIndex = 1;
+      this.lbStatus.Text = ". . .";
+      // 
       // WindowForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(322, 195);
+      this.ClientSize = new System.Drawing.Size(322, 118);
+      this.ControlBox = false;
+      this.Controls.Add(this.pnOverlay);
       this.Controls.Add(this.PageContainer);
       this.Controls.Add(this.ToolBar);
-      this.Controls.Add(this.statusStrip1);
-      this.MaximizeBox = false;
-      this.MinimumSize = new System.Drawing.Size(230, 100);
+      this.Controls.Add(this.StatusBar);
       this.Name = "WindowForm";
-      this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Janela";
-      this.AutoSizeChanged += new System.EventHandler(this.WindowForm_AutoSizeChanged);
-      this.Resize += new System.EventHandler(this.WindowForm_Resize);
-      this.statusStrip1.ResumeLayout(false);
-      this.statusStrip1.PerformLayout();
+      this.MinimumSizeChanged += new System.EventHandler(this.WindowForm_MinimumSizeChanged);
+      this.StatusBar.ResumeLayout(false);
+      this.StatusBar.PerformLayout();
+      this.ToolBar.ResumeLayout(false);
+      this.ToolBar.PerformLayout();
+      this.pnOverlay.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -106,10 +171,15 @@
 
     #endregion
     internal System.Windows.Forms.Timer Timer;
-    internal System.Windows.Forms.Panel PageContainer;
-    private System.Windows.Forms.StatusStrip statusStrip1;
-    internal System.Windows.Forms.ToolStripStatusLabel StatusLabel;
     internal System.Windows.Forms.ToolStripProgressBar ProgressBar;
-    internal System.Windows.Forms.ToolStrip ToolBar;
+    private System.Windows.Forms.ToolStripButton btExpand;
+    private System.Windows.Forms.ToolStripButton btReduce;
+    public System.Windows.Forms.Panel PageContainer;
+    public System.Windows.Forms.StatusStrip StatusBar;
+    public System.Windows.Forms.ToolStrip ToolBar;
+    public System.Windows.Forms.ToolStripStatusLabel StatusLabel;
+    private System.Windows.Forms.Panel pnOverlay;
+    private System.Windows.Forms.ProgressBar pgProgress;
+    private System.Windows.Forms.Label lbStatus;
   }
 }

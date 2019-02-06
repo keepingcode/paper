@@ -85,7 +85,7 @@
       this.mnMenu.Location = new System.Drawing.Point(0, 0);
       this.mnMenu.Name = "mnMenu";
       this.mnMenu.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
-      this.mnMenu.Size = new System.Drawing.Size(674, 24);
+      this.mnMenu.Size = new System.Drawing.Size(284, 24);
       this.mnMenu.TabIndex = 1;
       this.mnMenu.Text = "menuStrip1";
       // 
@@ -117,18 +117,17 @@
       this.mnSettings.Name = "mnSettings";
       this.mnSettings.Size = new System.Drawing.Size(151, 22);
       this.mnSettings.Text = "&Configurações";
+      this.mnSettings.Click += new System.EventHandler(this.mnSettings_Click);
       // 
       // NavigatorForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(674, 373);
+      this.ClientSize = new System.Drawing.Size(284, 261);
       this.Controls.Add(this.mnMenu);
-      this.IsMdiContainer = true;
       this.Name = "NavigatorForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Paper Browser";
-      this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
       this.mnMenu.ResumeLayout(false);
       this.mnMenu.PerformLayout();
       this.ResumeLayout(false);

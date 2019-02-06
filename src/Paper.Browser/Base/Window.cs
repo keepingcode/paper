@@ -8,6 +8,7 @@ using Paper.Browser.Base.Forms;
 using Paper.Browser.Base.Pages;
 using Paper.Browser.Commons;
 using Paper.Media;
+using Toolset;
 
 namespace Paper.Browser.Base
 {
@@ -21,68 +22,117 @@ namespace Paper.Browser.Base
     internal Window(WindowForm form)
     {
       this.Form = form;
-      this.Form.Timer.Tick += (o, e) => ShowMessage(null, TimeSpan.Zero);
-    }
-
-    public void SetTitle(string title)
-    {
-      Form.Call(() => Form.Text = title);
+      this.Form.Timer.Tick += (o, e) => SetMessage(null, TimeSpan.Zero);
     }
 
     private void SetProgress(int percent)
     {
-      Form.Call(() =>
-      {
-        if (percent > 0)
-        {
-          percent = 0;
-        }
-        Form.ProgressBar.Style = (percent < 0) ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
-        Form.ProgressBar.Value = (percent < 0) ? 0 : percent;
-      });
-    }
-
-    public void ShowMessage(string status)
-    {
-      ShowMessage(status, TimeSpan.FromSeconds(5));
-    }
-
-    public void ShowMessage(string status, TimeSpan delay)
-    {
-      lock (synclock)
+      try
       {
         Form.Call(() =>
         {
-          Form.Timer.Enabled = false;
-          Form.StatusLabel.Text = status;
-          if (!string.IsNullOrEmpty(status))
+          if (percent > 0)
           {
-            Form.Timer.Interval =
-              delay.TotalMilliseconds.CompareTo(int.MaxValue) >= 0
-                ? int.MaxValue
-                : (int)delay.TotalMilliseconds;
-            Form.Timer.Enabled = true;
+            percent = 0;
           }
+          Form.ProgressBar.Style = (percent < 0) ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
+          Form.ProgressBar.Value = (percent < 0) ? 0 : percent;
         });
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+      }
+    }
+
+    public void SetMessage(string status)
+    {
+      SetMessage(status, TimeSpan.FromSeconds(5));
+    }
+
+    public void SetMessage(string status, TimeSpan timeout)
+    {
+      lock (synclock)
+      {
+        try
+        {
+          Form.Call(() =>
+          {
+            Form.Timer.Enabled = false;
+            Form.StatusLabel.Text = status;
+            if (!string.IsNullOrEmpty(status))
+            {
+              Form.Timer.Interval =
+                timeout.TotalMilliseconds.CompareTo(int.MaxValue) >= 0
+                  ? int.MaxValue
+                  : (int)timeout.TotalMilliseconds;
+              Form.Timer.Enabled = true;
+            }
+          });
+        }
+        catch (Exception ex)
+        {
+          ex.Trace();
+        }
       }
     }
 
     public async void OpenAsync(string href)
     {
-      SetProgress(-1);
-      SetTitle("Carregando...");
-      ShowMessage($"Localizando {href}...", TimeSpan.MaxValue);
+      try
+      {
+        SetFormState(href);
 
-      var entity = await Http.RequestEntityAsync(href);
+        var entity = await Http.RequestEntityAsync(href);
+        var page = PageFactory.CreatePage(this, entity);
 
-      SetProgress(0);
-      SetTitle(entity.Title ?? href);
-      ShowMessage("Localizado.");
+        Pack((UserControl)page);
 
-      var page = PageFactory.CreatePage(this, entity);
-      Pack((UserControl)page);
+        SetFormState(href, entity: entity);
 
-      this.Page = page;
+        this.Page = page;
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+        SetFormState(href, ex: ex);
+      }
+    }
+
+    private void SetFormState(string href, Entity entity = null, Exception ex = null)
+    {
+      try
+      {
+        Form.SuspendLayout();
+        Form.Call(() =>
+        {
+          if (ex != null)
+          {
+            Form.Text = "Falha";
+            Form.Overlay = false;
+            SetMessage("Falha no carregamento.", TimeSpan.MaxValue);
+            SetProgress(0);
+          }
+          else if (entity != null)
+          {
+            Form.Text = entity.Title ?? href;
+            Form.Overlay = false;
+            SetMessage("Localizado.");
+            SetProgress(0);
+          }
+          else
+          {
+            Form.Text = "Carregando...";
+            Form.Overlay = true;
+            SetMessage($"Localizando {href}...", TimeSpan.MaxValue);
+            SetProgress(-1);
+          }
+        });
+      }
+      finally
+      {
+        Form.ResumeLayout();
+      }
     }
 
     private void Pack(Control control)

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Paper.Browser.Commons;
+using Toolset;
 
 namespace Paper.Browser.Base.Forms
 {
@@ -15,6 +17,28 @@ namespace Paper.Browser.Base.Forms
     public NavigatorForm()
     {
       InitializeComponent();
+
+      SetBounds();
+      this.WindowState = FormWindowState.Maximized;
+    }
+
+    private void SetBounds()
+    {
+      try
+      {
+        var screen = Screen.FromControl(this);
+        var area = screen.WorkingArea;
+        this.Bounds = new Rectangle(
+          area.Left + area.Width - this.Width,
+          area.Top,
+          this.Width,
+          area.Height
+        );
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+      }
     }
 
     public void OpenSettings()

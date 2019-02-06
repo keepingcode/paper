@@ -16,8 +16,8 @@ namespace Paper.Browser.Base
     {
       var form = new WindowForm();
       form.Text = "Página em Branco";
-      form.MdiParent = Form;
-      form.Show();
+      //form.MdiParent = Form;
+      form.Show(Form);
 
       var window = new Window(form);
       return window;

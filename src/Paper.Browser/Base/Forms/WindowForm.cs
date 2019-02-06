@@ -16,26 +16,50 @@ namespace Paper.Browser.Base.Forms
     public WindowForm()
     {
       InitializeComponent();
-      FeedbackAutosize();
+      Overlay = true;
+      StatusLabel.TextChanged += (o, e) => lbStatus.Text = StatusLabel.Text;
     }
 
-    private void FeedbackAutosize()
+    public bool Overlay
     {
-      this.MaximizeBox = !this.AutoSize;
-    }
-
-    private void WindowForm_AutoSizeChanged(object sender, EventArgs e)
-    {
-      FeedbackAutosize();
-    }
-
-    private void WindowForm_Resize(object sender, EventArgs e)
-    {
-      if (this.WindowState == FormWindowState.Maximized)
+      get => pnOverlay.Visible;
+      set
       {
-        this.WindowState = FormWindowState.Normal;
-        this.Expand();
+        pnOverlay.Visible = value;
+
+        foreach (Control control in this.Controls)
+        {
+          control.Enabled = !pnOverlay.Visible;
+        }
+        ControlBox = !pnOverlay.Visible;
+
+        pnOverlay.Left = 0;
+        pnOverlay.Top = 0;
+        pnOverlay.Width = this.ClientSize.Width;
+        pnOverlay.Height = this.ClientSize.Height;
+        pnOverlay.BringToFront();
+        pnOverlay.Enabled = pnOverlay.Visible;
       }
+    }
+
+    private void FeedbackMinimumSize()
+    {
+      btReduce.Enabled = (this.MinimumSize != Size.Empty);
+    }
+
+    private void btExpand_Click(object sender, EventArgs e)
+    {
+      this.Expand();
+    }
+
+    private void btReduce_Click(object sender, EventArgs e)
+    {
+      this.Reduce();
+    }
+
+    private void WindowForm_MinimumSizeChanged(object sender, EventArgs e)
+    {
+      FeedbackMinimumSize();
     }
   }
 }
