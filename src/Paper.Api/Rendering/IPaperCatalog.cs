@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Paper.Api.Commons;
 
 namespace Paper.Api.Rendering
 {
-  public interface IPaperCollectionFatory
+  public interface IPaperCatalog : ICatalog<IPaper>
   {
-    PaperCollection CreateCollection();
   }
 }

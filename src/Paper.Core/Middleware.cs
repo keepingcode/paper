@@ -34,14 +34,14 @@ namespace Paper.Core
       var res = ctx.Response;
       try
       {
-        var bookshelf = serviceProvider.GetService<IBookshelf>();
-        var papers = bookshelf?.FindPapers(req.Path);
+        var catalog = serviceProvider.GetService<IPaperCatalog>();
+        var papers = catalog?.Find(req.Path);
         if (papers == null)
         {
           var status = HttpStatusCode.ServiceUnavailable;
           var message =
             "Paper não configurado corretamente. " +
-            "A instância de Bookshelf não foi configurada na instância de IServiceProvider.";
+            "A instância de IPaperCatalog não foi configurada na instância de IServiceProvider.";
           await WriteFaultAsync(ctx, status, message, null);
           return;
         }
@@ -55,7 +55,7 @@ namespace Paper.Core
         }
 
         var context = new RenderingContext();
-        context.Bookshelf = bookshelf;
+        context.PaperCatalog = catalog;
         context.Factory = new Factory(serviceProvider);
         context.Request = new Request(new HttpRequest(ctx));
         context.Response = new Response(context.Request, new HttpResponse(ctx));

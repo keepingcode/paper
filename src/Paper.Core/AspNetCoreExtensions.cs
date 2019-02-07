@@ -34,11 +34,9 @@ namespace Paper.Core
 
     public static IServiceCollection AddPaperServices(this IServiceCollection services)
     {
-      var bookshelf = new Bookshelf();
-      services.AddSingleton<IBookshelf>(bookshelf);
-      bookshelf.AddExposedPaperCollections(new Factory(services.BuildServiceProvider()));
-
-      services.AddSingleton<ICatalog>(new Catalog());
+      var catalog = new PaperCatalog();
+      services.AddSingleton<IPaperCatalog>(catalog);
+      catalog.AddExposedPapers(new Factory(services.BuildServiceProvider()));
 
       return services;
     }
@@ -56,7 +54,7 @@ namespace Paper.Core
     {
       return app
         .Map($"{prefix}/Api/1", chain => chain
-          .UseRewriter(new RewriteOptions().AddRedirect("^$", "/Bookshelf"))
+          .UseRewriter(new RewriteOptions().AddRedirect("^$", "/Catalog"))
           .UseMiddleware<Middleware>()
         );
     }

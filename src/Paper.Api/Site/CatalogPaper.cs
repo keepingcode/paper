@@ -14,9 +14,10 @@ namespace Paper.Api.Site
 
     public string Route { get; } = "/Sandbox";
 
-    public CatalogPaper(ICatalog catalog)
+    //public CatalogPaper(ICatalog catalog)
+    public CatalogPaper()
     {
-      this.catalog = catalog;
+      //this.catalog = catalog;
     }
 
     public async Task RenderAsync(RenderingContext context, NextAsync next)

@@ -63,31 +63,31 @@ Exemplo:
       ...
     }
 
-## Bookshelf
+## PaperCatalog
 
-Um Bookshelf é um índice de rotas de acesso aos Papers disponíveis no sistema.
-O Paper Server expõe o Bookshelf em uma URI de referência usada pelo Paper
+Um PaperCatalog é um índice de rotas de acesso aos Papers disponíveis no sistema.
+O Paper Server expõe o PaperCatalog em uma URI de referência usada pelo Paper
 Browser para navegação entre as instâncias conhecidas de Papers.
 
 ## Catalogs
 
 Um Catalog é um objeto contendo um mapeamento de rotas para instâncias de Paper.
 
-Quando um Catalog é adicionado a um Bookshelf todas as rotas mapeadas nele são
-publicadas no índice de navegação do Bookshelf.
-Quando um Catalog é removido de um Bookshelf todas as rotas mapeadas por ele são
-removidas do índice de navegação do Bookshelf.
+Quando um Catalog é adicionado a um PaperCatalog todas as rotas mapeadas nele são
+publicadas no índice de navegação do PaperCatalog.
+Quando um Catalog é removido de um PaperCatalog todas as rotas mapeadas por ele são
+removidas do índice de navegação do PaperCatalog.
 
 Os serviços interessados em publicar páginas na plataforma devem
 registrar suas instâncias de Catalog por meio de um dos métodos de registro
 disponíveis na API de utilização.
 
-O Bookshelf checa periodicamente os serviços vinculados às instâncias de Catalog
+O PaperCatalog checa periodicamente os serviços vinculados às instâncias de Catalog
 para determinar quais estão realmente online,
 e portanto, navegáveis.
 
 A API de utilização mantém uma checagem periódica do registro da instância de
-Catalog no Bookshelf para garantir que o serviço
+Catalog no PaperCatalog para garantir que o serviço
 está sempre accessivel.
 
 ## Pipelines
