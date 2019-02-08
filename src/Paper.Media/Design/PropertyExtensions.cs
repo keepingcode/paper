@@ -18,97 +18,110 @@ namespace Paper.Media.Design
     /// <summary>
     /// Adiciona uma propriedade à entidade.
     /// </summary>
-    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="holder">A entidade a ser modificada.</param>
     /// <param name="name">O nome da propriedade.</param>
     /// <param name="value">O valor da propriedade.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddProperty(this Entity entity, string name, object value)
+    public static THolder AddProperty<THolder>(this THolder holder, string name, object value)
+      where THolder : IPropertyHolder
     {
-      if (entity.Properties == null)
+      if (holder.Properties == null)
       {
-        entity.Properties = new PropertyCollection();
+        holder.Properties = new PropertyCollection();
       }
-      entity.Properties.AddProperty(name, value);
-      return entity;
+      holder.Properties.AddProperty(name, value);
+      return holder;
     }
 
     /// <summary>
     /// Adiciona à entidade uma propriedade do tipo <see cref="PropertyCollection"/>
     /// para suportar propriedades complexas.
     /// </summary>
-    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="holder">A entidade a ser modificada.</param>
     /// <param name="name">O nome da propriedade.</param>
     /// <param name="property">
     /// Uma função para construção da instância de <see cref="PropertyCollection"/>.
     /// </param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddProperty(this Entity entity, string name, Action<PropertyCollection> itemBuilder, params Action<PropertyCollection>[] otherItemBuilders)
+    public static THolder AddProperty<THolder>(this THolder holder, string name, Action<PropertyCollection> itemBuilder, params Action<PropertyCollection>[] otherItemBuilders)
+      where THolder : IPropertyHolder
     {
-      if (entity.Properties == null)
+      if (holder.Properties == null)
       {
-        entity.Properties = new PropertyCollection();
+        holder.Properties = new PropertyCollection();
       }
-      entity.Properties.AddProperty(name, itemBuilder);
-      otherItemBuilders.ForEach(b => entity.Properties.AddProperty(name, b));
-      return entity;
+      holder.Properties.AddProperty(name, itemBuilder);
+      otherItemBuilders.ForEach(b => holder.Properties.AddProperty(name, b));
+      return holder;
     }
 
     /// <summary>
     /// Adiciona uma propriedade à entidade.
     /// </summary>
-    /// <typeparam name="T">Tipo do valor da propriedade.</typeparam>
-    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <typeparam name="TValue">Tipo do valor da propriedade.</typeparam>
+    /// <param name="holder">A entidade a ser modificada.</param>
     /// <param name="name">O nome da propriedade.</param>
     /// <param name="builder">
     /// Construtor de valor da propriedade.
     /// O construtor deve retornar o novo valor da propriedade.
     /// </param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddProperty<T>(this Entity entity, string name, Func<T, T> builder)
-      where T : class
+    public static THolder AddProperty<THolder, TValue>(this THolder holder, string name, Func<TValue, TValue> builder)
+      where THolder : IPropertyHolder
+      where TValue : class
     {
-      if (entity.Properties == null)
+      if (holder.Properties == null)
       {
-        entity.Properties = new PropertyCollection();
+        holder.Properties = new PropertyCollection();
       }
-      entity.Properties.AddProperty<T>(name, builder);
-      return entity;
+      holder.Properties.AddProperty<TValue>(name, builder);
+      return holder;
     }
 
     /// <summary>
     /// Adiciona uma propriedade à entidade.
     /// </summary>
-    /// <typeparam name="T">Tipo do valor da propriedade.</typeparam>
-    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <typeparam name="TValue">Tipo do valor da propriedade.</typeparam>
+    /// <param name="holder">A entidade a ser modificada.</param>
     /// <param name="name">O nome da propriedade.</param>
     /// <param name="builder">Construtor de valor da propriedade.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddProperty<T>(this Entity entity, string name, Action<T> builder)
-      where T : class
+    public static THolder AddProperty<THolder, TValue>(this THolder holder, string name, Action<TValue> builder)
+      where THolder : IPropertyHolder
+      where TValue : class
     {
-      if (entity.Properties == null)
+      if (holder.Properties == null)
       {
-        entity.Properties = new PropertyCollection();
+        holder.Properties = new PropertyCollection();
       }
-      entity.Properties.AddProperty<T>(name, builder);
-      return entity;
+      holder.Properties.AddProperty<TValue>(name, builder);
+      return holder;
     }
 
     /// <summary>
     /// Copia as propriedads do objeto indicado para as propriedades da entidade.
     /// </summary>
-    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="holder">A entidade a ser modificada.</param>
     /// <param name="graph">O objeto que terá suas propriedades copiadas.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddProperties(this Entity entity, object graph)
+    public static THolder AddProperties<THolder>(this THolder holder, object graph, string[] select = null, string[] except = null)
+      where THolder : IPropertyHolder
     {
-      if (entity.Properties == null)
+      if (holder.Properties == null)
       {
-        entity.Properties = new PropertyCollection();
+        holder.Properties = new PropertyCollection();
       }
-      var properties = graph as IEnumerable<Property> ?? Property.UnwrapProperties(graph);
-      entity.Properties.AddMany(properties);
-      return entity;
+
+      var properties =
+        from property in (graph as IEnumerable<Property> ?? Property.UnwrapProperties(graph))
+        where @select == null || property.Name.EqualsAnyIgnoreCase(@select)
+        where except == null || !property.Name.EqualsAnyIgnoreCase(except)
+        select property;
+
+      holder.Properties.AddMany(properties);
+      return holder;
     }
 
     #endregion

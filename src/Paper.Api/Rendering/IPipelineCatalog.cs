@@ -5,7 +5,7 @@ using Paper.Api.Commons;
 
 namespace Paper.Api.Rendering
 {
-  public interface IPaperCatalog : ICatalog<IPaper>
+  public interface IPipelineCatalog : ICatalog<IPipeline>
   {
   }
 }

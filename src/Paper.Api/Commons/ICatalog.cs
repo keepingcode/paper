@@ -25,6 +25,8 @@ namespace Paper.Api.Commons
 
     IEnumerable<T> Find(string path);
 
+    IEnumerable<T> FindExact(string path);
+
     IEnumerable<T> FindInCollection(ICatalogCollection<T> collection);
 
     IEnumerable<T> FindInCollection(string collectionName);

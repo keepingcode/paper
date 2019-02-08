@@ -9,7 +9,7 @@ namespace Paper.Media
 {
   public class Href : IXmlSerializable
   {
-    public string Value { get; private set; }
+    public string Value { get; set; }
 
     public override string ToString()
     {

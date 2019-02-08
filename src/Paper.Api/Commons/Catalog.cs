@@ -18,7 +18,7 @@ namespace Paper.Api.Commons
     private readonly Func<T, string> pathGetter;
 
     private PathIndex<List<Entry<T>>> index = new PathIndex<List<Entry<T>>>();
-    private Map<string, List<string>> paperCollections = new Map<string, List<string>>();
+    private Map<string, List<string>> collections = new Map<string, List<string>>();
 
     public Catalog(Func<T, string> pathGetter)
     {
@@ -31,7 +31,7 @@ namespace Paper.Api.Commons
       {
         lock (synclock)
         {
-          return paperCollections.Keys;
+          return collections.Keys;
         }
       }
     }
@@ -55,16 +55,16 @@ namespace Paper.Api.Commons
     {
       lock (synclock)
       {
-        var paths = paperCollections[collectionName];
+        var paths = collections[collectionName];
         if (paths == null)
         {
-          paperCollections[collectionName] = paths = new List<string>();
+          collections[collectionName] = paths = new List<string>();
         }
 
         foreach (var item in items)
         {
           var path = GetItemPath(item);
-          var entries = index.Get(path);
+          var entries = index.FindExact(path).FirstOrDefault();
           if (entries == null)
           {
             entries = new List<Entry<T>>();
@@ -96,15 +96,15 @@ namespace Paper.Api.Commons
     {
       lock (synclock)
       {
-        var paths = paperCollections[collectionName];
+        var paths = collections[collectionName];
         if (paths == null)
           return;
 
-        paperCollections[collectionName] = null;
+        collections[collectionName] = null;
 
         foreach (var path in paths)
         {
-          var entries = index.Get(path);
+          var entries = index.FindExact(path).FirstOrDefault();
           if (entries == null)
             continue;
 
@@ -127,7 +127,7 @@ namespace Paper.Api.Commons
     {
       lock (synclock)
       {
-        return paperCollections.ContainsKey(collectionName);
+        return collections.ContainsKey(collectionName);
       }
     }
 
@@ -135,11 +135,23 @@ namespace Paper.Api.Commons
     {
       lock (synclock)
       {
-        var papers =
+        var items =
           from entries in index.Find(path)
           from entry in entries
           select entry.Item;
-        return papers.Reverse().ToArray();
+        return items.Reverse().ToArray();
+      }
+    }
+
+    public IEnumerable<T> FindExact(string path)
+    {
+      lock (synclock)
+      {
+        var items =
+          from entries in index.FindExact(path)
+          from entry in entries
+          select entry.Item;
+        return items.Reverse().ToArray();
       }
     }
 
@@ -167,13 +179,13 @@ namespace Paper.Api.Commons
     {
       lock (synclock)
       {
-        var papers =
+        var items =
           from entries in index.Find(path)
           from entry in entries
           where (collectionName == null)
              || (collectionName == entry.CollectionName)
           select entry.Item;
-        return papers.Reverse().ToArray();
+        return items.Reverse().ToArray();
       }
     }
 
@@ -181,14 +193,14 @@ namespace Paper.Api.Commons
 
     #region Importação de itens por composição.
 
-    public void AddExposedPapers(IFactory factory)
+    public void ImportExposedCollections(IObjectFactory factory)
     {
       AddExposedCollectionFactories(factory);
       AddExposedCollections(factory);
       AddExposedItems(factory);
     }
 
-    private void AddExposedCollectionFactories(IFactory factory)
+    private void AddExposedCollectionFactories(IObjectFactory factory)
     {
       var types = ExposedTypes.GetTypes<ICatalogCollectionFactory<T>>();
       foreach (var type in types)
@@ -206,7 +218,7 @@ namespace Paper.Api.Commons
       }
     }
 
-    private void AddExposedCollections(IFactory factory)
+    private void AddExposedCollections(IObjectFactory factory)
     {
       var types = ExposedTypes.GetTypes<ICatalogCollection<T>>();
       foreach (var type in types)
@@ -223,7 +235,7 @@ namespace Paper.Api.Commons
       }
     }
 
-    private void AddExposedItems(IFactory factory)
+    private void AddExposedItems(IObjectFactory factory)
     {
       var types = ExposedTypes.GetTypes<T>();
       foreach (var type in types)

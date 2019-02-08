@@ -88,58 +88,107 @@ namespace Paper.Api.Commons
 
     public void Remove(string path)
     {
-      var node = FindNodeExact(path);
-      if (node != null)
+      foreach (var node in DoFindExactMatches(path))
       {
-        node.Path = null;
-        node.Value = null;
+        if (node != null)
+        {
+          node.Path = null;
+          node.Value = null;
+        }
       }
-    }
-
-    public TValue Get(string path)
-    {
-      var node = FindNodeExact(path);
-      return node?.Value;
     }
 
     public IEnumerable<TValue> Find(string path)
     {
-      var nodes = FindNodeMatches(path);
+      var nodes = DoFindMatches(path);
       return nodes.Select(x => x.Value);
     }
 
-    private Node<TValue> FindNodeExact(string path)
+    public IEnumerable<TValue> FindExact(string path)
     {
-      Node<TValue> index = entries;
-      foreach (var token in path.ToLower().Split('/').NonNullOrEmpty())
-      {
-        var key = index.ContainsKey(token) ? token : index.ContainsKey("*") ? "*" : null;
-        if (key == null)
-          return null;
-        index = index[key];
-      }
-      return index;
+      var nodes = DoFindExactMatches(path);
+      return nodes.Select(x => x.Value);
     }
 
-    private IEnumerable<Node<TValue>> FindNodeMatches(string path)
+    private IEnumerable<string> Tokenize(string path)
     {
       var tokens = path.ToLower().Split('/').NonNullOrEmpty();
+      tokens = Normalize(tokens).Reverse();
+      return tokens;
+    }
+
+    private IEnumerable<string> Normalize(IEnumerable<string> tokens)
+    {
+      int skip = 0;
+      foreach (var token in tokens.Reverse())
+      {
+        if (token == ".")
+        {
+          continue;
+        }
+        if (token == "..")
+        {
+          skip++;
+          continue;
+        }
+        if (skip > 0)
+        {
+          skip--;
+          continue;
+        }
+        yield return token;
+      }
+    }
+
+    private IEnumerable<Node<TValue>> DoFindMatches(string path)
+    {
+      var tokens = Tokenize(path);
       var trail = new Stack<Node<TValue>>();
-      var step = entries;
+      IEnumerable<Node<TValue>> nodes = entries.AsSingle();
       foreach (var token in tokens)
       {
-        var node = step[token] ?? step["*"];
-        if (node == null)
-          break;
-
-        if (node.Value != null)
-        {
-          trail.Push(node);
-        }
-
-        step = node;
+        nodes = ExploreChildren(token, nodes);
+        nodes.Where(x => x.Value != null).ForEach(trail.Push);
       }
       return trail;
+    }
+
+    private IEnumerable<Node<TValue>> DoFindExactMatches(string path)
+    {
+      var tokens = Tokenize(path);
+      IEnumerable<Node<TValue>> nodes = entries.AsSingle();
+      foreach (var token in tokens)
+      {
+        nodes = ExploreChildren(token, nodes);
+        if (!nodes.Any())
+        {
+          break;
+        }
+      }
+      return nodes.Where(x => x.Value != null);
+    }
+
+    private IEnumerable<Node<TValue>> ExploreChildren(string token, IEnumerable<Node<TValue>> nodes)
+    {
+      if (token == "*")
+      {
+        var allChildren = nodes.SelectMany(x => x.Values);
+        foreach (var child in allChildren)
+        {
+          yield return child;
+        }
+      }
+      else
+      {
+        foreach (var node in nodes)
+        {
+          var child = node[token] ?? node["*"];
+          if (child != null)
+          {
+            yield return child;
+          }
+        }
+      }
     }
 
     public class Node<T> : Map<string, Node<T>>

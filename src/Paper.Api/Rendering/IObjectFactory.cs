@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Paper.Api.Rendering
 {
-  public interface IFactory
+  public interface IObjectFactory
   {
     object CreateObject(Type type, params object[] args);
   }

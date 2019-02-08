@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using Paper.Media;
 
-namespace Paper.Api.Site
+namespace Paper.Api.Extensions.Site
 {
-  public interface IMenu
+  public interface IRoute : IPropertyHolder
   {
-    ICatalog Parent { get; }
-
     Href Href { get; }
 
     string Title { get; }
-
-    string Description { get; }
   }
 }

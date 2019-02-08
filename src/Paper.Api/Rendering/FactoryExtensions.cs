@@ -6,7 +6,7 @@ namespace Paper.Api.Rendering
 {
   public static class FactoryExtensions
   {
-    public static T CreateObject<T>(this IFactory factory, params object[] args)
+    public static T CreateObject<T>(this IObjectFactory factory, params object[] args)
     {
       return (T)factory.CreateObject(typeof(T), args);
     }

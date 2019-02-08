@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Paper.Api.Rendering
 {
-  public interface IPaper
+  public interface IPipeline
   {
     string Route { get; }
 
-    Task RenderAsync(RenderingContext context, NextAsync next);
+    Task RenderAsync(Request request, Response response, NextAsync next);
   }
 }

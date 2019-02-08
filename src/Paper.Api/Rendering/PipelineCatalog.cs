@@ -7,10 +7,10 @@ using Toolset.Collections;
 
 namespace Paper.Api.Rendering
 {
-  public class PaperCatalog : Catalog<IPaper>, IPaperCatalog
+  public class PipelineCatalog : Catalog<IPipeline>, IPipelineCatalog
   {
-    public PaperCatalog()
-      : base(paper => paper.Route)
+    public PipelineCatalog()
+      : base(item => item.Route)
     {
     }
   }

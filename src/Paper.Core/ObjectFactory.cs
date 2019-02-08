@@ -7,18 +7,13 @@ using Paper.Api.Rendering;
 
 namespace Paper.Core
 {
-  public class Factory : IFactory
+  public class ObjectFactory : IObjectFactory
   {
-    private IServiceProvider serviceProvider;
-
-    public Factory(IServiceProvider provider)
-    {
-      this.serviceProvider = provider;
-    }
+    public IServiceProvider ServiceProvider { get; set; }
 
     public object CreateObject(Type type, params object[] args)
     {
-      return ActivatorUtilities.CreateInstance(serviceProvider, type, args);
+      return ActivatorUtilities.CreateInstance(ServiceProvider, type, args);
     }
   }
 }

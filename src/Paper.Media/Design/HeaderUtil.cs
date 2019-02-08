@@ -44,7 +44,7 @@ namespace Paper.Media.Design
 
       // Adicionando o nome do campo à coleção de nomes de campos
       //
-      targetEntity.AddProperty<List<CaseVariantString>>(targetPropertyName,
+      targetEntity.AddProperty<Entity, List<CaseVariantString>>(targetPropertyName,
         list =>
         {
           if (!list.Any(x => x.Value.EqualsIgnoreCase(headerName)))

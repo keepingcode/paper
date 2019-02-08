@@ -42,6 +42,8 @@ namespace Paper.Api.Rendering
         entity.AddLinkSelf(req.RequestUri);
       }
 
+      entity.ExpandUri(req.RequestUri, req.PathBase);
+
       var accept = new AcceptHeader(req.Headers, req.QueryArgs);
       var mimeType = accept.BestMimeType;
       var encoding = accept.BestEncoding;
@@ -60,6 +62,8 @@ namespace Paper.Api.Rendering
       {
         serializer.Serialize(entity, memory, encoding);
         memory.Position = 0;
+
+        Status = HttpStatusCode.OK;
 
         Headers[HeaderNames.ContentType] = $"{contentType}; charset={encoding.WebName}";
         SetContentDisposition(mimeType, entity);

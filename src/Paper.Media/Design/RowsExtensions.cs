@@ -211,10 +211,12 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade modificada.</param>
     /// <param name="graph">Os dados do registro adicionado à entidade.</param>
     /// <param name="builder">O construtor do registro.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRow<T>(this Entity entity, T graph, Action<Entity> builder)
+    public static Entity AddRow<T>(this Entity entity, T graph, Action<Entity> builder, string[] select = null, string[] except = null)
     {
-      DoAddGraphs(entity, graph.AsSingle(), (e, x) => builder.Invoke(e));
+      DoAddGraphs(entity, graph.AsSingle(), (e, x) => builder.Invoke(e), select, except);
       return entity;
     }
 
@@ -224,10 +226,12 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade modificada.</param>
     /// <param name="graph">Os dados do registro adicionado à entidade.</param>
     /// <param name="builder">O construtor do registro.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRow<T>(this Entity entity, T graph, Action<Entity, T> builder = null)
+    public static Entity AddRow<T>(this Entity entity, T graph, Action<Entity, T> builder = null, string[] select = null, string[] except = null)
     {
-      DoAddGraphs(entity, graph.AsSingle(), builder);
+      DoAddGraphs(entity, graph.AsSingle(), builder, select, except);
       return entity;
     }
 
@@ -240,10 +244,12 @@ namespace Paper.Media.Design
     /// O método é invocado para cada registro criado.
     /// </param>
     /// <param name="rows">Os registros adicionados.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRows<T>(this Entity entity, IEnumerable<T> rows, Action<Entity> builder)
+    public static Entity AddRows<T>(this Entity entity, IEnumerable<T> rows, Action<Entity> builder, string[] select = null, string[] except = null)
     {
-      DoAddGraphs(entity, rows, (e, x) => builder.Invoke(e));
+      DoAddGraphs(entity, rows, (e, x) => builder.Invoke(e), select, except);
       return entity;
     }
 
@@ -256,14 +262,16 @@ namespace Paper.Media.Design
     /// O método é invocado para cada registro criado.
     /// </param>
     /// <param name="rows">Os registros adicionados.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRows<T>(this Entity entity, IEnumerable<T> rows, Action<Entity, T> builder = null)
+    public static Entity AddRows<T>(this Entity entity, IEnumerable<T> rows, Action<Entity, T> builder = null, string[] select = null, string[] except = null)
     {
-      DoAddGraphs(entity, rows, builder);
+      DoAddGraphs(entity, rows, builder, select, except);
       return entity;
     }
 
-    private static void DoAddGraphs<T>(Entity entity, IEnumerable<T> rows, Action<Entity, T> builder)
+    private static void DoAddGraphs<T>(Entity entity, IEnumerable<T> rows, Action<Entity, T> builder, string[] select = null, string[] except = null)
     {
       if (entity.Entities == null)
       {
@@ -284,7 +292,7 @@ namespace Paper.Media.Design
       foreach (var row in rows)
       {
         var item = new Entity();
-        item.AddData(row);
+        item.AddData(row, select: select, except: except);
         item.AddRel(Rel.Rows);
         item.AddClass(Class.Row);
         entity.Entities.Add(item);

@@ -63,8 +63,36 @@ namespace Paper.Media.Design
     /// </summary>
     /// <param name="entity">A entidade modificada.</param>
     /// <param name="data">Os dados adicionados à entidade.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddData(this Entity entity, object data)
+    public static Entity AddData<T>(this Entity entity, T data, string[] select = null, string[] except = null)
+    {
+      return AddData(entity, data, typeof(T), select, except);
+    }
+
+    /// <summary>
+    /// Adiciona as propriedades do objeto indicado como dados na entidade indicada.
+    /// </summary>
+    /// <param name="entity">A entidade modificada.</param>
+    /// <param name="data">Os dados adicionados à entidade.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
+    /// <returns>A própria entidade modificada.</returns>
+    public static Entity AddData(this Entity entity, object data, string[] select = null, string[] except = null)
+    {
+      return AddData(entity, data, data.GetType(), select, except);
+    }
+
+    /// <summary>
+    /// Adiciona as propriedades do objeto indicado como dados na entidade indicada.
+    /// </summary>
+    /// <param name="entity">A entidade modificada.</param>
+    /// <param name="data">Os dados adicionados à entidade.</param>
+    /// <param name="select">Nome das propriedades consideradas.</param>
+    /// <param name="except">Nome das propriedades excluídas.</param>
+    /// <returns>A própria entidade modificada.</returns>
+    public static Entity AddData(this Entity entity, object data, Type dataType, string[] select = null, string[] except = null)
     {
       if (entity.Entities == null)
       {
@@ -75,9 +103,9 @@ namespace Paper.Media.Design
         entity.Properties = new PropertyCollection();
       }
 
-      entity.AddClass(ClassNames.Data, Conventions.MakeName(data));
-      entity.AddDataHeadersFrom(data);
-      entity.AddProperties(data);
+      entity.AddClass(ClassNames.Data, Conventions.MakeName(dataType));
+      entity.AddDataHeadersFrom(data, select: select, except: except);
+      entity.AddProperties(data, select, except);
 
       return entity;
     }
@@ -151,9 +179,14 @@ namespace Paper.Media.Design
     /// <typeparam name="T">Um tipo para inferência dos campos.</typeparam>
     /// <param name="entity">A entidade modificada.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddDataHeadersFrom<T>(this Entity entity, Action<HeaderOptions> builder)
+    public static Entity AddDataHeadersFrom<T>(this Entity entity, Action<HeaderOptions> builder = null, string[] select = null, string[] except = null)
     {
-      var properties = Property.UnwrapPropertyInfo(typeof(T));
+      var properties =
+        from property in Property.UnwrapPropertyInfo(typeof(T))
+        where @select == null || property.Name.EqualsAnyIgnoreCase(@select)
+        where except == null || !property.Name.EqualsAnyIgnoreCase(except)
+        select property;
+
       foreach (var property in properties)
       {
         HeaderUtil.AddHeaderToEntity(
@@ -175,9 +208,14 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade modificada.</param>
     /// <param name="typeOrInstance">Um tipo ou instância para inferência dos campos.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddDataHeadersFrom(this Entity entity, object typeOrInstance, Action<HeaderOptions> builder = null)
+    public static Entity AddDataHeadersFrom(this Entity entity, object typeOrInstance, Action<HeaderOptions> builder = null, string[] select = null, string[] except = null)
     {
-      var properties = Property.UnwrapPropertyInfo(typeOrInstance);
+      var properties =
+        from property in Property.UnwrapPropertyInfo(typeOrInstance)
+        where @select == null || property.Name.EqualsAnyIgnoreCase(@select)
+        where except == null || !property.Name.EqualsAnyIgnoreCase(except)
+        select property;
+
       foreach (var property in properties)
       {
         HeaderUtil.AddHeaderToEntity(

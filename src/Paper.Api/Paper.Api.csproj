@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Compile Remove="Rendering\BookshelfExtensions.cs" />
+    <Compile Remove="Rendering\RenderingContext.cs" />
   </ItemGroup>
 
   <ItemGroup>
