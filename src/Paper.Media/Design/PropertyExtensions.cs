@@ -106,7 +106,7 @@ namespace Paper.Media.Design
     /// <param name="select">Nome das propriedades consideradas.</param>
     /// <param name="except">Nome das propriedades excluídas.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static THolder AddProperties<THolder>(this THolder holder, object graph, string[] select = null, string[] except = null)
+    public static THolder AddProperties<THolder>(this THolder holder, object graph, IEnumerable<string> select = null, IEnumerable<string> except = null)
       where THolder : IPropertyHolder
     {
       if (holder.Properties == null)

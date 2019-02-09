@@ -11,8 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\**" />
     <Compile Remove="temp\**" />
+    <EmbeddedResource Remove="Extensions\**" />
     <EmbeddedResource Remove="temp\**" />
+    <None Remove="Extensions\**" />
     <None Remove="temp\**" />
   </ItemGroup>
 

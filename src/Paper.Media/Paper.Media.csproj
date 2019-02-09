@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Compile Remove="Design\IPaper.cs" />
+    <Compile Remove="Design\MediaObjectExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -33,39 +33,14 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
-  
+  class Record
+  {
+    public int Id { get; set; }
+    public string Name { get; set; }
+  }
+
   class Program
   {
-    private static IEnumerable<string> Tokenize(string path)
-    {
-      var tokens = path.ToLower().Split('/').NonNullOrEmpty();
-      tokens = Normalize(tokens).Reverse();
-      return tokens;
-    }
-
-    private static IEnumerable<string> Normalize(IEnumerable<string> tokens)
-    {
-      int skip = 0;
-      foreach (var token in tokens.Reverse())
-      {
-        if (token == ".")
-        {
-          continue;
-        }
-        if (token == "..")
-        {
-          skip++;
-          continue;
-        }
-        if (skip > 0)
-        {
-          skip--;
-          continue;
-        }
-        yield return token;
-      }
-    }
-
     [STAThread]
     static void Main()
     {
@@ -73,8 +48,22 @@ namespace Sandbox
       Application.SetCompatibleTextRenderingDefault(false);
       try
       {
-        var tokens = Tokenize("../a");
-        Debug.WriteLine(string.Join("/", tokens));
+        var entity = new Entity();
+
+        var record1 = new Record { Id = 1, Name = "One" };
+        var record2 = new Record { Id = 2, Name = "Two" };
+        var records = new[]
+        {
+          new Record { Id = 3, Name = "Three" },
+          new Record { Id = 3, Name = "Four" }
+        };
+
+        // entity.SetRecord(record1, select: new[] { "Id" });
+        // entity.AddHeaders<Record>(new[] { "record", "list", "table" }, select: new[] { "Id" });
+
+        entity.SetRecordAndHeaders(record1, select: new[] { "Id" });
+
+        Debug.WriteLine(entity.ToJson());
       }
       catch (Exception ex)
       {

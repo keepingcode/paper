@@ -41,9 +41,9 @@ namespace Paper.Api.Extensions.Site
       var entity = new Entity();
       var rowHeaders = new List<string>();
 
-      entity.AddClass(ClassNames.Data);
+      entity.AddClass(ClassNames.Record);
       entity.AddClass(Conventions.MakeName(typeof(ISiteMap)));
-      entity.AddTitle(catalog.Title);
+      entity.SetTitle(catalog.Title);
       entity.AddLinkSelf(route.Append(catalog.Href).ToHref());
       foreach (var property in catalog.Properties.NonNull())
       {
@@ -66,7 +66,7 @@ namespace Paper.Api.Extensions.Site
         row.AddClass(ClassNames.Data);
         row.AddClass(Conventions.MakeName((item is ISiteMap) ? typeof(ISiteMap) : typeof(IRoute)));
         row.AddRel(RelNames.Rows);
-        row.AddTitle(item.Title);
+        row.SetTitle(item.Title);
         row.AddLinkSelf((item is ISiteMap) ? route.Append(item.Href).ToHref() : item.Href);
         foreach (var property in item.Properties.NonNull())
         {

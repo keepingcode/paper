@@ -7,11 +7,11 @@ namespace Paper.Media.Design
   /// <summary>
   /// Construtor de uma entidade que representa um cabeçalho.
   /// </summary>
-  public class HeaderOptions
+  public class HeaderBuilder
   {
     private readonly Entity entity;
 
-    internal HeaderOptions(Entity entity)
+    internal HeaderBuilder(Entity entity)
     {
       this.entity = entity;
     }
@@ -27,7 +27,7 @@ namespace Paper.Media.Design
     /// <param name="builder">O construtor do cabeçalho.</param>
     /// <param name="title">O valor do campo.</param>
     /// <returns>A própria instância do construtor do cabeçalho.</returns>
-    public HeaderOptions AddTitle(string title)
+    public HeaderBuilder AddTitle(string title)
     {
       entity.AddProperty("Title", title);
       return this;
@@ -39,7 +39,7 @@ namespace Paper.Media.Design
     /// <param name="builder">O construtor do cabeçalho.</param>
     /// <param name="dataType">O valor do campo.</param>
     /// <returns>A própria instância do construtor do cabeçalho.</returns>
-    public HeaderOptions AddDataType(string dataType)
+    public HeaderBuilder AddDataType(string dataType)
     {
       entity.AddProperty("DataType", dataType);
       return this;
@@ -51,7 +51,7 @@ namespace Paper.Media.Design
     /// <param name="builder">O construtor do cabeçalho.</param>
     /// <param name="type">O tipo do campo.</param>
     /// <returns>A própria instância do construtor do cabeçalho.</returns>
-    public HeaderOptions AddDataType(Type type)
+    public HeaderBuilder AddDataType(Type type)
     {
       var dataType = DataTypeNames.GetDataTypeName(type);
       entity.AddProperty("DataType", dataType);
@@ -64,7 +64,7 @@ namespace Paper.Media.Design
     /// <param name="builder">O construtor do cabeçalho.</param>
     /// <param name="hidden">O valor do campo.</param>
     /// <returns>A própria instância do construtor do cabeçalho.</returns>
-    public HeaderOptions AddHidden(bool hidden = true)
+    public HeaderBuilder AddHidden(bool hidden = true)
     {
       if (hidden)
       {

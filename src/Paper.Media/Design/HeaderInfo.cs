@@ -119,7 +119,7 @@ namespace Paper.Media.Design
     /// Copia as propriedades definidas para a coleção de opções de coluna indicada.
     /// </summary>
     /// <param name="options">As opções de coluna.</param>
-    public void CopyToHeaderOptions(HeaderOptions options)
+    public void CopyToHeaderOptions(HeaderBuilder options)
     {
       if (Title != null)
         options.AddTitle(Title);

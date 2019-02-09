@@ -442,7 +442,7 @@ namespace Paper.Media.Design
 
       var field = GetOrAddField(action.Fields, name);
 
-      field.AddTitle(title ?? name.ChangeCase(TextCase.ProperCase));
+      field.SetTitle(title ?? name.ChangeCase(TextCase.ProperCase));
       field.AddDataType(dataType ?? DataTypeNames.Text);
 
       if (builder != null)

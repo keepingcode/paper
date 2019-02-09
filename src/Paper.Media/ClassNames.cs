@@ -17,6 +17,11 @@ namespace Paper.Media
     public const string Blueprint = "blueprint";
 
     /// <summary>
+    /// Nome de classe que representa um registro.
+    /// </summary>
+    public const string Record = "record";
+
+    /// <summary>
     /// Nome de classe que representa dados de um formulário de edição.
     /// </summary>
     public const string Form = "form";
@@ -112,6 +117,81 @@ namespace Paper.Media
     {
       // O algoritmo é o mesmo aplicado ao tipo de dados.
       return DataTypeNames.GetDataTypeName(typeOrInstance);
+    }
+
+    /// <summary>
+    /// Determina se a classe representa uma classe de metadado.
+    /// 
+    /// Uma classe de metadado segue a convenção camelCase e possui função interna à plataforma do Paper.
+    /// </summary>
+    /// <param name="class">A classe verificada.</param>
+    /// <returns>Verdadeiro se o tipo corresponde a uma classe de metadado; Falso caso contrário.</returns>
+    public static bool IsMetaClass(string @class)
+    {
+      return !char.IsLower(@class.FirstOrDefault());
+    }
+
+    /// <summary>
+    /// Determina se a classe representa uma classe de usuário.
+    /// 
+    /// Uma classe de usuário segue a convenção PascalCase e possui função apenas para o aplicativo usuário
+    /// da plataforma do Paper.
+    /// </summary>
+    /// <param name="class">A classe verificada.</param>
+    /// <returns>Verdadeiro se o tipo corresponde a uma classe de usuario; Falso caso contrário.</returns>
+    public static bool IsUserClass(string @class)
+    {
+      return !char.IsLower(@class.FirstOrDefault());
+    }
+
+    /// <summary>
+    /// Determina se a coleção de nomes contém classes de metadados.
+    /// 
+    /// Uma classe de metadado segue a convenção camelCase e possui função interna à plataforma do Paper.
+    /// </summary>
+    /// <param name="classes">A classe verificada.</param>
+    /// <returns>Verdadeiro se a coleção de nomes contém uma classe de metadado.</returns>
+    public static bool HasMetaClass(NameCollection classes)
+    {
+      return classes?.Any(IsMetaClass) == true;
+    }
+
+    /// <summary>
+    /// Determina se a coleção de nomes contém classes de usuário.
+    /// 
+    /// Uma classe de usuário segue a convenção PascalCase e possui função apenas para o aplicativo usuário
+    /// da plataforma do Paper.
+    /// </summary>
+    /// <param name="classes">A classe verificada.</param>
+    /// <returns>Verdadeiro se a coleção de nomes contém uma classe de metadado.</returns>
+    public static bool HasUserClass(NameCollection classes)
+    {
+      return classes?.Any(IsUserClass) == true;
+    }
+
+    /// <summary>
+    /// Determina se a classe representa uma classe de metadado.
+    /// 
+    /// Uma classe de metadado segue a convenção camelCase e possui função interna à plataforma do Paper.
+    /// </summary>
+    /// <param name="classes">A classe verificada.</param>
+    /// <returns>Verdadeiro se o tipo corresponde a uma classe de metadado; Falso caso contrário.</returns>
+    public static IEnumerable<string> GetMetaClass(NameCollection classes)
+    {
+      return classes?.Where(IsMetaClass) ?? Enumerable.Empty<string>();
+    }
+
+    /// <summary>
+    /// Determina se a classe representa uma classe de usuário.
+    /// 
+    /// Uma classe de usuário segue a convenção PascalCase e possui função apenas para o aplicativo usuário
+    /// da plataforma do Paper.
+    /// </summary>
+    /// <param name="classes">A classe verificada.</param>
+    /// <returns>Verdadeiro se o tipo corresponde a uma classe de usuario; Falso caso contrário.</returns>
+    public static IEnumerable<string> GetUserClass(NameCollection classes)
+    {
+      return classes?.Where(IsUserClass) ?? Enumerable.Empty<string>();
     }
   }
 }

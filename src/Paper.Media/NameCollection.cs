@@ -34,6 +34,7 @@ namespace Paper.Media
     {
       var groups =
         from item in ParseNames2(items)
+        where !store.Contains(item)
         let isCamelCase = char.IsLower(item.FirstOrDefault())
         group item by isCamelCase into g
         select new { isCamelCase = g.Key, items = g };

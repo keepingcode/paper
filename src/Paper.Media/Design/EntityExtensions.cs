@@ -13,7 +13,7 @@ namespace Paper.Media.Design
   /// </summary>
   public static class EntityExtensions
   {
-    #region Básicos
+    #region Title
 
     /// <summary>
     /// Define o título da entidade.
@@ -21,7 +21,8 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <param name="title">O novo título da entidade.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddTitle(this Entity entity, string title)
+    public static TMedia SetTitle<TMedia>(this TMedia entity, string title)
+      where TMedia : IMediaObject
     {
       entity.Title = title;
       return entity;
@@ -37,7 +38,8 @@ namespace Paper.Media.Design
     /// O tipo que será usado como base para definição do título.
     /// </param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddTitle(this Entity entity, Type baseType)
+    public static TMedia SetTitle<TMedia>(this TMedia entity, Type baseType)
+      where TMedia : IMediaObject
     {
       var attribute =
         baseType
@@ -62,62 +64,367 @@ namespace Paper.Media.Design
     /// </typeparam>
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddTitle<T>(this Entity entity)
+    public static Entity SetTitle<T>(this Entity entity)
     {
-      return AddTitle(entity, typeof(T));
+      return SetTitle(entity, typeof(T));
     }
 
     /// <summary>
-    /// Adiciona as classes indicadas à entidade.
+    /// Constrói um título para a entidade a partir do tipo indicado.
+    /// O título é lido do atributo de classe [DisplayName], caso não exista,
+    /// o título é construído a partir do próprio nome do tipo.
     /// </summary>
-    /// <param name="entity">A entidade a ser modificada.</param>
-    /// <param name="className">O nome de uma classe.</param>
-    /// <param name="otherClassNames">Os nomes de outras classes.</param>
+    /// <typeparam name="T">
+    /// O tipo que será usado como base para definição do título.
+    /// </typeparam>
+    /// <param name="link">A entidade a ser modificada.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddClass(this Entity entity, string className, params string[] otherClassNames)
+    public static Link SetTitle<T>(this Link link)
     {
-      if (entity.Class == null)
-      {
-        entity.Class = new NameCollection();
-      }
-      entity.Class.Add(className);
-      entity.Class.AddMany(otherClassNames);
+      return SetTitle(link, typeof(T));
+    }
+
+    /// <summary>
+    /// Constrói um título para a entidade a partir do tipo indicado.
+    /// O título é lido do atributo de classe [DisplayName], caso não exista,
+    /// o título é construído a partir do próprio nome do tipo.
+    /// </summary>
+    /// <typeparam name="T">
+    /// O tipo que será usado como base para definição do título.
+    /// </typeparam>
+    /// <param name="field">A entidade a ser modificada.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static Field SetTitle<T>(this Field field)
+    {
+      return SetTitle(field, typeof(T));
+    }
+
+    #endregion
+
+    #region Class
+
+    /// <summary>
+    /// Obtém a coleção de classes ou cria e retorna uma caso esteja nula.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <returns>A coleção de nomes.</returns>
+    private static NameCollection GetClass<TMedia>(this TMedia entity)
+      where TMedia : IMediaObject
+    {
+      return entity.Class ?? (entity.Class = new NameCollection());
+    }
+    
+    /// <summary>
+    /// Adiciona classes à coleção de classes da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia>(this TMedia entity, params Class[] classes)
+      where TMedia : IMediaObject
+    {
+      entity.GetClass().AddMany(classes.Select(x => x.GetName()));
       return entity;
     }
 
     /// <summary>
-    /// Infere nomes de classes para a entidade baseado nos tipos indicados.
+    /// Adiciona classes à coleção de classes da entidade.
     /// </summary>
-    /// <param name="entity">A entidade a ser modificada.</param>
-    /// <param name="type">Um tipo para inferência de nome de classe.</param>
-    /// <param name="otherTypes">Outros tipos para inferência de nomes de classe.</param>
-    /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddClass(this Entity entity, Type type, params Type[] otherTypes)
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia>(this TMedia entity, IEnumerable<Class> classes)
+      where TMedia : IMediaObject
     {
-      if (entity.Class == null)
-      {
-        entity.Class = new NameCollection();
-      }
-      entity.Class.Add(DataTypeNames.GetDataTypeName(type));
-      entity.Class.AddMany(
-        otherTypes.Select(x => DataTypeNames.GetDataTypeName(x))
-      );
+      entity.GetClass().AddMany(classes.Select(x => x.GetName()));
       return entity;
     }
 
     /// <summary>
-    /// Infere um nome de classe a partir do tipo indicado.
+    /// Adiciona classes à coleção de classes da entidade.
     /// </summary>
-    /// <typeparam name="T">Tipo base para inferência do nome de classe.</typeparam>
-    /// <param name="entity">A entidade a ser modificada.</param>
-    /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddClass<T>(this Entity entity)
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia>(this TMedia entity, params string[] classes)
+      where TMedia : IMediaObject
     {
-      if (entity.Class == null)
-      {
-        entity.Class = new NameCollection();
-      }
-      entity.Class.Add(DataTypeNames.GetDataTypeName(typeof(T)));
+      entity.GetClass().AddMany(classes);
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona classes à coleção de classes da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia>(this TMedia entity, IEnumerable<string> classes)
+      where TMedia : IMediaObject
+    {
+      entity.GetClass().AddMany(classes);
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona classes à coleção de classes da entidade.
+    /// Os nomes das classes são inferidos dos tipos indicados.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia>(this TMedia entity, params Type[] classes)
+      where TMedia : IMediaObject
+    {
+      entity.GetClass().AddMany(classes.Select(Conventions.MakeName));
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona classes à coleção de classes da entidade.
+    /// Os nomes das classes são inferidos dos tipos indicados.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia>(this TMedia entity, IEnumerable<Type> classes)
+      where TMedia : IMediaObject
+    {
+      entity.GetClass().AddMany(classes.Select(Conventions.MakeName));
+      return entity;
+    }
+
+    /// <summary>
+    /// Define as classes da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia>(this TMedia entity, params Class[] classes)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.AddMany(classes.Select(x => x.GetName()));
+      return entity;
+    }
+
+    /// <summary>
+    /// Define as classes da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia>(this TMedia entity, IEnumerable<Class> classes)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.AddMany(classes.Select(x => x.GetName()));
+      return entity;
+    }
+
+    /// <summary>
+    /// Define as classes da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia>(this TMedia entity, params string[] classes)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.AddMany(classes);
+      return entity;
+    }
+
+    /// <summary>
+    /// Define as classes da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia>(this TMedia entity, IEnumerable<string> classes)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.AddMany(classes);
+      return entity;
+    }
+
+    /// <summary>
+    /// Define as classes da entidade.
+    /// Os nomes das classes são inferidos dos tipos indicados.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia>(this TMedia entity, params Type[] classes)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.AddMany(classes.Select(Conventions.MakeName));
+      return entity;
+    }
+
+    /// <summary>
+    /// Define as classes da entidade.
+    /// Os nomes das classes são inferidos dos tipos indicados.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <param name="classes">As classes adicionadas.</param>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia>(this TMedia entity, IEnumerable<Type> classes)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.AddMany(classes.Select(Conventions.MakeName));
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona a classe à coleção de classes da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia AddClass<TMedia, TClass>(this TMedia entity)
+      where TMedia : IMediaObject
+    {
+      entity.GetClass().Add(Conventions.MakeName(typeof(TClass)));
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona a classe à coleção de classes da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static Entity AddClass<TClass>(this Entity entity)
+    {
+      entity.GetClass().Add(Conventions.MakeName(typeof(TClass)));
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona a classe à coleção de classes da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="link">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static Link AddClass<TClass>(this Link link)
+    {
+      link.GetClass().Add(Conventions.MakeName(typeof(TClass)));
+      return link;
+    }
+
+    /// <summary>
+    /// Adiciona a classe à coleção de classes da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="field">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static Field AddClass<TClass>(this Field field)
+    {
+      field.GetClass().Add(Conventions.MakeName(typeof(TClass)));
+      return field;
+    }
+
+    /// <summary>
+    /// Define a classe da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static TMedia SetClass<TMedia, TClass>(this TMedia entity)
+      where TMedia : IMediaObject
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.Add(Conventions.MakeName(typeof(TClass)));
+      return entity;
+    }
+
+    /// <summary>
+    /// Define a classe da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="entity">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static Entity SetClass<TClass>(this Entity entity)
+    {
+      var @class = entity.GetClass();
+      @class.Clear();
+      @class.Add(Conventions.MakeName(typeof(TClass)));
+      return entity;
+    }
+
+    /// <summary>
+    /// Define a classe da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="link">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static Link SetClass<TClass>(this Link link)
+    {
+      var @class = link.GetClass();
+      @class.Clear();
+      @class.Add(Conventions.MakeName(typeof(TClass)));
+      return link;
+    }
+
+    /// <summary>
+    /// Define a classe da entidade.
+    /// O nome da classe é inferido do tipo indicado.
+    /// </summary>
+    /// <param name="field">A entidade alvo.</param>
+    /// <typeparam name="TClass">O tipo da classe adicionada.</typeparam>
+    /// <returns>A própria instância da entidade.</returns>
+    public static Field SetClass<TClass>(this Field field)
+    {
+      var @class = field.GetClass();
+      @class.Clear();
+      @class.Add(Conventions.MakeName(typeof(TClass)));
+      return field;
+    }
+
+    #endregion
+
+    #region Rel
+
+    /// <summary>
+    /// Obtém a coleção de nomes ou define uma nova coleção caso esteja nula.
+    /// </summary>
+    /// <param name="entity">A entidade destino.</param>
+    /// <returns>A coleção de nomes.</returns>
+    private static NameCollection GetRel<TMedia>(this TMedia entity)
+      where TMedia : IMediaObject
+    {
+      return entity.Rel ?? (entity.Rel = new NameCollection());
+    }
+
+    /// <summary>
+    /// Adiciona as relações indicadas à entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="rels">Nomes das relações.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static TMedia AddRel<TMedia>(this TMedia entity, params Rel[] rels)
+      where TMedia : IMediaObject
+    {
+      entity.GetRel().AddMany(rels.Select(x => x.GetName()));
       return entity;
     }
 
@@ -125,17 +432,12 @@ namespace Paper.Media.Design
     /// Adiciona as relações indicadas à entidade.
     /// </summary>
     /// <param name="entity">A entidade a ser modificada.</param>
-    /// <param name="rel">O nome de uma relação.</param>
-    /// <param name="otherRels">Nomes de outras relações.</param>
+    /// <param name="rels">Nomes das relações.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddRel(this Entity entity, string rel, params string[] otherRels)
+    public static TMedia AddRel<TMedia>(this TMedia entity, IEnumerable<Rel> rels)
+      where TMedia : IMediaObject
     {
-      if (entity.Rel == null)
-      {
-        entity.Rel = new NameCollection();
-      }
-      entity.Rel.Add(rel);
-      entity.Rel.AddMany(otherRels);
+      entity.GetRel().AddMany(rels.Select(x => x.GetName()));
       return entity;
     }
 
@@ -143,19 +445,91 @@ namespace Paper.Media.Design
     /// Adiciona as relações indicadas à entidade.
     /// </summary>
     /// <param name="entity">A entidade a ser modificada.</param>
-    /// <param name="rel">O nome de uma relação.</param>
-    /// <param name="otherRels">Nomes de outras relações.</param>
+    /// <param name="rels">Nomes das relações.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddRel(this Entity entity, Rel rel, params Rel[] otherRels)
+    public static TMedia AddRel<TMedia>(this TMedia entity, params string[] rels)
+      where TMedia : IMediaObject
     {
-      if (entity.Rel == null)
-      {
-        entity.Rel = new NameCollection();
-      }
-      entity.Rel.Add(rel.GetName());
-      entity.Rel.AddMany(otherRels.Select(RelExtensions.GetName));
+      entity.GetRel().AddMany(rels);
       return entity;
     }
+
+    /// <summary>
+    /// Adiciona as relações indicadas à entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="rels">Nomes das relações.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static TMedia AddRel<TMedia>(this TMedia entity, IEnumerable<string> rels)
+      where TMedia : IMediaObject
+    {
+      entity.GetRel().AddMany(rels);
+      return entity;
+    }
+
+    /// <summary>
+    /// Refine as relações da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="rels">Nomes das relações.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static TMedia SetRel<TMedia>(this TMedia entity, params Rel[] rels)
+      where TMedia : IMediaObject
+    {
+      var rel = entity.GetRel();
+      rel.Clear();
+      rel.AddMany(rels.Select(x => x.GetName()));
+      return entity;
+    }
+
+    /// <summary>
+    /// Refine as relações da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="rels">Nomes das relações.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static TMedia SetRel<TMedia>(this TMedia entity, IEnumerable<Rel> rels)
+      where TMedia : IMediaObject
+    {
+      var rel = entity.GetRel();
+      rel.Clear();
+      rel.AddMany(rels.Select(x => x.GetName()));
+      return entity;
+    }
+
+    /// <summary>
+    /// Refine as relações da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="rels">Nomes das relações.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static TMedia SetRel<TMedia>(this TMedia entity, params string[] rels)
+      where TMedia : IMediaObject
+    {
+      var rel = entity.GetRel();
+      rel.Clear();
+      rel.AddMany(rels);
+      return entity;
+    }
+
+    /// <summary>
+    /// Refine as relações da entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="rels">Nomes das relações.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static TMedia SetRel<TMedia>(this TMedia entity, IEnumerable<string> rels)
+      where TMedia : IMediaObject
+    {
+      var rel = entity.GetRel();
+      rel.Clear();
+      rel.AddMany(rels);
+      return entity;
+    }
+
+    #endregion
+
+    #region Class
 
     /// <summary>
     /// Adiciona uma entidade filha à coleção de entidades filhas da entidade indicada.

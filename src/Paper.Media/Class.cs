@@ -13,6 +13,11 @@ namespace Paper.Media
     /// Nome de classe para ume entidade que representa a configuração de um site.
     /// </summary>
     Blueprint,
+    
+    /// <summary>
+    /// Nome de classe que representa um registro.
+    /// </summary>
+    Record,
 
     /// <summary>
     /// Nome de classe que representa dados de um formulário de edição.

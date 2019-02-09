@@ -337,7 +337,7 @@ namespace Paper.Media.Design
     /// <typeparam name="T">Um tipo para inferência dos campos.</typeparam>
     /// <param name="entity">A entidade modificada.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRowHeadersFrom<T>(this Entity entity, Action<HeaderOptions> builder = null)
+    public static Entity AddRowHeadersFrom<T>(this Entity entity, Action<HeaderBuilder> builder = null)
     {
       var properties = Property.UnwrapPropertyInfo(typeof(T));
       foreach (var property in properties)
@@ -361,7 +361,7 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade modificada.</param>
     /// <param name="typeOrInstance">Um tipo ou instância para inferência dos campos.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRowHeadersFrom(this Entity entity, object typeOrInstance, Action<HeaderOptions> builder = null)
+    public static Entity AddRowHeadersFrom(this Entity entity, object typeOrInstance, Action<HeaderBuilder> builder = null)
     {
       var properties = Property.UnwrapPropertyInfo(typeOrInstance);
       foreach (var property in properties)
@@ -386,7 +386,7 @@ namespace Paper.Media.Design
     /// <param name="name">Os dados adicionados à entidade.</param>
     /// <param name="builder">Construtor do cabeçalho.</param>
     /// <returns>A própria entidade modificada.</returns>
-    public static Entity AddRowHeader(this Entity entity, string name, Action<HeaderOptions> builder = null)
+    public static Entity AddRowHeader(this Entity entity, string name, Action<HeaderBuilder> builder = null)
     {
       HeaderUtil.AddHeaderToEntity(
           entity
