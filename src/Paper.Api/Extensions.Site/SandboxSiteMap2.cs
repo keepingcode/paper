@@ -15,7 +15,7 @@ namespace Paper.Api.Extensions.Site
       {
         Href = $"{this.Href}/My/First/Page/2",
         Title = "Rota Talz 2",
-        Properties = new Media.PropertyCollection
+        Properties = new Media.PropertyMap
         {
           { "icon", "teoria" }
         }

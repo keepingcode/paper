@@ -174,5 +174,5 @@ namespace Paper.Media
       var type = (typeOrInstance is Type) ? (Type)typeOrInstance : typeOrInstance.GetType();
       return type.IsArray || typeof(IList<>).IsAssignableFrom(type);
     }
-  }
+  } 
 }

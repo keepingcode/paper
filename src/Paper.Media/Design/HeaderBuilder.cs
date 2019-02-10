@@ -9,17 +9,21 @@ namespace Paper.Media.Design
   /// </summary>
   public class HeaderBuilder
   {
-    private readonly Entity entity;
-
     internal HeaderBuilder(Entity entity)
     {
-      this.entity = entity;
+      this.HeaderEntity = entity;
     }
+
+    private Entity HeaderEntity { get; }
 
     /// <summary>
     /// Nome da coluna.
     /// </summary>
-    public string Name => entity.Properties?["Name"]?.Value as string;
+    public string Name
+    {
+      get => HeaderEntity.Properties?["Name"]?.Value as string;
+      set => HeaderEntity.AddProperty("Name", value);
+    }
 
     /// <summary>
     /// Adiciona o título do cabeçalho.
@@ -29,7 +33,7 @@ namespace Paper.Media.Design
     /// <returns>A própria instância do construtor do cabeçalho.</returns>
     public HeaderBuilder AddTitle(string title)
     {
-      entity.AddProperty("Title", title);
+      HeaderEntity.AddProperty("Title", title);
       return this;
     }
 
@@ -41,7 +45,7 @@ namespace Paper.Media.Design
     /// <returns>A própria instância do construtor do cabeçalho.</returns>
     public HeaderBuilder AddDataType(string dataType)
     {
-      entity.AddProperty("DataType", dataType);
+      HeaderEntity.AddProperty("DataType", dataType);
       return this;
     }
 
@@ -54,7 +58,7 @@ namespace Paper.Media.Design
     public HeaderBuilder AddDataType(Type type)
     {
       var dataType = DataTypeNames.GetDataTypeName(type);
-      entity.AddProperty("DataType", dataType);
+      HeaderEntity.AddProperty("DataType", dataType);
       return this;
     }
 
@@ -68,11 +72,11 @@ namespace Paper.Media.Design
     {
       if (hidden)
       {
-        entity.AddProperty("Hidden", hidden);
+        HeaderEntity.AddProperty("Hidden", hidden);
       }
       else
       {
-        entity.Properties?.Remove("Hidden");
+        HeaderEntity.Properties?.Remove("Hidden");
       }
       return this;
     }

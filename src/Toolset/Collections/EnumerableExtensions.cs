@@ -58,19 +58,6 @@ namespace Toolset.Collections
       return new[] { instance }.AsEnumerable<T>().Concat(enumerable);
     }
 
-#if !NETCOREAPP2_0 && !NETCOREAPP2_1
-    /// <summary>
-    /// Adiciona um item ao fim de um enumerado.
-    /// </summary>
-    /// <typeparam name="T">Tipo do enumerado.</typeparam>
-    /// <param name="instance">Instância adicionado ao final do enumerado.</param>
-    /// <returns>O enumerado contendo o item adcionado.</returns>
-    public static IEnumerable<T> Append<T>(this IEnumerable<T> enumerable, T instance)
-    {
-      return enumerable.Concat(new[] { instance });
-    }
-#endif
-
     /// <summary>
     /// Emite apenas os itens não nulos.
     /// </summary>
@@ -184,5 +171,34 @@ namespace Toolset.Collections
         action.Invoke(item.element, item.index);
       }
     }
+
+#if !NETCOREAPP2_0 && !NETCOREAPP2_1
+
+    /// <summary>
+    /// Salta os últimos itens do enumerado.
+    /// </summary>
+    public static IEnumerable<T> Append<T>(this IEnumerable<T> enumerable, T instance)
+    {
+      return enumerable.Concat(new[] { instance });
+    }
+    
+    /// <summary>
+    /// Adiciona um item ao fim de um enumerado.
+    /// </summary>
+    /// <param name="count">Quantidade de itens saltados no fim do enumerado</param>
+    public static IEnumerable<T> SkipLast<T>(this IEnumerable<T> enumerable, int count)
+    {
+      var queue = new Queue<T>();
+      foreach (var item in enumerable)
+      {
+        if (queue.Count == count)
+        {
+          yield return queue.Dequeue();
+        }
+        queue.Enqueue(item);
+      }
+    }
+
+#endif
   }
 }

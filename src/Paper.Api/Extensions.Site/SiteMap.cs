@@ -13,7 +13,7 @@ namespace Paper.Api.Extensions.Site
 
     public string Title { get; set; }
 
-    public PropertyCollection Properties { get; set; }
+    public PropertyMap Properties { get; set; }
 
     public virtual List<IRoute> Items
     {

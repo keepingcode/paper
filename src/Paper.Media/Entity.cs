@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 namespace Paper.Media
 {
   [DataContract(Namespace = Namespaces.Default, Name = "Entity")]
-  public class Entity : IEntity, IMediaObject, IPropertyHolder
+  public class Entity : IEntity, IMediaObject, IPropertyMap
   {
     /// <summary>
     /// Tipo da entidade.
@@ -36,9 +36,15 @@ namespace Paper.Media
 
     /// <summary>
     /// Coleção das propriedades da entidade. Opcional.
+    ///// </summary>
+    //[DataMember(EmitDefaultValue = false, Order = 40)]
+    //public virtual PropertyCollection Properties { get; set; }
+
+    /// <summary>
+    /// Coleção das propriedades da entidade. Opcional.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 40)]
-    public virtual PropertyCollection Properties { get; set; }
+    public virtual PropertyMap Properties { get; set; }
 
     /// <summary>
     /// Coleção das demais entidades relacionadas à entidade. Opcional.

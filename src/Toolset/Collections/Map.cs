@@ -34,36 +34,61 @@ namespace Toolset.Collections
       }
     }
 
-    public TValue this[TKey key]
-    {
-      get => map.ContainsKey(key) ? map[key] : default(TValue);
-      set => map[key] = value;
-    }
-
     public int Count => map.Count;
 
     public ICollection<TKey> Keys => map.Keys;
 
     public ICollection<TValue> Values => map.Values;
 
+    public TValue this[TKey key]
+    {
+      get => map.ContainsKey(key) ? map[key] : default(TValue);
+      set => OnAdd(map, key, value);
+    }
+
     public void Add(TKey key, TValue value)
     {
-      map[key] = value;
+      OnAdd(map, key, value);
     }
 
     public void Add(KeyValuePair<TKey, TValue> item)
     {
-      map[item.Key] = item.Value;
+      OnAdd(map, item.Key, item.Value);
     }
 
     public void AddMany(IEnumerable<KeyValuePair<TKey, TValue>> items)
     {
-      items.ForEach(item => map[item.Key] = item.Value);
+      items.ForEach(item => OnAdd(map, item.Key, item.Value));
+    }
+
+    public bool Remove(TKey key)
+    {
+      return OnRemove(map, key);
+    }
+
+    public bool Remove(KeyValuePair<TKey, TValue> item)
+    {
+      return OnRemove(map, item.Key);
     }
 
     public void Clear()
     {
-      map.Clear();
+      OnClear(map);
+    }
+
+    protected virtual void OnAdd(Dictionary<TKey, TValue> store, TKey key, TValue value)
+    {
+      store[key] = value;
+    }
+
+    protected virtual bool OnRemove(Dictionary<TKey, TValue> store, TKey key)
+    {
+      return store.Remove(key);
+    }
+
+    protected virtual void OnClear(Dictionary<TKey, TValue> store)
+    {
+      store.Clear();
     }
 
     public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -104,16 +129,6 @@ namespace Toolset.Collections
       return ((IDictionary<TKey, TValue>)map).GetEnumerator();
     }
 
-    public bool Remove(TKey key)
-    {
-      return map.Remove(key);
-    }
-
-    public bool Remove(KeyValuePair<TKey, TValue> item)
-    {
-      return ((IDictionary<TKey, TValue>)map).Remove(item);
-    }
-
     public bool TryGetValue(TKey key, out TValue value)
     {
       return map.TryGetValue(key, out value);
@@ -125,9 +140,15 @@ namespace Toolset.Collections
 
     object IDictionary.this[object key]
     {
-      get => ((IDictionary)this)[key];
-      set => ((IDictionary)this)[key] = value;
+      get => this[(TKey)key];
+      set => this[(TKey)key] = (TValue)value;
     }
+
+    void IDictionary.Add(object key, object value) => this.Add((TKey)key, (TValue)value);
+
+    void IDictionary.Remove(object key) => this.Remove((TKey)key);
+
+    void IDictionary.Clear() => this.Clear();
 
     bool IDictionary.IsFixedSize => ((IDictionary)map).IsFixedSize;
 
@@ -139,10 +160,6 @@ namespace Toolset.Collections
 
     object ICollection.SyncRoot => ((IDictionary)map).SyncRoot;
 
-    void IDictionary.Add(object key, object value) => ((IDictionary)map).Add(key, value);
-
-    void IDictionary.Clear() => ((IDictionary)map).Clear();
-
     bool IDictionary.Contains(object key) => ((IDictionary)map).Contains(key);
 
     void ICollection.CopyTo(Array array, int index) => ((IDictionary)map).CopyTo(array, index);
@@ -150,8 +167,6 @@ namespace Toolset.Collections
     IEnumerator IEnumerable.GetEnumerator() => ((IDictionary)map).GetEnumerator();
 
     IDictionaryEnumerator IDictionary.GetEnumerator() => ((IDictionary)map).GetEnumerator();
-
-    void IDictionary.Remove(object key) => ((IDictionary)map).Remove(key);
 
     #endregion
   }

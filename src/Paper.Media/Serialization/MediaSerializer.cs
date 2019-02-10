@@ -127,30 +127,46 @@ namespace Paper.Media.Serialization
         return;
       }
 
-      if (element.GetType().IsValueType || StringUtils.IsStringCompatible(element))
+      if (element.GetType().IsValueType || SerializationUtilities.IsStringCompatible(element))
       {
         writer.WriteValue(element);
         return;
       }
 
-      if (element is PropertyCollection properties)
+      if (element is PropertyMap map)
       {
         writer.WriteObjectStart(elementName ?? element.GetType().Name);
-        foreach (var item in properties)
+        foreach (var entry in map)
         {
-          Write(writer, item);
+          if (entry.Value != null)
+          {
+            writer.WritePropertyStart(entry.Key);
+            Write(writer, entry.Value);
+            writer.WritePropertyEnd();
+          }
         }
         writer.WriteObjectEnd();
         return;
       }
 
-      if (element is Property property)
-      {
-        writer.WritePropertyStart(property.Name);
-        Write(writer, property.Value);
-        writer.WritePropertyEnd();
-        return;
-      }
+      //if (element is PropertyCollection properties)
+      //{
+      //  writer.WriteObjectStart(elementName ?? element.GetType().Name);
+      //  foreach (var item in properties)
+      //  {
+      //    Write(writer, item);
+      //  }
+      //  writer.WriteObjectEnd();
+      //  return;
+      //}
+      //
+      //if (element is Property property)
+      //{
+      //  writer.WritePropertyStart(property.Name);
+      //  Write(writer, property.Value);
+      //  writer.WritePropertyEnd();
+      //  return;
+      //}
 
       if (element is IEnumerable list)
       {

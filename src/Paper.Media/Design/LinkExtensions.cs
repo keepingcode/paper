@@ -131,12 +131,14 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <param name="href">A URL de referência do link.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddLinkSelf(this Entity entity, Href href, Action<Link> builder)
+    public static Entity SetSelfLink(this Entity entity, Href href, Action<Link> builder)
     {
       if (entity.Links == null)
       {
         entity.Links = new LinkCollection();
       }
+
+      entity.Links.RemoveAll(x => x.Rel.Has(Rel.Self));
 
       var link = new Link();
       link.Href = href;
@@ -154,12 +156,14 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <param name="href">A URL de referência do link.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddLinkSelf(this Entity entity, Href href, params string[] rels)
+    public static Entity SetSelfLink(this Entity entity, Href href, params string[] rels)
     {
       if (entity.Links == null)
       {
         entity.Links = new LinkCollection();
       }
+
+      entity.Links.RemoveAll(x => x.Rel.Has(Rel.Self));
 
       var link = new Link();
       link.Href = href;
@@ -179,12 +183,14 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <param name="href">A URL de referência do link.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddLinkSelf(this Entity entity, Href href, Rel rel, params Rel[] otherRels)
+    public static Entity SetSelfLink(this Entity entity, Href href, Rel rel, params Rel[] otherRels)
     {
       if (entity.Links == null)
       {
         entity.Links = new LinkCollection();
       }
+
+      entity.Links.RemoveAll(x => x.Rel.Has(Rel.Self));
 
       var link = new Link();
       link.Href = href;

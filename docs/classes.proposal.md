@@ -11,6 +11,18 @@ Tamanhos
     -   lg - Large
     -   xl - Extra Large
 
+Meta Class
+:   Uma classe de metadado segue a convenção camelCase e possui função interna à plataforma do Paper.
+
+    Como em: record
+
+User Class
+:   Uma classe de usuário segue a convenção PascalCase e possui função apenas para o aplicativo usuário
+    da plataforma do Paper.
+
+    Como em: MyApp.MyRecord
+
+
 Estruturação de registros
 -------------------------
 

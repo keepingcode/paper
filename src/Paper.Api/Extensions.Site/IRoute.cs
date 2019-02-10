@@ -5,10 +5,12 @@ using Paper.Media;
 
 namespace Paper.Api.Extensions.Site
 {
-  public interface IRoute : IPropertyHolder
+  public interface IRoute
   {
     Href Href { get; }
 
     string Title { get; }
+
+    PropertyMap Properties { get; }
   }
 }

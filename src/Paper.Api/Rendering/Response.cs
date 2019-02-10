@@ -39,7 +39,7 @@ namespace Paper.Api.Rendering
       var hasSelfLink = entity.Links?.Any(x => x.Rel?.Contains(RelNames.Self) == true) == true;
       if (!hasSelfLink)
       {
-        entity.AddLinkSelf(req.RequestUri);
+        entity.SetSelfLink(req.RequestUri);
       }
 
       entity.ExpandUri(req.RequestUri, req.PathBase);

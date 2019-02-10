@@ -25,66 +25,68 @@ namespace Paper.Api.Extensions.Site
 
     public async Task RenderAsync(Request request, Response response, NextAsync next)
     {
-      var path = request.Path.Substring(Route.Length);
-      var route = new UriString(this.Route);
+      await next.Invoke();
 
-      var catalog = siteMapCatalog.FindExact(path).FirstOrDefault();
-      if (catalog == null)
-      {
-        await next.Invoke();
-        return;
-      }
+      //var path = request.Path.Substring(Route.Length);
+      //var route = new UriString(this.Route);
 
-      var parent = siteMapCatalog.FindExact(path + "/..").FirstOrDefault();
-      var children = siteMapCatalog.FindExact(path + "/*").ToArray();
+      //var catalog = siteMapCatalog.FindExact(path).FirstOrDefault();
+      //if (catalog == null)
+      //{
+      //  await next.Invoke();
+      //  return;
+      //}
 
-      var entity = new Entity();
-      var rowHeaders = new List<string>();
+      //var parent = siteMapCatalog.FindExact(path + "/..").FirstOrDefault();
+      //var children = siteMapCatalog.FindExact(path + "/*").ToArray();
 
-      entity.AddClass(ClassNames.Record);
-      entity.AddClass(Conventions.MakeName(typeof(ISiteMap)));
-      entity.SetTitle(catalog.Title);
-      entity.AddLinkSelf(route.Append(catalog.Href).ToHref());
-      foreach (var property in catalog.Properties.NonNull())
-      {
-        if (property.Value != null)
-        {
-          entity.AddDataHeader(property.Name, dataType: Conventions.MakeDataType(property.Value.GetType()));
-          entity.AddProperty(property.Name, property.Value);
-        }
-      }
+      //var entity = new Entity();
+      //var rowHeaders = new List<string>();
 
-      if (parent != null)
-      {
-        entity.AddLink(route.Append(parent.Href).ToHref(), parent.Title, Rel.Up);
-      }
+      //entity.AddClass(ClassNames.Record);
+      //entity.AddClass(typeof(ISiteMap));
+      //entity.SetTitle(catalog.Title);
+      //entity.SetSelfLink(route.Append(catalog.Href).ToHref());
+      //foreach (var property in catalog.Properties.NonNull())
+      //{
+      //  if (property.Value != null)
+      //  {
+      //    entity.AddHeader(property.Name, dataType: property.Value.GetType());
+      //    entity.AddProperty(property.Name, property.Value);
+      //  }
+      //}
 
-      var subItems = children.Concat(catalog.Items.NonNull());
-      foreach (var item in subItems)
-      {
-        var row = new Entity();
-        row.AddClass(ClassNames.Data);
-        row.AddClass(Conventions.MakeName((item is ISiteMap) ? typeof(ISiteMap) : typeof(IRoute)));
-        row.AddRel(RelNames.Rows);
-        row.SetTitle(item.Title);
-        row.AddLinkSelf((item is ISiteMap) ? route.Append(item.Href).ToHref() : item.Href);
-        foreach (var property in item.Properties.NonNull())
-        {
-          if (property.Value == null)
-            continue;
+      //if (parent != null)
+      //{
+      //  entity.AddLink(route.Append(parent.Href).ToHref(), parent.Title, Rel.Up);
+      //}
 
-          if (!property.Name.EqualsAnyIgnoreCase(rowHeaders))
-          {
-            rowHeaders.Add(property.Name);
-            entity.AddRowHeader(property.Name, dataType: Conventions.MakeDataType(property.Value.GetType()));
-          }
-          row.AddDataHeader(property.Name, dataType: Conventions.MakeDataType(property.Value.GetType()));
-          row.AddProperty(property.Name, property.Value);
-        }
-        entity.AddRow(row);
-      }
+      //var subItems = children.Concat(catalog.Items.NonNull());
+      //foreach (var item in subItems)
+      //{
+      //  var row = new Entity();
+      //  row.AddClass(ClassNames.Data);
+      //  row.AddClass(Conventions.MakeName((item is ISiteMap) ? typeof(ISiteMap) : typeof(IRoute)));
+      //  row.AddRel(RelNames.Rows);
+      //  row.SetTitle(item.Title);
+      //  row.SetSelfLink((item is ISiteMap) ? route.Append(item.Href).ToHref() : item.Href);
+      //  foreach (var property in item.Properties.NonNull())
+      //  {
+      //    if (property.Value == null)
+      //      continue;
 
-      await response.WriteEntityAsync(entity);
+      //    if (!property.Name.EqualsAnyIgnoreCase(rowHeaders))
+      //    {
+      //      rowHeaders.Add(property.Name);
+      //      entity.AddRowHeader(property.Name, dataType: Conventions.MakeDataType(property.Value.GetType()));
+      //    }
+      //    row.AddDataHeader(property.Name, dataType: Conventions.MakeDataType(property.Value.GetType()));
+      //    row.AddProperty(property.Name, property.Value);
+      //  }
+      //  entity.AddRow(row);
+      //}
+
+      //await response.WriteEntityAsync(entity);
     }
   }
 }

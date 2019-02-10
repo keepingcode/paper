@@ -47,19 +47,6 @@ namespace Toolset.Collections
       return new[] { instance }.AsQueryable().Concat(enumerable);
     }
 
-#if !NETCOREAPP2_0
-    /// <summary>
-    /// Adiciona um item ao fim de um enumerado.
-    /// </summary>
-    /// <typeparam name="T">Tipo do enumerado.</typeparam>
-    /// <param name="instance">Instância adicionado ao final do enumerado.</param>
-    /// <returns>O enumerado contendo o item adcionado.</returns>
-    public static IQueryable<T> Append<T>(this IQueryable<T> enumerable, T instance)
-    {
-      return enumerable.Concat(new[] { instance });
-    }
-#endif
-
     /// <summary>
     /// Emite apenas os itens não nulos.
     /// </summary>
@@ -160,5 +147,21 @@ namespace Toolset.Collections
         action.Invoke(item.element, item.index);
       }
     }
+
+#if !NETCOREAPP2_0
+
+    /// <summary>
+    /// Adiciona um item ao fim de um enumerado.
+    /// </summary>
+    /// <typeparam name="T">Tipo do enumerado.</typeparam>
+    /// <param name="instance">Instância adicionado ao final do enumerado.</param>
+    /// <returns>O enumerado contendo o item adcionado.</returns>
+    public static IQueryable<T> Append<T>(this IQueryable<T> enumerable, T instance)
+    {
+      return enumerable.Concat(new[] { instance });
+    }
+
+#endif
+
   }
 }

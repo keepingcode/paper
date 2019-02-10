@@ -25,8 +25,8 @@ namespace Paper.Browser.Base.Pages
 
     private void SetUp(Entity entity)
     {
-      var allHeaders = entity.Properties?["headers"]?.Value as PropertyCollection;
-      var rowHeaders = allHeaders?["rows"]?.Value as PropertyCollection;
+      var allHeaders = entity.Properties?["headers"] as PropertyMap;
+      var rowHeaders = allHeaders?["rows"] as PropertyMap;
       if (rowHeaders != null)
       {
         

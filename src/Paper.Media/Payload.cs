@@ -13,51 +13,54 @@ namespace Paper.Media
   public class Payload
   {
     [DataMember]
-    public PropertyCollection Data { get; set; }
+    public PropertyMap Data { get; set; }
 
     [DataMember]
     public RowCollection Rows { get; set; }
 
     // TODO: Ainda nao suportado.
     [DataMember]
-    public PropertyCollection Form { get; set; }
+    public PropertyMap Form { get; set; }
 
     public Entity ToEntity()
     {
       var entity = new Entity();
 
-      if (Data != null)
-      {
-        var @class = Data["@class"];
-        var properties = Data.Except(@class);
-        entity.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
-        entity.AddProperties(properties);
-      }
+      // TODO REIMPLEMENTAR
+      throw new NotImplementedException();
 
-      if (Rows != null)
-      {
-        foreach (var row in Rows)
-        {
-          var @class = row["@class"];
-          var properties = row.Except(@class);
+      //if (Data != null)
+      //{
+      //  var @class = Data["@class"];
+      //  var properties = Data.Except(@class);
+      //  entity.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
+      //  entity.AddProperties(properties);
+      //}
 
-          var child = new Entity();
-          child.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
-          child.AddProperties(properties);
+      //if (Rows != null)
+      //{
+      //  foreach (var row in Rows)
+      //  {
+      //    var @class = row["@class"];
+      //    var properties = row.Except(@class);
 
-          entity.AddEntity(child);
-        }
-      }
+      //    var child = new Entity();
+      //    child.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
+      //    child.AddProperties(properties);
 
-      if (Form != null)
-      {
-        var @action = Form["@action"];
-        var properties = Form.Except(@action);
-        entity.AddClass(ClassNames.Form);
-        entity.AddProperties(properties);
-      }
+      //    entity.AddEntity(child);
+      //  }
+      //}
 
-      return entity;
+      //if (Form != null)
+      //{
+      //  var @action = Form["@action"];
+      //  var properties = Form.Except(@action);
+      //  entity.AddClass(ClassNames.Form);
+      //  entity.AddProperties(properties);
+      //}
+
+      //return entity;
     }
 
     public static Payload FromEntity(Entity entity)
@@ -67,20 +70,20 @@ namespace Paper.Media
       var hasData = entity.Class?.Contains(ClassNames.Data) == true;
       if (hasData)
       {
-        payload.Data = new PropertyCollection();
-        if (entity.Properties is PropertyCollection properties)
+        payload.Data = new PropertyMap();
+        if (entity.Properties is PropertyMap properties)
         {
           var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "data";
           if (@class != null)
           {
-            payload.Data.Add(new Property("@class", @class));
+            payload.Data.Add("@class", @class);
           }
 
           foreach (var property in properties)
           {
-            if (!property.Name.StartsWith("_"))
+            if (!property.Key.StartsWith("_"))
             {
-              payload.Data.Add(new Property(property.Name, property.Value));
+              payload.Data.Add(property.Key, property.Value);
             }
           }
         }
@@ -94,16 +97,16 @@ namespace Paper.Media
         var children = entity.Entities.Where(e => e.Class.Contains(ClassNames.Data) && e.Properties != null);
         foreach (var child in children)
         {
-          var row = new PropertyCollection();
+          var row = new PropertyMap();
 
           var @class = child.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "row";
-          row.Add(new Property("@class", @class));
+          row.Add("@class", @class);
 
           foreach (var property in child.Properties)
           {
-            if (!property.Name.StartsWith("_"))
+            if (!property.Key.StartsWith("_"))
             {
-              row.Add(new Property(property.Name, property.Value));
+              row.Add(property.Key, property.Value);
             }
           }
 
@@ -114,14 +117,14 @@ namespace Paper.Media
       var hasForm = entity.Class?.Contains(ClassNames.Form) == true;
       if (hasForm)
       {
-        payload.Form = new PropertyCollection();
-        if (entity.Properties is PropertyCollection properties)
+        payload.Form = new PropertyMap();
+        if (entity.Properties is PropertyMap properties)
         {
           foreach (var property in properties)
           {
-            if (!property.Name.StartsWith("_"))
+            if (!property.Key.StartsWith("_"))
             {
-              payload.Form.Add(new Property(property.Name, property.Value));
+              payload.Form.Add(property.Key, property.Value);
             }
           }
         }
@@ -131,7 +134,7 @@ namespace Paper.Media
     }
 
     [CollectionDataContract(Namespace = Namespaces.Default, Name = "Rows", ItemName = "Row")]
-    public class RowCollection : List<PropertyCollection>
+    public class RowCollection : List<PropertyMap>
     {
     }
   }

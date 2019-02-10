@@ -11,6 +11,6 @@ namespace Paper.Api.Extensions.Site
 
     public virtual string Title { get; set; }
 
-    public virtual PropertyCollection Properties { get; set; }
+    public virtual PropertyMap Properties { get; set; }
   }
 }

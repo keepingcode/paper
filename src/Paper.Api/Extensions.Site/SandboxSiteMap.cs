@@ -15,7 +15,7 @@ namespace Paper.Api.Extensions.Site
       {
         Href = $"{this.Href}/My/First/Page",
         Title = "Rota Talz",
-        Properties = new Media.PropertyCollection
+        Properties = new Media.PropertyMap
         {
           { "icon", "peneira" }
         }

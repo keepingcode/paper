@@ -128,7 +128,7 @@ namespace Paper.Media
     /// <returns>Verdadeiro se o tipo corresponde a uma classe de metadado; Falso caso contrário.</returns>
     public static bool IsMetaClass(string @class)
     {
-      return !char.IsLower(@class.FirstOrDefault());
+      return char.IsLower(@class.FirstOrDefault());
     }
 
     /// <summary>

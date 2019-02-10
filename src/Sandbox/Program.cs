@@ -10,11 +10,13 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using Microsoft.CSharp;
 using Paper.Media;
 using Paper.Media.Design;
@@ -33,11 +35,8 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
-  class Record
-  {
-    public int Id { get; set; }
-    public string Name { get; set; }
-  }
+  class A { }
+  class B { }
 
   class Program
   {
@@ -50,18 +49,63 @@ namespace Sandbox
       {
         var entity = new Entity();
 
-        var record1 = new Record { Id = 1, Name = "One" };
-        var record2 = new Record { Id = 2, Name = "Two" };
-        var records = new[]
+        entity.AddProperties(new
         {
-          new Record { Id = 3, Name = "Three" },
-          new Record { Id = 3, Name = "Four" }
-        };
+          graph = new
+          {
+            id = 10,
+            items = new HashMap
+            {
+              { "one", new { id = 1, name = "one" } },
+              { "two", new { id = 2, name = "two" } }
+            }
+          }
+        }
+        , select: new[] { "graph.items.one", "graph.items.two" }
+        , except: new[] { "graph.items.one.name" }
+        );
 
-        // entity.SetRecord(record1, select: new[] { "Id" });
-        // entity.AddHeaders<Record>(new[] { "record", "list", "table" }, select: new[] { "Id" });
+        // entity.SetTitle("My Title");
+        //entity.SetProperty("my.count", 3);
+        //entity.WithProperties("my.numbers").SetProperty("ten", 10);
+        //entity.WithProperties("my.numbers").SetProperty("two.five", 5);
 
-        entity.SetRecordAndHeaders(record1, select: new[] { "Id" });
+        //entity.Properties
+        //entity.Actions
+        //entity.Links
+
+        //{
+        //  Title = "Foo Bar",
+        //  Properties = new PropertyMap
+        //  {
+        //    { "Id", 10 },
+        //    { "Name", "Foo" },
+        //    { "Group",
+        //      new PropertyMap {
+        //        { "Id", 20 },
+        //        { "Name", "Bar" }
+        //      }
+        //    },
+        //    { "Nums", new string[] { "One", "Two", "Three" } },
+        //    { "Texs", new List<string> { "One", "Two", "Three" } }
+        //  }
+        //};
+
+        try
+        {
+          using (var memory = new MemoryStream())
+          {
+            var serializer = new DataContractJsonSerializer(typeof(Entity));
+            serializer.WriteObject(memory, entity);
+            memory.Position = 0;
+            var json = new StreamReader(memory).ReadToEnd();
+            Debug.WriteLine(Json.Beautify(json));
+          }
+        }
+        catch (Exception ex)
+        {
+          ex.Trace();
+        }
 
         Debug.WriteLine(entity.ToJson());
       }

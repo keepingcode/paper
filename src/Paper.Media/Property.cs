@@ -7,6 +7,7 @@ using System.Collections;
 using System.ComponentModel;
 using Toolset;
 using Paper.Media.Utilities;
+using Paper.Media.Serialization;
 
 namespace Paper.Media
 {
@@ -67,7 +68,7 @@ namespace Paper.Media
       if (type.IsValueType
       || type.Namespace == "System"
       || type.Namespace?.StartsWith("System.") == true
-      || StringUtils.IsStringCompatible(value)
+      || SerializationUtilities.IsStringCompatible(value)
       || value is IEnumerable
       || value is CaseVariantString
       || value is PropertyCollection

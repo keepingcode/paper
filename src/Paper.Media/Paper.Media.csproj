@@ -38,13 +38,30 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Design\DataExtensions.cs" />
+    <Compile Remove="Design\EntityActionExtensions.cs" />
+    <Compile Remove="Design\EntityExtensions.cs" />
+    <Compile Remove="Design\ExposePaperAttribute.cs" />
+    <Compile Remove="Design\FieldExtensions.cs" />
+    <Compile Remove="Design\HeaderBuilder.cs" />
+    <Compile Remove="Design\HeaderExtensions.cs" />
+    <Compile Remove="Design\HeaderInfo.cs" />
+    <Compile Remove="Design\HeaderUtil.cs" />
     <Compile Remove="Design\IPaper.cs" />
+    <Compile Remove="Design\ISortableEnumerable.cs" />
+    <Compile Remove="Design\ISortableQueryable.cs" />
     <Compile Remove="Design\MediaObjectExtensions.cs" />
+    <Compile Remove="Design\PageExtensions.cs" />
+    <Compile Remove="Design\PaperAttribute.cs" />
+    <Compile Remove="Design\PropertyExtensions.cs" />
+    <Compile Remove="Design\RecordExtensions.cs" />
+    <Compile Remove="Design\RowsExtensions.cs" />
+    <Compile Remove="Property.cs" />
+    <Compile Remove="PropertyCollection.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="Utilities\ExpressionUtils.cs" />
-    <Compile Include="Utilities\StringUtils.cs" />
   </ItemGroup>
 
   <ItemGroup>

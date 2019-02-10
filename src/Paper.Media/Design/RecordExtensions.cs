@@ -144,7 +144,7 @@ namespace Paper.Media.Design
         var href = record._Get<Href>("Href");
         if (href != null)
         {
-          entity.AddLinkSelf(href);
+          entity.SetSelfLink(href);
         }
       }
 

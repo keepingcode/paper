@@ -45,7 +45,7 @@ namespace Paper.Media
         entity.Class.Add(ClassNames.Error);
       }
 
-      entity.Properties = new PropertyCollection();
+      entity.Properties = new PropertyMap();
       entity.Properties.Add("Code", (int)status);
       entity.Properties.Add("Status", status.ToString());
 

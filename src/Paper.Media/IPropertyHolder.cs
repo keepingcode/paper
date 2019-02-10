@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Paper.Media
 {
-  public interface IPropertyHolder
+  public interface IPropertyMap
   {
-    PropertyCollection Properties { get; set; }
+    PropertyMap Properties { get; set; }
   }
 }
