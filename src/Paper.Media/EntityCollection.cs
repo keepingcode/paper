@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using Toolset.Collections;
 
 namespace Paper.Media
 {
@@ -11,7 +12,7 @@ namespace Paper.Media
   /// </summary>
   [CollectionDataContract(Namespace = Namespaces.Default, Name = "Entities")]
   [XmlType]
-  public class EntityCollection : List<Entity>
+  public class EntityCollection : Collection<Entity>
   {
     public EntityCollection()
     {

@@ -10,6 +10,9 @@ namespace Toolset.Collections
   {
     private readonly Dictionary<TKey, TValue> map;
 
+
+
+
     public Map()
     {
       map = new Dictionary<TKey, TValue>();
@@ -28,6 +31,30 @@ namespace Toolset.Collections
     public Map(IEnumerable<KeyValuePair<TKey, TValue>> entries)
     {
       map = new Dictionary<TKey, TValue>();
+      foreach (var entry in entries)
+      {
+        map[entry.Key] = entry.Value;
+      }
+    }
+
+    public Map(IEqualityComparer<TKey> comparer)
+    {
+      map = new Dictionary<TKey, TValue>(comparer);
+    }
+
+    public Map(IEqualityComparer<TKey> comparer, int capacity)
+    {
+      map = new Dictionary<TKey, TValue>(capacity, comparer);
+    }
+
+    public Map(IEqualityComparer<TKey> comparer, IDictionary<TKey, TValue> entries)
+    {
+      map = new Dictionary<TKey, TValue>(entries, comparer);
+    }
+
+    public Map(IEqualityComparer<TKey> comparer, IEnumerable<KeyValuePair<TKey, TValue>> entries)
+    {
+      map = new Dictionary<TKey, TValue>(comparer);
       foreach (var entry in entries)
       {
         map[entry.Key] = entry.Value;

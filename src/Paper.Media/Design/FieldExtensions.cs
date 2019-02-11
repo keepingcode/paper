@@ -20,7 +20,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="placeholder">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddPlaceholder(this Field field, string placeholder)
+    public static Field SetPlaceholder(this Field field, string placeholder)
     {
       field.Placeholder = placeholder;
       return field;
@@ -33,7 +33,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="category">A categoria do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddCategory(this Field field, string category)
+    public static Field SetCategory(this Field field, string category)
     {
       field.Category = category;
       return field;
@@ -45,7 +45,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="dataType">A categoria do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddDataType(this Field field, string dataType)
+    public static Field SetDataType(this Field field, string dataType)
     {
       field.DataType = dataType;
       return field;
@@ -57,7 +57,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="dataType">A categoria do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddDataType(this Field field, DataType dataType)
+    public static Field SetDataType(this Field field, DataType dataType)
     {
       field.DataType = dataType.GetName();
       return field;
@@ -69,7 +69,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="readOnly">O valor da propriedade somente leitura do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddReadOnly(this Field field, bool readOnly = true)
+    public static Field SetReadOnly(this Field field, bool readOnly = true)
     {
       field.ReadOnly = readOnly;
       return field;
@@ -81,7 +81,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="required">O valor da propriedade requerida do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddRequired(this Field field, bool required = true)
+    public static Field SetRequired(this Field field, bool required = true)
     {
       field.Required = required;
       return field;
@@ -93,7 +93,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="hidden">O valor da propriedade oculta do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddHidden(this Field field, bool hidden = true)
+    public static Field SetHidden(this Field field, bool hidden = true)
     {
       field.Type = hidden ? FieldTypeNames.Hidden : null;
       return field;
@@ -105,7 +105,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="value">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddValue(this Field field, object value)
+    public static Field SetValue(this Field field, object value)
     {
       field.Value = value;
       return field;
@@ -117,7 +117,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="allowMany">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddAllowMany(this Field field, bool allowMany = true)
+    public static Field SetAllowMany(this Field field, bool allowMany = true)
     {
       field.AllowMany = allowMany;
       return field;
@@ -129,7 +129,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="allowRange">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddAllowRange(this Field field, bool allowRange = true)
+    public static Field SetAllowRange(this Field field, bool allowRange = true)
     {
       field.AllowRange = allowRange;
       return field;
@@ -141,7 +141,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="allowWildcards">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddAllowWildcards(this Field field, bool allowWildcards = true)
+    public static Field SetAllowWildcards(this Field field, bool allowWildcards = true)
     {
       field.AllowWildcards = allowWildcards;
       return field;
@@ -153,7 +153,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="multiline">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddMultiline(this Field field, bool multiline = true)
+    public static Field SetMultiline(this Field field, bool multiline = true)
     {
       field.Multiline = multiline;
       return field;
@@ -165,7 +165,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="maxLength">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddMaxLength(this Field field, int maxLength)
+    public static Field SetMaxLength(this Field field, int maxLength)
     {
       field.MaxLength = maxLength;
       return field;
@@ -177,7 +177,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="minLength">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddMinLength(this Field field, int minLength)
+    public static Field SetMinLength(this Field field, int minLength)
     {
       field.MinLength = minLength;
       return field;
@@ -189,7 +189,7 @@ namespace Paper.Media.Design
     /// <param name="field">O campo a ser modificado.</param>
     /// <param name="pattern">O valor do campo.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddPattern(this Field field, string pattern)
+    public static Field SetPattern(this Field field, string pattern)
     {
       field.Pattern = pattern;
       return field;
@@ -202,7 +202,7 @@ namespace Paper.Media.Design
     /// <param name="href">A rota do provedor de dados.</param>
     /// <param name="keys">Nomes dos campos chaves.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddProvider(this Field field, string href, params string[] keys)
+    public static Field SetProvider(this Field field, string href, params string[] keys)
     {
       field.Provider = new FieldProvider();
       field.Provider.Href = href;
@@ -217,7 +217,7 @@ namespace Paper.Media.Design
     /// <param name="href">A rota do provedor de dados.</param>
     /// <param name="keys">Nomes dos campos chaves.</param>
     /// <returns>A própria instância do campo modificado.</returns>
-    public static Field AddProvider(this Field field, string href, IEnumerable<string> keys)
+    public static Field SetProvider(this Field field, string href, IEnumerable<string> keys)
     {
       if (keys == null)
       {

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Toolset.Collections;
 
 namespace Paper.Media
 {
@@ -9,7 +10,7 @@ namespace Paper.Media
   /// Coleção de ações.
   /// </summary>
   [CollectionDataContract(Namespace = Namespaces.Default, Name = "Actions")]
-  public class EntityActionCollection : List<EntityAction>
+  public class EntityActionCollection : Collection<EntityAction>
   {
     public EntityActionCollection()
     {

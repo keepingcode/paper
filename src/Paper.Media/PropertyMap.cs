@@ -22,7 +22,7 @@ namespace Paper.Media
   [KnownType(typeof(PropertyMap))]
   [KnownType(typeof(NameCollection))]
   [KnownType(typeof(DictionaryEntry))]
-  [KnownType(typeof(List<object>))]
+  [KnownType(typeof(PropertyValueCollection))]
   public class PropertyMap : HashMap<object>, IPropertyMap
   {
     PropertyMap IPropertyMap.Properties
@@ -119,10 +119,10 @@ namespace Paper.Media
       return map;
     }
 
-    private static List<object> UnwrapArray(IEnumerable array, IEnumerable<IEnumerable<string>> select, IEnumerable<IEnumerable<string>> except)
+    private static PropertyValueCollection UnwrapArray(IEnumerable array, IEnumerable<IEnumerable<string>> select, IEnumerable<IEnumerable<string>> except)
     {
       var items = array.Cast<object>();
-      var list = new List<object>(items.Count());
+      var list = new PropertyValueCollection(items.Count());
       foreach (var item in items)
       {
         var value = UnwrapTerm(item, select, except);
@@ -130,6 +130,5 @@ namespace Paper.Media
       }
       return list;
     }
-
   }
 }

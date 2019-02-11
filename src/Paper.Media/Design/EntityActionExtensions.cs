@@ -26,18 +26,14 @@ namespace Paper.Media.Design
     /// <returns>A própria instância da entidade modificada.</returns>
     public static Entity AddAction(this Entity entity, EntityAction action)
     {
-      if (entity.Actions == null)
-      {
-        entity.Actions = new EntityActionCollection();
-      }
-
-      if (action.Name == null)
+      if (string.IsNullOrEmpty(action.Name))
       {
         action.Name = MakeActionName(entity.Actions);
       }
 
-      entity.Actions.RemoveAll(x => x.Name.EqualsIgnoreCase(action.Name));
-      entity.Actions.Add(action);
+      var actions = entity.WithActions();
+      actions.RemoveWhen(x => x.Name.EqualsIgnoreCase(action.Name));
+      actions.Add(action);
 
       return entity;
     }
@@ -47,18 +43,12 @@ namespace Paper.Media.Design
     /// </summary>
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <param name="name">Nome da ação.</param>
-    /// <param name="builder">Função de construção da ação.</param>
+    /// <param name="options">Função de construção da ação.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
-    public static Entity AddAction(this Entity entity, string name, Action<EntityAction> builder)
+    public static Entity AddAction(this Entity entity, string name, Action<EntityAction> options)
     {
-      if (entity.Actions == null)
-      {
-        entity.Actions = new EntityActionCollection();
-      }
-
-      var action = GetOrAddAction(entity.Actions, name);
-      builder.Invoke(action);
-
+      var action = GetOrAddAction(entity.WithActions(), name);
+      options.Invoke(action);
       return entity;
     }
 
@@ -110,6 +100,15 @@ namespace Paper.Media.Design
 
     #endregion
 
+    #region With*
+
+    public static FieldCollection WithFields(this EntityAction action)
+    {
+      return action.Fields ?? (action.Fields = new FieldCollection());
+    }
+
+    #endregion
+
     #region Básicos
 
     /// <summary>
@@ -119,7 +118,7 @@ namespace Paper.Media.Design
     /// <param name="action">A ação a ser modificada.</param>
     /// <param name="mediaType">O mime type do link.</param>
     /// <returns>A própria instância do link modificada.</returns>
-    public static EntityAction AddMimeType(this EntityAction action, string mediaType)
+    public static EntityAction SetType(this EntityAction action, string mediaType)
     {
       action.Type = mediaType;
       return action;
@@ -132,7 +131,7 @@ namespace Paper.Media.Design
     /// <param name="action">A ação a ser modificada.</param>
     /// <param name="href">A URL de destino da ação.</param>
     /// <returns>A própria instância da ação modificada.</returns>
-    public static EntityAction AddHref(this EntityAction action, string href)
+    public static EntityAction SetHref(this EntityAction action, Href href)
     {
       action.Href = href;
       return action;
@@ -151,7 +150,7 @@ namespace Paper.Media.Design
     /// <param name="action">A ação a ser modificada.</param>
     /// <param name="method">O método HTTP.</param>
     /// <returns>A própria instância da ação modificada.</returns>
-    public static EntityAction AddMethod(this EntityAction action, string method)
+    public static EntityAction SetMethod(this EntityAction action, string method)
     {
       action.Method = method;
       return action;
@@ -164,7 +163,7 @@ namespace Paper.Media.Design
     /// <param name="action">A ação a ser modificada.</param>
     /// <param name="method">O método HTTP.</param>
     /// <returns>A própria instância da ação modificada.</returns>
-    public static EntityAction AddMethod(this EntityAction action, Method method)
+    public static EntityAction SetMethod(this EntityAction action, Method method)
     {
       action.Method = method.GetName();
       return action;
@@ -174,15 +173,20 @@ namespace Paper.Media.Design
 
     #region AddField<T>
 
-    public static EntityAction AddField<T>(this EntityAction action, Expression<Func<T, object>> keySelector, Action<Field> builder = null)
+    public static EntityAction AddField<T>(this EntityAction action, Expression<Func<T, object>> keySelector, Action<Field> options = null)
     {
-      ExtractInfo(keySelector, out string fieldName, out string fieldTitle, out string fieldDataTtype);
+      ExtractInfo(
+          keySelector
+        , out string fieldName
+        , out string fieldTitle
+        , out string fieldDataTtype
+      );
       DoAddField(
           action
         , fieldName
         , fieldTitle
         , fieldDataTtype
-        , builder
+        , options
         , false
       );
       return action;
@@ -206,19 +210,20 @@ namespace Paper.Media.Design
       return action;
     }
 
-    public static EntityAction AddFieldMulti<T>(this EntityAction action, Expression<Func<T, object>> keySelector, Action<Field> builder = null)
+    public static EntityAction AddFieldMulti<T>(this EntityAction action, Expression<Func<T, object>> keySelector, Action<Field> options = null)
     {
-      ExtractInfo(keySelector, 
-        out string fieldName,
-        out string fieldTitle,
-        out string fieldDataTtype
+      ExtractInfo(
+          keySelector
+        , out string fieldName
+        , out string fieldTitle
+        , out string fieldDataTtype
       );
       DoAddField(
           action
         , fieldName
         , fieldTitle
         , fieldDataTtype
-        , builder
+        , options
         , true
       );
       return action;
@@ -290,107 +295,27 @@ namespace Paper.Media.Design
 
     #region AddField
 
-    public static EntityAction AddField(
-        this EntityAction action
-      , string name
-      , string dataType
-      , string title = null
-      )
+    public static EntityAction AddField(this EntityAction action, string name, Action<Field> options)
     {
       DoAddField(
           action
         , name
-        , title
-        , dataType
         , null
+        , null
+        , options
         , false
       );
       return action;
     }
 
-    public static EntityAction AddField(
-        this EntityAction action
-      , string name
-      , DataType dataType
-      , string title = null
-      )
-    {
-      DoAddField(
-          action
-        , name
-        , title
-        , dataType.GetName()
-        , null
-        , false
-      );
-      return action;
-    }
-
-    public static EntityAction AddField(
-        this EntityAction action
-      , string name
-      , Action<Field> builder
-      )
+    public static EntityAction AddFieldMulti(this EntityAction action, string name, Action<Field> options)
     {
       DoAddField(
           action
         , name
         , null
         , null
-        , builder
-        , false
-      );
-      return action;
-    }
-
-    public static EntityAction AddFieldMulti(
-        this EntityAction action
-      , string name
-      , string dataType
-      , string title = null
-      )
-    {
-      DoAddField(
-          action
-        , name
-        , title
-        , dataType
-        , null
-        , true
-      );
-      return action;
-    }
-
-    public static EntityAction AddFieldMulti(
-        this EntityAction action
-      , string name
-      , DataType dataType
-      , string title = null
-      )
-    {
-      DoAddField(
-          action
-        , name
-        , title
-        , dataType.GetName()
-        , null
-        , true
-      );
-      return action;
-    }
-
-    public static EntityAction AddFieldMulti(
-        this EntityAction action
-      , string name
-      , Action<Field> builder
-      )
-    {
-      DoAddField(
-          action
-        , name
-        , null
-        , null
-        , builder
+        , options
         , true
       );
       return action;
@@ -431,23 +356,18 @@ namespace Paper.Media.Design
       , string name
       , string title
       , string dataType
-      , Action<Field> builder
+      , Action<Field> options
       , bool allowMulti
       )
     {
-      if (action.Fields == null)
-      {
-        action.Fields = new FieldCollection();
-      }
-
-      var field = GetOrAddField(action.Fields, name);
+      var field = GetOrAddField(action.WithFields(), name);
 
       field.SetTitle(title ?? name.ChangeCase(TextCase.ProperCase));
-      field.AddDataType(dataType ?? DataTypeNames.Text);
+      field.SetDataType(dataType ?? DataTypeNames.Text);
 
-      if (builder != null)
+      if (options != null)
       {
-        builder.Invoke(field);
+        options.Invoke(field);
       }
       else
       {
@@ -464,13 +384,13 @@ namespace Paper.Media.Design
             case DataTypeNames.Time:
             case DataTypeNames.Decimal:
             case DataTypeNames.Number:
-              field.AddAllowMany();
-              field.AddAllowRange();
+              field.SetAllowMany();
+              field.SetAllowRange();
               break;
 
             case DataTypeNames.Text:
-              field.AddAllowMany();
-              field.AddAllowWildcards();
+              field.SetAllowMany();
+              field.SetAllowWildcards();
               break;
           }
         }

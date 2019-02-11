@@ -19,6 +19,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using Microsoft.CSharp;
 using Paper.Media;
+using Paper.Media.Data;
 using Paper.Media.Design;
 using Paper.Media.Serialization;
 using Toolset;
@@ -35,8 +36,12 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
-  class A { }
-  class B { }
+  class Class
+  {
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public DateTime? Date { get; set; }
+  }
 
   class Program
   {
@@ -47,67 +52,50 @@ namespace Sandbox
       Application.SetCompatibleTextRenderingDefault(false);
       try
       {
+        //var uri = new UriString("http://localhost.com/?page=10&pageSize=20");
+        //var uri = new UriString("http://localhost.com/?limit=10&offset=20");
+
+        var sort = new Sort()
+          .AddField<Class>(opt => opt.Id)
+          .AddField<Class>(opt => opt.Name)
+          .AddField<Class>(opt => opt.Date);
+
+        sort.CopyFrom("http://localhost.com/?sort=id&sort=name:desc");
+        Debug.WriteLine(sort);
+
+        sort.AddSortedField("date", Paper.Media.Data.SortOrder.Descending);
+
+        var uri = sort.CreateUri("http://localhost.com/");
+        Debug.WriteLine(uri);
+
+        return;
+
         var entity = new Entity();
+        entity.SetTitle("Teste");
 
-        entity.AddProperties(new
-        {
-          graph = new
-          {
-            id = 10,
-            items = new HashMap
-            {
-              { "one", new { id = 1, name = "one" } },
-              { "two", new { id = 2, name = "two" } }
-            }
-          }
-        }
-        , select: new[] { "graph.items.one", "graph.items.two" }
-        , except: new[] { "graph.items.one.name" }
-        );
 
-        // entity.SetTitle("My Title");
-        //entity.SetProperty("my.count", 3);
-        //entity.WithProperties("my.numbers").SetProperty("ten", 10);
-        //entity.WithProperties("my.numbers").SetProperty("two.five", 5);
+        
 
-        //entity.Properties
-        //entity.Actions
-        //entity.Links
 
-        //{
-        //  Title = "Foo Bar",
-        //  Properties = new PropertyMap
-        //  {
-        //    { "Id", 10 },
-        //    { "Name", "Foo" },
-        //    { "Group",
-        //      new PropertyMap {
-        //        { "Id", 20 },
-        //        { "Name", "Bar" }
-        //      }
-        //    },
-        //    { "Nums", new string[] { "One", "Two", "Three" } },
-        //    { "Texs", new List<string> { "One", "Two", "Three" } }
-        //  }
-        //};
-
-        try
-        {
-          using (var memory = new MemoryStream())
-          {
-            var serializer = new DataContractJsonSerializer(typeof(Entity));
-            serializer.WriteObject(memory, entity);
-            memory.Position = 0;
-            var json = new StreamReader(memory).ReadToEnd();
-            Debug.WriteLine(Json.Beautify(json));
-          }
-        }
-        catch (Exception ex)
-        {
-          ex.Trace();
-        }
-
+        entity.ExpandUri("http://localhost/", "/api/1");
         Debug.WriteLine(entity.ToJson());
+
+
+        //try
+        //{
+        //  using (var memory = new MemoryStream())
+        //  {
+        //    var serializer = new DataContractJsonSerializer(typeof(Entity));
+        //    serializer.WriteObject(memory, entity);
+        //    memory.Position = 0;
+        //    var json = new StreamReader(memory).ReadToEnd();
+        //    Debug.WriteLine(Json.Beautify(json));
+        //  }
+        //}
+        //catch (Exception ex)
+        //{
+        //  ex.Trace();
+        //}
       }
       catch (Exception ex)
       {

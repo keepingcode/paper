@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ComponentModel;
+using Toolset.Collections;
 
 namespace Paper.Media
 {
@@ -10,7 +11,7 @@ namespace Paper.Media
   /// Coleção de links.
   /// </summary>
   [CollectionDataContract(Namespace = Namespaces.Default, Name = "Links")]
-  public class LinkCollection : List<Link>
+  public class LinkCollection : Collection<Link>
   {
     public LinkCollection()
     {

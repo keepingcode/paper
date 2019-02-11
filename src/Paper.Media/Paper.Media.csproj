@@ -39,25 +39,22 @@
 
   <ItemGroup>
     <Compile Remove="Design\DataExtensions.cs" />
-    <Compile Remove="Design\EntityActionExtensions.cs" />
-    <Compile Remove="Design\EntityExtensions.cs" />
+    <Compile Remove="Design\EntityDesign.cs" />
     <Compile Remove="Design\ExposePaperAttribute.cs" />
-    <Compile Remove="Design\FieldExtensions.cs" />
-    <Compile Remove="Design\HeaderBuilder.cs" />
-    <Compile Remove="Design\HeaderExtensions.cs" />
     <Compile Remove="Design\HeaderInfo.cs" />
     <Compile Remove="Design\HeaderUtil.cs" />
     <Compile Remove="Design\IPaper.cs" />
     <Compile Remove="Design\ISortableEnumerable.cs" />
     <Compile Remove="Design\ISortableQueryable.cs" />
     <Compile Remove="Design\MediaObjectExtensions.cs" />
+    <Compile Remove="Design\Page.cs" />
     <Compile Remove="Design\PageExtensions.cs" />
     <Compile Remove="Design\PaperAttribute.cs" />
     <Compile Remove="Design\PropertyExtensions.cs" />
     <Compile Remove="Design\RecordExtensions.cs" />
     <Compile Remove="Design\RowsExtensions.cs" />
+    <Compile Remove="Design\SortOrder.cs" />
     <Compile Remove="Property.cs" />
-    <Compile Remove="PropertyCollection.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,6 +71,10 @@
     <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj" />
     <ProjectReference Include="..\Toolset.Serialization\Toolset.Serialization.csproj" />
     <ProjectReference Include="..\Toolset.Text.Template\Toolset.Text.Template.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Utilities.Types\" />
   </ItemGroup>
 
 </Project>
