@@ -24,6 +24,36 @@ namespace Paper.Media.Design
     /// <param name="entity">A entidade a ser modificada.</param>
     /// <param name="action">A instância da ação.</param>
     /// <returns>A própria instância da entidade modificada.</returns>
+    public static Entity AddActions(this Entity entity, params EntityAction[] actions)
+    {
+      foreach (var action in actions)
+      {
+        AddAction(entity, action);
+      }
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona uma ação à entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="action">A instância da ação.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
+    public static Entity AddActions(this Entity entity, IEnumerable<EntityAction> actions)
+    {
+      foreach (var action in actions)
+      {
+        AddAction(entity, action);
+      }
+      return entity;
+    }
+
+    /// <summary>
+    /// Adiciona uma ação à entidade.
+    /// </summary>
+    /// <param name="entity">A entidade a ser modificada.</param>
+    /// <param name="action">A instância da ação.</param>
+    /// <returns>A própria instância da entidade modificada.</returns>
     public static Entity AddAction(this Entity entity, EntityAction action)
     {
       if (string.IsNullOrEmpty(action.Name))
@@ -110,6 +140,12 @@ namespace Paper.Media.Design
     #endregion
 
     #region Básicos
+
+    public static EntityAction SetName(this EntityAction action, string name)
+    {
+      action.Name = name;
+      return action;
+    }
 
     /// <summary>
     /// Define o tipo (MimeType) do documento retornado pelo link.

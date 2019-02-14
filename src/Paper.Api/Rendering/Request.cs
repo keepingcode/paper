@@ -24,6 +24,8 @@ namespace Paper.Api.Rendering
 
     public string Path => request.Path;
 
+    public string Method => request.Method;
+
     public Headers Headers => request.Headers;
 
     public Stream Body => request.Body;

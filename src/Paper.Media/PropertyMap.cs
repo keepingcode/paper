@@ -45,7 +45,7 @@ namespace Paper.Media
 
     private static object UnwrapTerm(object value, IEnumerable<IEnumerable<string>> select, IEnumerable<IEnumerable<string>> except)
     {
-      if (!SerializationUtilities.IsSerializable(value))
+      if (!SerializationUtilities.IsSerializable(value) || value is PropertyMap)
       {
         if (value is IDictionary dictionary)
         {

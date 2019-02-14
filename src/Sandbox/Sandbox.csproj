@@ -51,6 +51,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Draft.cs" />
+    <Compile Include="UsersPaper_SmallestSample.cs" />
+    <Compile Include="UsersPaper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,6 +61,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Paper.Api\Paper.Api.csproj">
+      <Project>{2c8a4dfe-b8ad-4511-b1e3-6a0bb52ee858}</Project>
+      <Name>Paper.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Paper.Media\Paper.Media.csproj">
       <Project>{A1463E32-8E17-413B-A32D-EA942C6F1FB8}</Project>
       <Name>Paper.Media</Name>

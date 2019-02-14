@@ -20,8 +20,10 @@ namespace Paper.Media.Serialization
       {
         if (item is IDictionary map)
         {
-          return map.Keys.Cast<object>().All(IsStringCompatible)
-              && map.Values.Cast<object>().All(IsSerializable);
+          var isSerializable =
+               map.Keys.Cast<object>().All(IsStringCompatible)
+            && map.Values.Cast<object>().All(IsSerializable);
+          return isSerializable;
         }
         else
         {

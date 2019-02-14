@@ -21,6 +21,7 @@ namespace Paper.Core
       this.RequestUri = context.Request.GetDisplayUrl();
       this.PathBase = context.Request.PathBase;
       this.Path = context.Request.Path;
+      this.Method = context.Request.Method;
       this.Headers = new Headers(new HttpHeaders(context.Request.Headers));
       this.Body = context.Request.Body;
     }
@@ -30,6 +31,8 @@ namespace Paper.Core
     public string PathBase { get; }
 
     public string Path { get; }
+
+    public string Method { get; }
 
     public Headers Headers { get; }
 

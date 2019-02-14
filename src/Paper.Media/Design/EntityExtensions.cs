@@ -637,6 +637,18 @@ namespace Paper.Media.Design
       return entity;
     }
 
+    public static Entity AddEntities<T>(this Entity entity, IEnumerable<T> items, Action<T, Entity> builder)
+    {
+      var children = items.Select(item =>
+      {
+        var child = new Entity();
+        builder.Invoke(item, child);
+        return child;
+      });
+      entity.WithEntities().AddMany(children);
+      return entity;
+    }
+
     #endregion
 
     #region Rel
@@ -841,9 +853,11 @@ namespace Paper.Media.Design
     public static TEntity AddProperties<TEntity>(this TEntity entity, object graph, IEnumerable<string> select = null, IEnumerable<string> except = null)
       where TEntity : IPropertyMap
     {
-      var map = entity.WithProperties();
-      var properties = (PropertyMap)PropertyMap.CreateCompatibleValue(graph, select, except);
-      map.AddMany(properties);
+      if (graph != null)
+      {
+        var propertyMap = (PropertyMap)PropertyMap.CreateCompatibleValue(graph, select, except);
+        entity.WithProperties().AddMany(propertyMap);
+      }
       return entity;
     }
 

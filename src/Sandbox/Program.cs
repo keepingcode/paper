@@ -13,11 +13,11 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Microsoft.CSharp;
+using Paper.Api.Rendering;
 using Paper.Media;
 using Paper.Media.Data;
 using Paper.Media.Design;
@@ -36,71 +36,77 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
-  class Class
-  {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public DateTime? Date { get; set; }
-  }
-
   class Program
   {
     [STAThread]
     static void Main()
     {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
+      System.Windows.Forms.Application.EnableVisualStyles();
+      System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
       try
       {
-        //var uri = new UriString("http://localhost.com/?page=10&pageSize=20");
-        //var uri = new UriString("http://localhost.com/?limit=10&offset=20");
+        var siteDescriptor = new SiteDescriptor();
+        var paperRenderer = new PaperRenderer(siteDescriptor, typeof(MyPaper));
 
-        var sort = new Sort()
-          .AddField<Class>(opt => opt.Id)
-          .AddField<Class>(opt => opt.Name)
-          .AddField<Class>(opt => opt.Date);
+        siteDescriptor.MapRoute("/Users", opt => opt
+          .On(Method.Get, paperRenderer.GetAsync)
+          //.On(Method.Post, paperRenderer.PostAsync)
+        );
 
-        sort.CopyFrom("http://localhost.com/?sort=id&sort=name:desc");
-        Debug.WriteLine(sort);
+        // siteDescriptor.MapRoute("/Users/{userId}", opt => opt
+        //   .On(Method.Get, paperRenderer.GetAsync)
+        //   .On(Method.Post, paperRenderer.PostAsync)
+        // );
 
-        sort.AddSortedField("date", Paper.Media.Data.SortOrder.Descending);
-
-        var uri = sort.CreateUri("http://localhost.com/");
-        Debug.WriteLine(uri);
-
-        return;
-
-        var entity = new Entity();
-        entity.SetTitle("Teste");
-
-
-        
-
-
-        entity.ExpandUri("http://localhost/", "/api/1");
-        Debug.WriteLine(entity.ToJson());
-
-
-        //try
-        //{
-        //  using (var memory = new MemoryStream())
-        //  {
-        //    var serializer = new DataContractJsonSerializer(typeof(Entity));
-        //    serializer.WriteObject(memory, entity);
-        //    memory.Position = 0;
-        //    var json = new StreamReader(memory).ReadToEnd();
-        //    Debug.WriteLine(Json.Beautify(json));
-        //  }
-        //}
-        //catch (Exception ex)
-        //{
-        //  ex.Trace();
-        //}
+        // siteDescriptor.Linkage(
+        //   "/Users/{userId}", opt => opt
+        // );
       }
       catch (Exception ex)
       {
         ex.Trace();
       }
     }
+  }
+
+  public delegate Task Linkage();
+
+  
+
+  class PaperRenderer
+  {
+    public PaperRenderer(SiteDescriptor siteDescriptor, Type type)
+    {
+    }
+
+    public async Task GetAsync(Request request, Response response, NextAsync next)
+    {
+      await Task.Yield();
+    }
+
+    public async Task PostAsync(Request request, Response response, NextAsync next)
+    {
+      await Task.Yield();
+    }
+  }
+
+  class SiteDescriptor
+  {
+    public SiteDescriptor MapRoute(string route, Action<Options> options)
+    {
+      return this;
+    }
+
+    public class Options
+    {
+      public Options On(Method get, Renderer render)
+      {
+        return this;
+      }
+    }
+  }
+
+  class MyPaper
+  {
   }
 }

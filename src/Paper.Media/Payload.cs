@@ -26,111 +26,86 @@ namespace Paper.Media
     {
       var entity = new Entity();
 
-      // TODO REIMPLEMENTAR
-      throw new NotImplementedException();
+      if (Data != null)
+      {
+        CopyMapToEntity(Data, entity, ClassNames.Record);
+      }
 
-      //if (Data != null)
-      //{
-      //  var @class = Data["@class"];
-      //  var properties = Data.Except(@class);
-      //  entity.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
-      //  entity.AddProperties(properties);
-      //}
+      if (Rows != null)
+      {
+        foreach (var row in Rows)
+        {
+          var record = new Entity();
+          CopyMapToEntity(row, entity, ClassNames.Record);
+          entity.AddEntity(record);
+        }
+      }
 
-      //if (Rows != null)
-      //{
-      //  foreach (var row in Rows)
-      //  {
-      //    var @class = row["@class"];
-      //    var properties = row.Except(@class);
+      if (Form != null)
+      {
+        CopyMapToEntity(Data, entity, ClassNames.Form);
+      }
 
-      //    var child = new Entity();
-      //    child.AddClass(new[] { ClassNames.Data, @class?.Value?.ToString() }.NonNull());
-      //    child.AddProperties(properties);
-
-      //    entity.AddEntity(child);
-      //  }
-      //}
-
-      //if (Form != null)
-      //{
-      //  var @action = Form["@action"];
-      //  var properties = Form.Except(@action);
-      //  entity.AddClass(ClassNames.Form);
-      //  entity.AddProperties(properties);
-      //}
-
-      //return entity;
+      return entity;
     }
 
     public static Payload FromEntity(Entity entity)
     {
       var payload = new Payload();
 
-      var hasData = entity.Class?.Contains(ClassNames.Data) == true;
+      var hasData = entity.Class.Has(ClassNames.Record);
       if (hasData)
       {
         payload.Data = new PropertyMap();
-        if (entity.Properties is PropertyMap properties)
-        {
-          var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "data";
-          if (@class != null)
-          {
-            payload.Data.Add("@class", @class);
-          }
-
-          foreach (var property in properties)
-          {
-            if (!property.Key.StartsWith("_"))
-            {
-              payload.Data.Add(property.Key, property.Value);
-            }
-          }
-        }
+        CopyEntityToMap(entity, payload.Data, ClassNames.Record);
       }
 
-      var hasRows = entity.Entities?.Any(e => e.Class.Contains(ClassNames.Data)) == true;
+      var hasRows = entity.Entities?.Any(e => e.Class.Has(ClassNames.Record)) == true;
       if (hasRows)
       {
         payload.Rows = new RowCollection();
 
-        var children = entity.Entities.Where(e => e.Class.Contains(ClassNames.Data) && e.Properties != null);
-        foreach (var child in children)
+        var records = entity.Entities.Where(e => e.Class.Has(ClassNames.Record));
+        foreach (var record in records)
         {
-          var row = new PropertyMap();
-
-          var @class = child.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? "row";
-          row.Add("@class", @class);
-
-          foreach (var property in child.Properties)
-          {
-            if (!property.Key.StartsWith("_"))
-            {
-              row.Add(property.Key, property.Value);
-            }
-          }
-
-          payload.Rows.Add(row);
+          var map = new PropertyMap();
+          CopyEntityToMap(record, map, ClassNames.Record);
+          payload.Rows.Add(map);
         }
       }
 
-      var hasForm = entity.Class?.Contains(ClassNames.Form) == true;
+      var hasForm = entity.Class.Has(ClassNames.Form);
       if (hasForm)
       {
         payload.Form = new PropertyMap();
-        if (entity.Properties is PropertyMap properties)
-        {
-          foreach (var property in properties)
-          {
-            if (!property.Key.StartsWith("_"))
-            {
-              payload.Form.Add(property.Key, property.Value);
-            }
-          }
-        }
+        CopyEntityToMap(entity, payload.Form, ClassNames.Form);
       }
 
       return payload;
+    }
+
+    private static void CopyEntityToMap(Entity entity, PropertyMap map, string defaultClass)
+    {
+      var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? defaultClass;
+      if (@class != null)
+      {
+        map.Add("@class", @class);
+      }
+      if (entity.Properties is PropertyMap properties)
+      {
+        foreach (var property in properties.Where(x => !x.Key.StartsWith("__")))
+        {
+          map.Add(property.Key, property.Value);
+        }
+      }
+    }
+
+    private static void CopyMapToEntity(PropertyMap map, Entity entity, string defaultClass)
+    {
+      var @class = map["@class"];
+      var properties = map.Where(x => !x.Key.EqualsAnyIgnoreCase("@class"));
+      entity.AddClass(new[] { defaultClass, @class?.ToString() }.NonNull());
+      entity.AddProperties(properties);
     }
 
     [CollectionDataContract(Namespace = Namespaces.Default, Name = "Rows", ItemName = "Row")]

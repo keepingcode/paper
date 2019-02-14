@@ -18,6 +18,8 @@ namespace Paper.Api.Rendering
 
     string Path { get; }
 
+    string Method { get; }
+
     Headers Headers { get; }
 
     Stream Body { get; }

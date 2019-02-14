@@ -22,13 +22,13 @@ namespace Paper.Api.Rendering
     private HashMap<Var> ParsePath(string path, string pathTemplate)
     {
       var matches = Regex.Matches(pathTemplate, @"\{([^{}]+)\}");
-      var keys = matches.Select(x => x.Groups[1].Value).ToArray();
+      var keys = matches.Cast<Match>().Select(x => x.Groups[1].Value).ToArray();
 
       var pathPattern = $"^{Regex.Replace(pathTemplate, @"(\{[^{}]+\})", @"([^/]+)")}";
 
       var match = Regex.Match(path, pathPattern);
       var values = match.Success
-        ? match.Groups.Skip(1).Select(x => new Var(x.Value)).ToArray()
+        ? match.Groups.Cast<Group>().Skip(1).Select(x => new Var(x.Value)).ToArray()
         : new Var[0];
 
       var map = new HashMap<Var>();
