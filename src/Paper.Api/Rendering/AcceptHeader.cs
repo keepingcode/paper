@@ -6,6 +6,7 @@ using System.Text;
 using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Net;
 
 namespace Paper.Api.Rendering
 {

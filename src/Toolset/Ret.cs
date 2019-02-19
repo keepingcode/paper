@@ -5,238 +5,206 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Toolset.Collections;
+using Toolset.Net;
 using Toolset.Xml;
 
 namespace Toolset
 {
-  public class Ret
+  public struct Ret
   {
-    private Type valueType;
-
-    internal object _value;
-    internal string _faultMessage;
-
-    internal Ret()
-    {
-    }
-
-    public bool OK => Status < 400;
-
-    public int Status { get; set; }
+    public bool Ok => (int)Status.Code < 400;
 
     public object Value { get; set; }
 
-    public Exception Fault { get; set; }
+    public RetStatus Status { get; set; }
 
-    public string FaultMessage
+    public RetFault Fault { get; set; }
+
+    public static implicit operator Ret(bool value)
     {
-      get
+      return new Ret
       {
-        if (OK)
-          return null;
+        Status = new RetStatus
+        {
+          Code = value ? HttpStatusCode.OK : HttpStatusCode.NotFound
+        }
+      };
+    }
 
-        if (_faultMessage != null)
-          return _faultMessage;
+    public static implicit operator Ret(Exception exception)
+    {
+      return new Ret
 
-        if (Fault is Exception ex)
-          return string.Join(Environment.NewLine, ex.GetCauseMessages());
+      {
+        Status = new RetStatus
+        {
+          Code = HttpStatusCode.InternalServerError
+        },
+        Fault = new RetFault
+        {
+          Message = exception.GetCauseMessage(),
+          Exception = exception
+        }
+      };
+    }
 
-        return Fault?.ToString()
-            ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
+    #region Estruturas
+
+    public struct RetStatus
+    {
+      private HashMap<string> _data;
+
+      public HttpStatusCode Code { get; set; }
+
+      public int CodeValue
+      {
+        get => (int)Code;
+        set => Code = (HttpStatusCode)value;
       }
-      set => _faultMessage = value;
-    }
 
-    public override string ToString()
-    {
-      var message =
-        FaultMessage
-        ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
-
-      return $"{{{Status} {message}{(OK ? $": {Value}" : null)}}}";
-    }
-
-    public static implicit operator Ret(bool ok)
-    {
-      return ok ? Ret.Ok() : Ret.Fail();
-    }
-
-    public static implicit operator Ret(Exception ex)
-    {
-      return Ret.Fail(ex);
-    }
-
-    #region Métodos Ok()
-
-    public static Ret Ok()
-    {
-      return new Ret
+      public HttpStatusClass CodeClass
       {
-        Status = (int)HttpStatusCode.OK
-      };
+        get => (HttpStatusClass)(CodeValue / 100);
+      }
+
+      public HashMap<string> Data
+      {
+        get => _data ?? (_data = new HashMap<string>());
+        set => _data = value;
+      }
     }
 
-    public static Ret Ok(int status)
+    public struct RetFault
     {
-      return new Ret
-      {
-        Status = status
-      };
-    }
+      public string Message { get; set; }
 
-    public static Ret Ok(HttpStatusCode status)
-    {
-      return new Ret
-      {
-        Status = (int)status
-      };
-    }
-
-    public static Ret<T> Ok<T>(T value)
-    {
-      return new Ret<T>
-      {
-        Status = (int)HttpStatusCode.OK,
-        Value = value
-      };
-    }
-
-    public static Ret<T> Ok<T>(T value, int status)
-    {
-      return new Ret<T>
-      {
-        Status = status,
-        Value = value
-      };
-    }
-
-    public static Ret<T> Ok<T>(T value, HttpStatusCode status)
-    {
-      return new Ret<T>
-      {
-        Status = (int)status,
-        Value = value
-      };
+      public Exception Exception { get; set; }
     }
 
     #endregion
 
-    #region Métodos Fail()
+    #region Extensões
 
-    //public static RetFault Throw(Ret ret)
-    //{
-    //  return new RetFault
-    //  {
-    //    Status = ret.Status,
-    //    Fault = ret.Fault
-    //  };
-    //}
-
-    public static Ret Fail()
+    public static Ret OK()
     {
       return new Ret
       {
-        Status = (int)HttpStatusCode.InternalServerError
+        Status = new RetStatus
+        {
+          Code = HttpStatusCode.OK
+        }
+      };
+    }
+
+    public static Ret<T> OK<T>(T value)
+    {
+      return new Ret<T>
+      {
+        Value = value,
+        Status = new RetStatus
+        {
+          Code = HttpStatusCode.OK
+        }
+      };
+    }
+
+    public static Ret<T> Create<T>(T value, HttpStatusCode status)
+    {
+      return new Ret<T>
+      {
+        Value = value,
+        Status = new RetStatus
+        {
+          Code = status
+        }
+      };
+    }
+
+    public static Ret Create(HttpStatusCode status)
+    {
+      return new Ret
+      {
+        Status = new RetStatus
+        {
+          Code = status
+        }
+      };
+    }
+
+    public static Ret Create(HttpStatusCode status, string faultMessage)
+    {
+      return new Ret
+      {
+        Status = new RetStatus
+        {
+          Code = status
+        },
+        Fault = new RetFault
+        {
+          Message = faultMessage
+        }
+      };
+    }
+
+    public static Ret Create(HttpStatusCode status, Exception exception)
+    {
+      return new Ret
+      {
+        Status = new RetStatus
+        {
+          Code = status
+        },
+        Fault = new RetFault
+        {
+          Message = exception?.GetCauseMessage(),
+          Exception = exception
+        }
+      };
+    }
+
+    public static Ret Create(HttpStatusCode status, string faultMessage, Exception exception)
+    {
+      return new Ret
+      {
+        Status = new RetStatus
+        {
+          Code = status
+        },
+        Fault = new RetFault
+        {
+          Message = faultMessage ?? exception.GetCauseMessage(),
+          Exception = exception
+        }
       };
     }
 
     public static Ret Fail(string faultMessage)
     {
-      return new Ret
-      {
-        Status = (int)HttpStatusCode.InternalServerError,
-        FaultMessage = faultMessage
-      };
+      return Fail(faultMessage, null);
     }
 
-    public static Ret Fail(Exception fault)
+    public static Ret Fail(Exception exception)
+    {
+      return Fail(null, exception);
+    }
+
+    public static Ret Fail(string faultMessage, Exception exception)
     {
       return new Ret
       {
-        Status = fault is NotImplementedException
-          ? (int)HttpStatusCode.NotImplemented
-          : (int)HttpStatusCode.InternalServerError,
-        Fault = fault
-      };
-    }
-
-    public static Ret Fail(int status)
-    {
-      return new Ret
-      {
-        Status = status
-      };
-    }
-
-    public static Ret Fail(int status, string faultMessage)
-    {
-      return new Ret
-      {
-        Status = status,
-        FaultMessage = faultMessage
-      };
-    }
-
-    public static Ret Fail(int status, Exception fault)
-    {
-      fault.Debug();
-      return new Ret
-      {
-        Status = status,
-        Fault = fault
-      };
-    }
-
-    public static Ret Fail(int status, string faultMessage, Exception fault)
-    {
-      fault.Debug();
-      return new Ret
-      {
-        Status = status,
-        FaultMessage = faultMessage,
-        Fault = fault
-      };
-    }
-
-    public static Ret Fail(HttpStatusCode status)
-    {
-      return new Ret
-      {
-        Status = (int)status
-      };
-    }
-
-    public static Ret Fail(HttpStatusCode status, string faultMessage)
-    {
-      return new Ret
-      {
-        Status = (int)status,
-        FaultMessage = faultMessage
-      };
-    }
-
-    public static Ret Fail(HttpStatusCode status, Exception fault)
-    {
-      fault.Debug();
-      return new Ret
-      {
-        Status = (int)status,
-        Fault = fault
-      };
-    }
-
-    public static Ret Fail(HttpStatusCode status, string faultMessage, Exception fault)
-    {
-      fault.Debug();
-      return new Ret
-      {
-        Status = (int)status,
-        FaultMessage = faultMessage,
-        Fault = fault
+        Status = new RetStatus
+        {
+          Code = HttpStatusCode.InternalServerError
+        },
+        Fault = new RetFault
+        {
+          Message = faultMessage ?? exception?.GetCauseMessage(),
+          Exception = exception
+        }
       };
     }
 
     #endregion
-
   }
 }

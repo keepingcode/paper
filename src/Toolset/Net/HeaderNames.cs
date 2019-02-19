@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Paper.Api.Rendering
+namespace Toolset.Net
 {
   public static class HeaderNames
   {

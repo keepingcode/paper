@@ -67,7 +67,7 @@ namespace Toolset
         from iface in type.GetInterfaces()
         where iface.IsGenericType
         where iface.GetGenericTypeDefinition() == typeof(IDictionary<,>)
-           //|| iface.GetGenericTypeDefinition() == typeof(IKeyValueCollection<,>)
+        //|| iface.GetGenericTypeDefinition() == typeof(IKeyValueCollection<,>)
         select iface
       ).FirstOrDefault();
 
@@ -87,7 +87,7 @@ namespace Toolset
         from iface in type.GetInterfaces()
         where iface.IsGenericType
         where iface.GetGenericTypeDefinition() == typeof(IDictionary<,>)
-           //|| iface.GetGenericTypeDefinition() == typeof(IKeyValueCollection<,>)
+        //|| iface.GetGenericTypeDefinition() == typeof(IKeyValueCollection<,>)
         select iface
       ).FirstOrDefault();
 
@@ -95,6 +95,18 @@ namespace Toolset
         return genericType.GetGenericArguments().Last();
 
       return typeof(object);
+    }
+
+    public static Type Ret(object graph)
+    {
+      var type = graph is Type t ? t : graph?.GetType();
+      if (type == null)
+        return null;
+
+      if (type == typeof(Ret))
+        return graph?.GetType() ?? typeof(object);
+
+      return type.GetGenericArguments().First();
     }
   }
 }

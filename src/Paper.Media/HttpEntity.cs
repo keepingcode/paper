@@ -24,9 +24,9 @@ namespace Paper.Media
     public static Ret<Entity> CreateFromRet(Route route, Ret ret)
     {
       if (ret.Value is Entity entity)
-        return entity;
-
-      return Create(route, ret.Status, ret.FaultMessage, ret.Fault);
+        return Ret.OK(entity);
+      else
+        return Create(route, ret.Status.Code, ret.Fault.Message, ret.Fault.Exception);
     }
 
     public static Ret<Entity> Create(Route route, HttpStatusCode status, string message, Exception exception)
@@ -62,7 +62,7 @@ namespace Paper.Media
         Rel = RelNames.Self
       });
 
-      return Ret.Ok(entity, status);
+      return Ret.Create(entity, status);
     }
 
     public static Ret<Entity> Create(Route route, HttpStatusCode status, string message)

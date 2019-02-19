@@ -6,6 +6,8 @@ namespace Paper.Api.Rendering
 {
   public interface IObjectFactory
   {
-    object CreateObject(Type type, params object[] args);
+    object CreateObject(Type type, params object[] extraArgs);
+
+    object GetInstance(Type type);
   }
 }

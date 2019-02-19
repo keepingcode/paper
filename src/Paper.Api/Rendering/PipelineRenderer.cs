@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Paper.Media;
 using Paper.Media.Serialization;
 using Toolset;
+using Toolset.Net;
 
 namespace Paper.Api.Rendering
 {

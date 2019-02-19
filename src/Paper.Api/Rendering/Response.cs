@@ -10,6 +10,7 @@ using Paper.Media.Serialization;
 using Paper.Media;
 using Toolset.Collections;
 using Toolset;
+using Toolset.Net;
 
 namespace Paper.Api.Rendering
 {
@@ -39,7 +40,10 @@ namespace Paper.Api.Rendering
       var hasSelfLink = entity.Links?.Any(x => x.Rel?.Contains(RelNames.Self) == true) == true;
       if (!hasSelfLink)
       {
-        entity.SetSelfLink(req.RequestUri);
+        var link = new Link();
+        link.AddRel(RelNames.Self);
+        link.SetHref(req.RequestUri);
+        entity.WithLinks().AddAt(0, link);
       }
 
       entity.ExpandUri(req.RequestUri, req.PathBase);

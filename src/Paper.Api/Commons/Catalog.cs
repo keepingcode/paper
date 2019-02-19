@@ -131,6 +131,29 @@ namespace Paper.Api.Commons
       }
     }
 
+    public ICollection<string> GetPaths()
+    {
+      return index.GetPaths().ToArray();
+    }
+
+    public ICollection<string> GetPathsInCollection(ICatalogCollection<T> collection)
+    {
+      return GetPathsInCollection(collection.Name);
+    }
+
+    public ICollection<string> GetPathsInCollection(string collectionName)
+    {
+      var paths = new List<string>();
+      index.Visit((path, entry) =>
+      {
+        if (entry.Any(x => x.CollectionName.EqualsIgnoreCase(collectionName)))
+        {
+          paths.Add(path);
+        }
+      });
+      return paths;
+    }
+
     public IEnumerable<T> Find(string path)
     {
       lock (synclock)
@@ -153,16 +176,6 @@ namespace Paper.Api.Commons
           select entry.Item;
         return items.Reverse().ToArray();
       }
-    }
-
-    public IEnumerable<T> FindInCollection(ICatalogCollection<T> collection)
-    {
-      return DoFindInCollection(collection.Name, null);
-    }
-
-    public IEnumerable<T> FindInCollection(string collectionName)
-    {
-      return DoFindInCollection(collectionName, null);
     }
 
     public IEnumerable<T> FindInCollection(ICatalogCollection<T> collection, string path)
@@ -193,23 +206,33 @@ namespace Paper.Api.Commons
 
     #region Importação de itens por composição.
 
-    public void ImportExposedCollections(IObjectFactory factory)
+    public virtual void ImportExposedCollections(IObjectFactory factory)
     {
-      AddExposedCollectionFactories(factory);
-      AddExposedCollections(factory);
-      AddExposedItems(factory);
+      AddExposedCollectionFactories<T>(factory, item => item);
+      AddExposedCollections<T>(factory, item => item);
+      AddExposedItems<T>(factory, item => item);
     }
 
-    private void AddExposedCollectionFactories(IObjectFactory factory)
+    public virtual void ImportExposedCollections<TContract>(IObjectFactory factory, Func<TContract, T> converter)
+      where TContract : class
     {
-      var types = ExposedTypes.GetTypes<ICatalogCollectionFactory<T>>();
+      AddExposedCollectionFactories<TContract>(factory, converter);
+      AddExposedCollections<TContract>(factory, converter);
+      AddExposedItems<TContract>(factory, converter);
+    }
+
+    private void AddExposedCollectionFactories<TContract>(IObjectFactory factory, Func<TContract, T> converter)
+      where TContract : class
+    {
+      var types = ExposedTypes.GetTypes<ICatalogCollectionFactory<TContract>>();
       foreach (var type in types)
       {
         try
         {
-          var collectionFactory = (ICatalogCollectionFactory<T>)factory.CreateObject(type);
+          var collectionFactory = (ICatalogCollectionFactory<TContract>)factory.CreateObject(type);
           var collection = collectionFactory.CreateCollection();
-          AddCollection(collection);
+          var items = collection.Items.Select(converter);
+          AddCollection(collection.Name, items);
         }
         catch (Exception ex)
         {
@@ -218,15 +241,17 @@ namespace Paper.Api.Commons
       }
     }
 
-    private void AddExposedCollections(IObjectFactory factory)
+    private void AddExposedCollections<TContract>(IObjectFactory factory, Func<TContract, T> converter)
+      where TContract : class
     {
-      var types = ExposedTypes.GetTypes<ICatalogCollection<T>>();
+      var types = ExposedTypes.GetTypes<ICatalogCollection<TContract>>();
       foreach (var type in types)
       {
         try
         {
-          var collection = (ICatalogCollection<T>)factory.CreateObject(type);
-          AddCollection(collection);
+          var collection = (ICatalogCollection<TContract>)factory.CreateObject(type);
+          var items = collection.Items.Select(converter);
+          AddCollection(collection.Name, items);
         }
         catch (Exception ex)
         {
@@ -235,16 +260,18 @@ namespace Paper.Api.Commons
       }
     }
 
-    private void AddExposedItems(IObjectFactory factory)
+    private void AddExposedItems<TContract>(IObjectFactory factory, Func<TContract, T> converter)
+      where TContract : class
     {
-      var types = ExposedTypes.GetTypes<T>();
+      var types = ExposedTypes.GetTypes<TContract>();
       foreach (var type in types)
       {
         try
         {
-          var item = (T)factory.CreateObject(type);
-          var collection = item._GetAttribute<CatalogAttribute>();
+          var contract = (TContract)factory.CreateObject(type);
+          var collection = contract._GetAttribute<CatalogAttribute>();
           var collectionName = collection?.CollectionName ?? type.Assembly.FullName.Split(',').First();
+          var item = converter.Invoke(contract);
           AddCollection(collectionName, item);
         }
         catch (Exception ex)

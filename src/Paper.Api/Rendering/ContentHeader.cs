@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Net;
 
 namespace Paper.Api.Rendering
 {

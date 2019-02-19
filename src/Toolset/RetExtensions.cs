@@ -9,16 +9,13 @@ namespace Toolset
 {
   public static class RetExtensions
   {
-    public static bool IsNotFound(this Ret ret)
-      => ret.Status == (int)HttpStatusCode.NotFound;
+    public static bool IsNotFound(this Ret.RetStatus status)
+      => status.Code == HttpStatusCode.NotFound;
 
-    public static bool IsNotFound<T>(this Ret<T> ret)
-      => ret.Status == (int)HttpStatusCode.NotFound;
+    public static bool IsNotFoundOrImplemented(this Ret.RetStatus status)
+      => status.Code == HttpStatusCode.NotFound || status.Code == HttpStatusCode.NotImplemented;
 
-    public static bool IsNotFoundOrImplemented(this Ret ret)
-      => ret.Status == (int)HttpStatusCode.NotFound || ret.Status == (int)HttpStatusCode.NotImplemented;
-
-    public static bool IsNotFoundOrImplemented<T>(this Ret<T> ret)
-      => ret.Status == (int)HttpStatusCode.NotFound || ret.Status == (int)HttpStatusCode.NotImplemented;
+    public static bool IsRedirect(this Ret.RetStatus status)
+      => ((int)status.Code / 100) == 3;
   }
 }

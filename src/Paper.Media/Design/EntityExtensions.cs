@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -633,6 +634,18 @@ namespace Paper.Media.Design
 
     public static Entity AddEntities(this Entity entity, IEnumerable<Entity> children)
     {
+      entity.WithEntities().AddMany(children);
+      return entity;
+    }
+
+    public static Entity AddEntities(this Entity entity, IEnumerable items, Action<object, Entity> builder)
+    {
+      var children = items.Cast<object>().Select(item =>
+      {
+        var child = new Entity();
+        builder.Invoke(item, child);
+        return child;
+      });
       entity.WithEntities().AddMany(children);
       return entity;
     }

@@ -23,13 +23,15 @@ namespace Paper.Api.Commons
 
     bool HasCollection(string collectionName);
 
+    ICollection<string> GetPaths();
+
+    ICollection<string> GetPathsInCollection(ICatalogCollection<T> collection);
+
+    ICollection<string> GetPathsInCollection(string collectionName);
+
     IEnumerable<T> Find(string path);
 
     IEnumerable<T> FindExact(string path);
-
-    IEnumerable<T> FindInCollection(ICatalogCollection<T> collection);
-
-    IEnumerable<T> FindInCollection(string collectionName);
 
     IEnumerable<T> FindInCollection(ICatalogCollection<T> collection, string path);
 

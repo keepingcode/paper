@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Paper.Api.Extensions.Pages
+namespace Paper.Api
 {
-  class IRecordPage
+  public interface IPaperSettings
   {
+    string UriPrefix { get; }
   }
 }

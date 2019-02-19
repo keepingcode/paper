@@ -11,15 +11,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions.Site.Rendering\**" />
     <Compile Remove="Extensions\**" />
     <Compile Remove="temp\**" />
+    <EmbeddedResource Remove="Extensions.Site.Rendering\**" />
     <EmbeddedResource Remove="Extensions\**" />
     <EmbeddedResource Remove="temp\**" />
+    <None Remove="Extensions.Site.Rendering\**" />
     <None Remove="Extensions\**" />
     <None Remove="temp\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions.Papers\Result.cs" />
     <Compile Remove="Rendering\BookshelfExtensions.cs" />
     <Compile Remove="Rendering\RenderingContext.cs" />
   </ItemGroup>

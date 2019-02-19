@@ -8,53 +8,26 @@ using System.Xml.Serialization;
 
 namespace Toolset
 {
-  public class Ret<T>
+  public struct Ret<T>
   {
-    private Type valueType;
-
-    private T _value;
-    private string _faultMessage;
-
-    internal Ret()
-    {
-    }
-
-    public bool OK => Status < 400;
-
-    public int Status { get; set; }
+    public bool Ok => (int)Status.Code < 400;
 
     public T Value { get; set; }
 
-    public Exception Fault { get; set; }
+    public Ret.RetStatus Status { get; set; }
 
-    public string FaultMessage
+    public Ret.RetFault Fault { get; set; }
+
+    public static implicit operator Ret<T>(T value)
     {
-      get
+      return new Ret<T>
       {
-        if (OK)
-          return null;
-
-        if (_faultMessage != null)
-          return _faultMessage;
-
-        if (Fault is Exception ex)
-          return string.Join(Environment.NewLine, ex.GetCauseMessages());
-
-        return Fault?.ToString()
-            ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
-      }
-      set => _faultMessage = value;
-    }
-
-    public override string ToString()
-    {
-      var message =
-        FaultMessage
-        ?? ((HttpStatusCode)Status).ToString().ChangeCase(TextCase.ProperCase);
-
-      var value = OK ? $": {Change.To<string>(Value)}" : null;
-
-      return $"{{{Status} {message}{value}}}";
+        Value = value,
+        Status = new Ret.RetStatus
+        {
+          Code = (((object)value) != null) ? HttpStatusCode.OK : HttpStatusCode.NotFound
+        }
+      };
     }
 
     public static implicit operator T(Ret<T> ret)
@@ -62,38 +35,40 @@ namespace Toolset
       return ret.Value;
     }
 
-    public static implicit operator Ret<T>(T value)
+    public static implicit operator Ret<T>(Exception exception)
     {
-      return Ret.Ok(value);
+      return new Ret<T>
+      {
+        Status = new Ret.RetStatus
+        {
+          Code = HttpStatusCode.InternalServerError
+        },
+        Fault = new Ret.RetFault
+        {
+          Message = exception.GetCauseMessage(),
+          Exception = exception
+        }
+      };
     }
 
-    public static implicit operator Ret<T>(Exception ex)
+    public static implicit operator Ret<T>(Ret ret)
     {
-      return Ret.Fail(ex);
+      return new Ret<T>
+      {
+        Value = (ret.Value == null) ? default(T) : (T)ret.Value,
+        Status = ret.Status,
+        Fault = ret.Fault
+      };
     }
 
-    #region Conversões implícitas
-
-    public static implicit operator Ret<T>(Ret other)
+    public static implicit operator Ret(Ret<T> ret)
     {
-      var ret = new Ret<T>();
-      ret.Status = other.Status;
-      ret.Value = Change.To<T>(other.Value);
-      ret.Fault = other.Fault;
-      ret._faultMessage = other._faultMessage;
-      return ret;
+      return new Ret
+      {
+        Value = ret.Value,
+        Status = ret.Status,
+        Fault = ret.Fault
+      };
     }
-
-    public static implicit operator Ret(Ret<T> other)
-    {
-      var ret = new Ret();
-      ret.Status = other.Status;
-      ret.Value = other.Value;
-      ret.Fault = other.Fault;
-      ret._faultMessage = other._faultMessage;
-      return ret;
-    }
-
-    #endregion
   }
 }

@@ -8,6 +8,7 @@ using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -17,6 +18,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Microsoft.CSharp;
+using Paper.Api.Extensions.Papers;
 using Paper.Api.Rendering;
 using Paper.Media;
 using Paper.Media.Data;
@@ -25,6 +27,7 @@ using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
 using Toolset.Data;
+using Toolset.Net;
 using Toolset.Reflection;
 using Toolset.Sequel;
 using Toolset.Serialization;
@@ -36,77 +39,86 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
-  class Program
+  [Expose]
+  public class UsuarioPapers
   {
-    [STAThread]
-    static void Main()
+    public static TBusuario[] DB =
     {
-      System.Windows.Forms.Application.EnableVisualStyles();
-      System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-      try
+      new TBusuario { DFid_usuario = 1, DFnome_usuario = "Fulano" },
+      new TBusuario { DFid_usuario = 2, DFnome_usuario = "Beltrano" },
+      new TBusuario { DFid_usuario = 2, DFnome_usuario = "Cicrano" }
+    };
+
+    public class TBusuario
+    {
+      public int DFid_usuario { get; set; }
+      public string DFnome_usuario { get; set; }
+    }
+
+    public class UsuarioForm
+    {
+      public string DFnome_usuario { get; set; }
+    }
+
+    public class UsuarioFilter : IFilter
+    {
+      public Var<int> DFid_usuario { get; set; }
+      public Var<string> DFnome_usuario { get; set; }
+    }
+
+    public class OlaPaper : IPaper
+    {
+      public object Index() => new { Texto = "Olá, mundo!" };
+    }
+
+    public class UsuariosPaper : IPaper
+    {
+      public void CreateSort(Sort sort) => sort.AddFieldsFrom<TBusuario>();
+      public void CreateForm(UsuarioFilter filter) => new UsuarioFilter();
+
+      public Ret<TBusuario[]> Index(Sort sort, Page page, UsuarioFilter filter)
       {
-        var siteDescriptor = new SiteDescriptor();
-        var paperRenderer = new PaperRenderer(siteDescriptor, typeof(MyPaper));
-
-        siteDescriptor.MapRoute("/Users", opt => opt
-          .On(Method.Get, paperRenderer.GetAsync)
-          //.On(Method.Post, paperRenderer.PostAsync)
-        );
-
-        // siteDescriptor.MapRoute("/Users/{userId}", opt => opt
-        //   .On(Method.Get, paperRenderer.GetAsync)
-        //   .On(Method.Post, paperRenderer.PostAsync)
-        // );
-
-        // siteDescriptor.Linkage(
-        //   "/Users/{userId}", opt => opt
-        // );
+        try
+        {
+          var rows = DB.FilterBy(filter).SortBy(sort).PaginateBy(page).ToArray();
+          if (rows.Length > 0)
+          {
+            return rows;
+          }
+          else
+          {
+            return Redirect.To<OlaPaper>();
+          }
+        }
+        catch (Exception ex)
+        {
+          throw ex;
+        }
       }
-      catch (Exception ex)
+
+      public Ret Save(UsuarioForm form, IEnumerable<TBusuario> usuarios)
       {
-        ex.Trace();
-      }
-    }
-  }
-
-  public delegate Task Linkage();
-
-  
-
-  class PaperRenderer
-  {
-    public PaperRenderer(SiteDescriptor siteDescriptor, Type type)
-    {
-    }
-
-    public async Task GetAsync(Request request, Response response, NextAsync next)
-    {
-      await Task.Yield();
-    }
-
-    public async Task PostAsync(Request request, Response response, NextAsync next)
-    {
-      await Task.Yield();
-    }
-  }
-
-  class SiteDescriptor
-  {
-    public SiteDescriptor MapRoute(string route, Action<Options> options)
-    {
-      return this;
-    }
-
-    public class Options
-    {
-      public Options On(Method get, Renderer render)
-      {
-        return this;
+        return Redirect.To<OlaPaper>();
       }
     }
-  }
 
-  class MyPaper
-  {
+    public class UsuarioPaper : IPaper
+    {
+
+      // métodos Create
+      // métodos Format
+
+      public void CreteForm(UsuarioFilter filter) => new UsuarioFilter();
+
+      public Ret<TBusuario> Index(int id)
+      {
+        return Redirect.To<OlaPaper>();
+      }
+
+      public Ret Save(UsuarioForm form, TBusuario usuario)
+      {
+        return Redirect.To<OlaPaper>();
+      }
+    }
   }
 }

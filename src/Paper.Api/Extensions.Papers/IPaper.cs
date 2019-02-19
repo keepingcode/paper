@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Paper.Api.Extensions.Pages
+namespace Paper.Api.Extensions.Papers
 {
-  class IRecordCollectionPage
+  public interface IPaper
   {
   }
 }

@@ -14,16 +14,10 @@ namespace Paper.Api.Commons
 
     private IEnumerable<Node<TValue>> Traverse(Node<TValue> node)
     {
-      if (node != entries)
+      yield return node;
+      foreach (var child in node.Values.SelectMany(Traverse))
       {
-        yield return node;
-      }
-      foreach (var entry in node)
-      {
-        foreach (var child in Traverse(entry.Value))
-        {
-          yield return child;
-        }
+        yield return child;
       }
     }
 
@@ -39,9 +33,9 @@ namespace Paper.Api.Commons
     {
       foreach (var node in Traverse(entries))
       {
-        foreach (var child in node.Values)
+        if (node.Value != null)
         {
-          visitor.Invoke(node.Path, child.Value);
+          visitor.Invoke(node.Path, node.Value);
         }
       }
     }
@@ -143,13 +137,20 @@ namespace Paper.Api.Commons
     private IEnumerable<Node<TValue>> DoFindMatches(string path)
     {
       var tokens = Tokenize(path);
+
       var trail = new Stack<Node<TValue>>();
+      if (entries.Value != null)
+      {
+        trail.Push(entries);
+      }
+
       IEnumerable<Node<TValue>> nodes = entries.AsSingle();
       foreach (var token in tokens)
       {
         nodes = ExploreChildren(token, nodes);
         nodes.Where(x => x.Value != null).ForEach(trail.Push);
       }
+
       return trail;
     }
 

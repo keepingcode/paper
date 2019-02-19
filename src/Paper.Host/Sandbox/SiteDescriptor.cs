@@ -16,19 +16,19 @@ namespace Paper.Host.Sandbox
 
     public Renderer GetRenderer(string route, string method)
     {
-      var map = rendererIndex.Get(route);
+      var map = rendererIndex.FindExact(route);
       return map?[method]?.Renderer;
     }
 
     public ICollection<ActionRenderer> GetActionRenderers(string route)
     {
-      var map = rendererIndex.Get(route);
+      var map = rendererIndex.FindExact(route);
       return map?[MethodNames.Get]?.ActionRenderers;
     }
 
     private Entry EnsureEntry(string route, string method)
     {
-      var map = rendererIndex.Get(route);
+      var map = rendererIndex.FindExact(route);
       if (map == null)
       {
         rendererIndex.Add(route, map = new HashMap<Entry>());

@@ -43,7 +43,8 @@ namespace Paper.Media.Design
       if (type.FullName.Contains("AnonymousType"))
         return null;
 
-      return type.FullName;
+      var name = type.FullName.Split(',').First().Replace("+", ".");
+      return name;
     }
 
     public static string MakeTitle(DataColumn column)

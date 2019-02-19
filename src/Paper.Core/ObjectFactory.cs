@@ -15,5 +15,10 @@ namespace Paper.Core
     {
       return ActivatorUtilities.CreateInstance(ServiceProvider, type, args);
     }
+
+    public object GetInstance(Type type)
+    {
+      return ServiceProvider.GetService(type);
+    }
   }
 }

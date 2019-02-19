@@ -31,5 +31,20 @@ namespace Toolset
           //|| typeof(IKeyValueCollection<,>).IsAssignableFrom(type)
           ;
     }
+
+    public static bool Ret(object graph)
+    {
+      var type = graph is Type t ? t : graph?.GetType();
+      if (type == null)
+        return false;
+
+      if (type == typeof(Ret))
+        return true;
+
+      if (!type.IsGenericType)
+        return false;
+
+      return type.GetGenericTypeDefinition() == typeof(Ret<>);
+    }
   }
 }

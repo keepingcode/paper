@@ -96,7 +96,7 @@ namespace Paper.Api.Rendering
       }
     }
 
-    public TValue Get(string path)
+    public TValue FindExact(string path)
     {
       var node = FindNodeExact(path);
       return node?.Value;

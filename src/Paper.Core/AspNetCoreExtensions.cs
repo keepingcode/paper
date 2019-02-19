@@ -16,6 +16,7 @@ using Paper.Api.Rendering;
 using Microsoft.AspNetCore.Rewrite;
 using System.Net;
 using Paper.Api.Extensions.Site;
+using Paper.Api.Extensions.Papers;
 
 namespace Paper.Core
 {
@@ -34,17 +35,21 @@ namespace Paper.Core
 
     public static IServiceCollection AddPaperServices(this IServiceCollection services)
     {
-      var catalog = new PipelineCatalog();
       var factory = new ObjectFactory();
-      var siteMap = new SiteMapCatalog();
+      var pipelineCatalog = new PipelineCatalog();
+      var siteMapCatalog = new SiteMapCatalog();
+      var paperCatalog = new PaperCatalog();
 
-      services.AddSingleton<IPipelineCatalog>(catalog);
       services.AddSingleton<IObjectFactory>(factory);
-      services.AddSingleton<ISiteMapCatalog>(siteMap);
+      services.AddSingleton<IPipelineCatalog>(pipelineCatalog);
+      services.AddSingleton<ISiteMapCatalog>(siteMapCatalog);
+      services.AddSingleton<IPaperCatalog>(paperCatalog);
 
       factory.ServiceProvider = services.BuildServiceProvider();
-      catalog.ImportExposedCollections(factory);
-      siteMap.ImportExposedCollections(factory);
+
+      pipelineCatalog.ImportExposedCollections(factory);
+      siteMapCatalog.ImportExposedCollections(factory);
+      paperCatalog.ImportExposedCollections(factory);
 
       return services;
     }

@@ -9,102 +9,102 @@ namespace Toolset
 {
   public static class ExceptionExtensions
   {
-    public static string GetStackTrace(this Exception excecao)
+    public static string GetStackTrace(this Exception exception)
     {
       using (var saida = new StringWriter())
       {
-        Trace(excecao, saida);
+        Trace(exception, saida);
         return saida.ToString();
       }
     }
 
-    public static void Debug(this Exception excecao)
+    public static void Debug(this Exception exception)
     {
       try
       {
-        var pilha = GetStackTrace(excecao);
+        var pilha = GetStackTrace(exception);
         System.Diagnostics.Debug.WriteLine(pilha);
       }
       catch (Exception ex)
       {
-        Dump(excecao, ex);
+        Dump(exception, ex);
       }
     }
 
-    public static void Trace(this Exception excecao)
+    public static void Trace(this Exception exception)
     {
       try
       {
-        var pilha = GetStackTrace(excecao);
+        var pilha = GetStackTrace(exception);
         System.Diagnostics.Trace.TraceError(pilha);
       }
       catch (Exception ex)
       {
-        Dump(excecao, ex);
+        Dump(exception, ex);
       }
     }
 
-    public static void TraceWarning(this Exception excecao)
+    public static void TraceWarning(this Exception exception)
     {
-      var pilha = GetStackTrace(excecao);
+      var pilha = GetStackTrace(exception);
       try
       {
         System.Diagnostics.Trace.TraceWarning(pilha);
       }
       catch (Exception ex)
       {
-        Dump(excecao, ex);
+        Dump(exception, ex);
       }
     }
 
-    public static void Trace(this Exception excecao, string mensagem)
+    public static void Trace(this Exception exception, string mensagem)
     {
-      var pilha = GetStackTrace(excecao);
+      var pilha = GetStackTrace(exception);
       try
       {
         System.Diagnostics.Trace.TraceError("{0}\nCausa:\n{1}", mensagem, pilha);
       }
       catch (Exception ex)
       {
-        Dump(excecao, ex);
+        Dump(exception, ex);
       }
     }
 
-    public static void Trace(this Exception excecao, string formato, params object[] args)
+    public static void Trace(this Exception exception, string formato, params object[] args)
     {
-      Trace(excecao, string.Format(formato, args));
+      Trace(exception, string.Format(formato, args));
     }
 
-    public static void TraceWarning(this Exception excecao, string mensagem)
+    public static void TraceWarning(this Exception exception, string mensagem)
     {
       try
       {
-        var pilha = GetStackTrace(excecao);
+        var pilha = GetStackTrace(exception);
         System.Diagnostics.Trace.TraceWarning("{0}\nCausa:\n{1}", mensagem, pilha);
       }
       catch (Exception ex)
       {
-        Dump(excecao, ex);
+        Dump(exception, ex);
       }
     }
 
-    public static void TraceWarning(this Exception excecao, string formato, params object[] args)
+    public static void TraceWarning(this Exception exception, string formato, params object[] args)
     {
-      TraceWarning(excecao, string.Format(formato, args));
+      TraceWarning(exception, string.Format(formato, args));
     }
 
-    public static void Trace(this Exception excecao, Stream saida)
+    public static void Trace(this Exception exception, Stream saida)
     {
       using (var gravador = new StreamWriter(saida))
       {
-        Trace(excecao, gravador);
+        Trace(exception, gravador);
       }
     }
 
-    public static void Trace(this Exception excecao, TextWriter saida)
+    public static void Trace(this Exception exception, TextWriter saida)
     {
       saida.Write("fault ");
-      Exception ex = excecao;
+      Exception ex = exception;
       do
       {
         saida.WriteLine(ex.Message);
@@ -129,20 +129,25 @@ namespace Toolset
       } while (ex != null);
     }
 
-    public static Exception[] GetCauses(this Exception excecao)
+    public static Exception[] GetCauses(this Exception exception)
     {
-      var causes = EnumerateExceptionCauses(excecao).ToArray();
+      var causes = EnumerateExceptionCauses(exception).ToArray();
       return causes;
     }
 
-    public static string[] GetCauseMessages(this Exception excecao)
+    public static string[] GetCauseMessages(this Exception exception)
     {
       var causes =
-        EnumerateExceptionCauses(excecao)
+        EnumerateExceptionCauses(exception)
           .Select(x => x.Message ?? "Falha não identificada.")
           .Distinct()
           .ToArray();
       return causes;
+    }
+
+    public static string GetCauseMessage(this Exception exception)
+    {
+      return string.Join(Environment.NewLine, exception.GetCauseMessages());
     }
 
     private static IEnumerable<Exception> EnumerateExceptionCauses(Exception exception)
@@ -162,18 +167,18 @@ namespace Toolset
     /// <param name="excecoes">As exceções a serem gravadas.</param>
     private static void Dump(params Exception[] excecoes)
     {
-      foreach (var excecao in excecoes)
+      foreach (var exception in excecoes)
       {
         try
         {
-          var pilha = GetStackTrace(excecao);
+          var pilha = GetStackTrace(exception);
 
           Console.Write("[FALHA]");
-          Console.WriteLine(excecao.Message);
+          Console.WriteLine(exception.Message);
           Console.WriteLine(pilha);
 
           System.Diagnostics.Debug.Write("[FALHA]");
-          System.Diagnostics.Debug.WriteLine(excecao.Message);
+          System.Diagnostics.Debug.WriteLine(exception.Message);
           System.Diagnostics.Debug.WriteLine(pilha);
         }
         catch

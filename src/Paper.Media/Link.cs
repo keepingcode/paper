@@ -23,13 +23,13 @@ namespace Paper.Media
     /// Sempre defina o tipo primário antes dos tipos alternativos.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 10)]
-    public NameCollection Class { get; set; }
+    public virtual NameCollection Class { get; set; }
 
     /// <summary>
     /// Título do link. Opcional.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 20)]
-    public string Title { get; set; }
+    public virtual string Title { get; set; }
 
     /// <summary>
     /// Natureza da relação entre o link e a entidade, segundo o modelo
@@ -42,19 +42,19 @@ namespace Paper.Media
     /// As relações mais comuns estão disponíveis na classe RelValues.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 30)]
-    public NameCollection Rel { get; set; }
+    public virtual NameCollection Rel { get; set; }
 
     /// <summary>
     /// URL de referência do link.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 40)]
-    public Href Href { get; set; }
+    public virtual Href Href { get; set; }
 
     /// <summary>
     /// Tipo do conteúdo oferecido pelo link.
     /// Um mimetype como "text/json", etc.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 50)]
-    public string Type { get; set; }
+    public virtual string Type { get; set; }
   }
 }

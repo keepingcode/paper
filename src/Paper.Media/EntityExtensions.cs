@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Toolset.Collections;
 
 namespace Paper.Media
 {
@@ -8,7 +9,7 @@ namespace Paper.Media
   {
     public static IEnumerable<Entity> EntitiesAndSelf(this Entity entity)
     {
-      return new[] { entity }.Concat(entity.Entities);
+      return entity.AsSingle().Concat(entity.Entities);
     }
   }
 }
