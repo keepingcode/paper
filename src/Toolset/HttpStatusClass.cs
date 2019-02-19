@@ -7,10 +7,10 @@ namespace Toolset
 {
   public enum HttpStatusClass
   {
-    Informational,
-    Success,
-    Redirection,
-    ClientError,
-    ServerError
+    Informational = 1,
+    Success = 2,
+    Redirection = 3,
+    ClientError = 4,
+    ServerError = 5
   }
 }

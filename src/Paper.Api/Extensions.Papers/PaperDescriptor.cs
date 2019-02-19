@@ -8,6 +8,7 @@ using Paper.Media;
 using Toolset.Reflection;
 using Paper.Media.Data;
 using Toolset;
+using Paper.Media.Design;
 
 namespace Paper.Api.Extensions.Papers
 {
@@ -18,7 +19,7 @@ namespace Paper.Api.Extensions.Papers
       this.Paper = paper;
       this.PaperType = paper.GetType();
       this.IndexMethod = this.PaperType._GetMethodInfo("Index");
-      this.PathArgs = MakePathArgs();
+      this.PaperParameters = MakePaperParameters();
       this.PathTemplate = MakePath();
       this.Formatters = MakeFormatters().ToArray();
     }
@@ -29,7 +30,7 @@ namespace Paper.Api.Extensions.Papers
 
     public string PathTemplate { get; }
 
-    public ParameterInfo[] PathArgs { get; }
+    public ParameterInfo[] PaperParameters { get; }
 
     public MethodInfo IndexMethod { get; }
 
@@ -37,7 +38,7 @@ namespace Paper.Api.Extensions.Papers
 
     public ICollection<MethodInfo> Formatters { get; }
 
-    private ParameterInfo[] MakePathArgs()
+    private ParameterInfo[] MakePaperParameters()
     {
       return (
          from param in IndexMethod.GetParameters()
@@ -50,13 +51,9 @@ namespace Paper.Api.Extensions.Papers
 
     public string MakePath()
     {
-      var name = Regex.Replace(PaperType.Name, "(Paper|Action)s?$", "", RegexOptions.IgnoreCase);
-      var args = PathArgs.Select(x => $"{{{x.Name}}}").ToArray();
-
-      var namePath = $"/{name.Replace(".", "/")}";
-      var argsPath = (args.Length > 0) ? $"/{string.Join("/", args)}" : null;
-
-      var path = $"{namePath}{argsPath}";
+      var namePath = Conventions.MakeName(PaperType).Replace(".", "/");
+      var argsPath = string.Join("/", PaperParameters.Select(x => $"{{{x.Name}}}"));
+      var path = $"/{string.Join("/", namePath, argsPath)}";
       return path;
     }
 

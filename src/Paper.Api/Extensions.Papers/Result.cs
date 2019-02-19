@@ -5,33 +5,9 @@ using Paper.Media;
 
 namespace Paper.Api.Extensions.Papers
 {
-  public class Result
+  internal struct Result
   {
-    public Result(IPaper paper)
-    {
-    }
-
-    public Result(Uri location)
-    {
-    }
-
-    public Result(string location)
-    {
-    }
-
-    public static implicit operator Result(IPaper paper)
-    {
-      return new Result(paper);
-    }
-
-    public static implicit operator Result(Uri location)
-    {
-      return new Result(location);
-    }
-
-    public static implicit operator Result(string location)
-    {
-      return new Result(location);
-    }
+    public Type ValueType { get; set; }
+    public object Value { get; set; }
   }
 }

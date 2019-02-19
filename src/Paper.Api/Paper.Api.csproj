@@ -8,6 +8,8 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,9 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Extensions.Papers\Result.cs" />
+    <Compile Remove="Extensions.Papers\PaperRenderer2.cs" />
     <Compile Remove="Rendering\BookshelfExtensions.cs" />
     <Compile Remove="Rendering\RenderingContext.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Extensions.Papers\PaperLink.cs,bak" />
   </ItemGroup>
 
   <ItemGroup>

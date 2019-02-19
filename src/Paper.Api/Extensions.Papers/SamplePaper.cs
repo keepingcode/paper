@@ -49,9 +49,9 @@ namespace Paper.Api.Extensions.Papers
         return DB.Tasks.FilterBy(filter).SortBy(sort).PaginateBy(page).ToArray();
       }
 
-      public PaperLink[] Link()
+      public PaperLink Link()
       {
-        return null;
+        return Links.Link("http://www.google.com", opt => opt.SetTitle("Google Search"));
       }
 
       public IEnumerable<PaperLink> Link(Task task)
@@ -94,6 +94,25 @@ namespace Paper.Api.Extensions.Papers
       public IEnumerable<PaperLink> Link()
       {
         yield return Links.Link<TasksPaper>(link => link.SetTitle("Tarefas"));
+      }
+
+      public IEnumerable<PaperLink> Link(int taskId)
+      {
+        var prev = DB.Tasks.Where(x => x.Id < taskId).Select(x => x.Id).DefaultIfEmpty().Max();
+        var next = DB.Tasks.Where(x => x.Id > taskId).Select(x => x.Id).DefaultIfEmpty().Min();
+        if (prev > 0)
+        {
+          yield return Links.Link<TaskPaper>(prev, opt => opt.SetTitle("Anterior"));
+        }
+        if (next > 0)
+        {
+          yield return Links.Link<TaskPaper>(next, opt => opt.SetTitle("Próximo"));
+        }
+      }
+
+      public IEnumerable<PaperLink> Link(Task task)
+      {
+        yield return Links.Link($"http://www.google.com?q={task.Title}", opt => opt.SetTitle("Google Search"));
       }
 
       public void Save(int taskId, TaskForm form)

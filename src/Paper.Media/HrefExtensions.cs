@@ -48,10 +48,13 @@ namespace Paper.Media
 
     private static void DoExpandUri(this Href href, UriString requestUri, UriString pathBase)
     {
-      if (href != null)
-      {
-        href.Value = requestUri.Combine(pathBase, href.Value);
-      }
+      if (href == null)
+        return;
+
+      if (href.Value.Contains("://"))
+        return;
+
+      href.Value = requestUri.Combine(pathBase).Combine(href.Value);
     }
   }
 }

@@ -133,7 +133,7 @@ namespace Paper.Api.Commons
 
     public ICollection<string> GetPaths()
     {
-      return index.GetPaths().ToArray();
+      return index.GetPaths().NonNull().ToArray();
     }
 
     public ICollection<string> GetPathsInCollection(ICatalogCollection<T> collection)

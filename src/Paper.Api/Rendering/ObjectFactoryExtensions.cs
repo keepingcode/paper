@@ -48,8 +48,8 @@ namespace Paper.Api.Rendering
 
     private static object SelectArgument(object[] args, Type expectedType)
     {
-      var arg = args.FirstOrDefault(x => x.GetType() == expectedType)
-             ?? args.FirstOrDefault(x => expectedType.IsAssignableFrom(x.GetType()));
+      var arg = args.FirstOrDefault(x => x?.GetType() == expectedType)
+             ?? args.FirstOrDefault(x => expectedType.IsAssignableFrom(x?.GetType()));
       return arg;
     }
   }

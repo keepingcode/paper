@@ -12,13 +12,30 @@ namespace Paper.Api.Extensions.Papers
 {
   public static class Links
   {
-    public static PaperLink Self<TPaper>(params object[] args)
+    public static PaperLink Self<TPaper>()
+      where TPaper : IPaper
+    {
+      return Self(typeof(TPaper), (object[])null);
+    }
+
+    public static PaperLink Self<TPaper>(object arg)
+      where TPaper : IPaper
+    {
+      return Self(typeof(TPaper), new[] { arg });
+    }
+
+    public static PaperLink Self<TPaper>(object[] args)
       where TPaper : IPaper
     {
       return Self(typeof(TPaper), args);
     }
 
-    public static PaperLink Self(Type paperType, params object[] args)
+    public static PaperLink Self(Type paperType, object arg)
+    {
+      return Self(paperType, new[] { arg });
+    }
+
+    public static PaperLink Self(Type paperType, object[] args)
     {
       return new PaperLink((factory, entity) =>
       {
@@ -29,11 +46,15 @@ namespace Paper.Api.Extensions.Papers
         var paper = (IPaper)Activator.CreateInstance(paperType);
         var paperDescriptor = new PaperDescriptor(paper);
 
-        var href = paperDescriptor.PathTemplate;
-        foreach (var arg in args)
+        var href = paperDescriptor.PathTemplate.Substring(1);
+
+        if (args != null)
         {
-          var value = Change.To<string>(arg);
-          href = Regex.Replace(href, @"\{[^{}]+\}", value);
+          foreach (var arg in args)
+          {
+            var value = Change.To<string>(arg);
+            href = Regex.Replace(href, @"\{[^{}]+\}", value);
+          }
         }
 
         entity.SetSelfLink(href);
@@ -45,12 +66,27 @@ namespace Paper.Api.Extensions.Papers
       return new PaperLink((factory, entity) => entity.SetSelfLink(href));
     }
 
-    public static PaperLink Link<TPaper>(Action<Link> opt, params object[] args)
+    public static PaperLink Link<TPaper>(Action<Link> opt)
     {
-      return Link(typeof(TPaper), opt, args);
+      return Link(typeof(TPaper), (object[])null, opt);
     }
 
-    public static PaperLink Link(Type paperType, Action<Link> opt, params object[] args)
+    public static PaperLink Link<TPaper>(object arg, Action<Link> opt)
+    {
+      return Link(typeof(TPaper), new[] { arg }, opt);
+    }
+
+    public static PaperLink Link<TPaper>(object[] args, Action<Link> opt)
+    {
+      return Link(typeof(TPaper), args, opt);
+    }
+
+    public static PaperLink Link(Type paperType, object arg, Action<Link> opt)
+    {
+      return Link(paperType, new[] { arg }, opt);
+    }
+
+    public static PaperLink Link(Type paperType, object[] args, Action<Link> opt)
     {
       return new PaperLink((factory, entity) =>
       {
@@ -61,23 +97,27 @@ namespace Paper.Api.Extensions.Papers
         var paper = (IPaper)Activator.CreateInstance(paperType);
         var paperDescriptor = new PaperDescriptor(paper);
 
-        var href = paperDescriptor.PathTemplate;
-        foreach (var arg in args)
+        var href = paperDescriptor.PathTemplate.Substring(1);
+
+        if (args != null)
         {
-          var value = Change.To<string>(arg);
-          href = Regex.Replace(href, @"\{[^{}]+\}", value);
+          foreach (var arg in args)
+          {
+            var value = Change.To<string>(arg);
+            href = Regex.Replace(href, @"\{[^{}]+\}", value);
+          }
         }
 
-        DoAddLink(entity, href, opt);
+        AddLinkToEntity(entity, href, opt);
       });
     }
 
     public static PaperLink Link(Href href, Action<Link> opt)
     {
-      return new PaperLink((factory, entity) => DoAddLink(entity, href, opt));
+      return new PaperLink((factory, entity) => AddLinkToEntity(entity, href, opt));
     }
 
-    private static void DoAddLink(Entity entity, Href href, Action<Link> opt)
+    private static void AddLinkToEntity(Entity entity, Href href, Action<Link> opt)
     {
       var link = new Link();
       link.SetHref(href);
