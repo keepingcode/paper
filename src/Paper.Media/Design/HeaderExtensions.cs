@@ -9,6 +9,8 @@ namespace Paper.Media.Design
 {
   public static class HeaderExtensions
   {
+    #region Header
+
     public static Entity AddHeader(this Entity entity, string name, Rel rel, Action<HeaderDesign> options = null)
     {
       return AddHeader(entity, name, rel.GetName(), options);
@@ -48,6 +50,41 @@ namespace Paper.Media.Design
 
       return entity;
     }
+
+    #endregion
+
+    #region Headers
+
+    public static Entity AddHeaders(this Entity entity, object graphOrType, Rel rel, IEnumerable<string> select = null, IEnumerable<string> except = null)
+    {
+      return AddHeaders(entity, graphOrType, rel.GetName(), select, except);
+    }
+
+    public static Entity AddHeaders(this Entity entity, object graphOrType, string rel, IEnumerable<string> select = null, IEnumerable<string> except = null)
+    {
+      var type = graphOrType is Type ? (Type)graphOrType : graphOrType.GetType();
+
+      var properties =
+        from p in type.GetProperties()
+        where p.CanRead && !p.GetIndexParameters().Any()
+        where @select == null || @select.Contains(p.Name)
+        where except == null || !except.Contains(p.Name)
+        select p;
+
+      foreach (var property in properties)
+      {
+        var title = Conventions.MakeTitle(property);
+        var hidden = property.Name.StartsWith("_");
+        entity.AddHeader(property.Name, rel, opt => opt
+          .SetTitle(title)
+          .SetHidden(hidden)
+          .SetDataType(property.PropertyType)
+        );
+      }
+      return entity;
+    }
+
+    #endregion
 
     #region Legacy
 

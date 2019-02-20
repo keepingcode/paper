@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions.Papers\PaperLink.cs" />
     <Compile Remove="Extensions.Papers\PaperRenderer2.cs" />
     <Compile Remove="Rendering\BookshelfExtensions.cs" />
     <Compile Remove="Rendering\RenderingContext.cs" />

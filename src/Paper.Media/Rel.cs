@@ -58,6 +58,8 @@ namespace Paper.Media
 
     Blueprint = 1000,
 
+    Record,
+
     Link,
 
     /// <summary>

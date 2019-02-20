@@ -57,6 +57,8 @@ namespace Paper.Media
     
     public const string Blueprint = "blueprint";
 
+    public const string Record = "record";
+
     public const string Link = "link";
     
     /// <summary>
