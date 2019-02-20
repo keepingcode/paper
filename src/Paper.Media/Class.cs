@@ -9,11 +9,8 @@ namespace Paper.Media
   /// </summary>
   public enum Class
   {
-    /// <summary>
-    /// Nome de classe para ume entidade que representa a configuração de um site.
-    /// </summary>
-    Blueprint,
-    
+    #region Estruturais básicas
+
     /// <summary>
     /// Nome de classe que representa um registro.
     /// </summary>
@@ -23,31 +20,6 @@ namespace Paper.Media
     /// Nome de classe que representa dados de um formulário de edição.
     /// </summary>
     Form,
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como dados.
-    /// </summary>
-    Data,
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como uma coleção de registros.
-    /// </summary>
-    Rows,
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como um registro de coleção de registros.
-    /// </summary>
-    Row,
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como uma coleção de cards.
-    /// </summary>
-    Cards,
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como um registro de coleção de cards.
-    /// </summary>
-    Card,
 
     /// <summary>
     /// Nome de classe para ume entidade que se comporta como um cabeçalho.
@@ -63,21 +35,6 @@ namespace Paper.Media
     /// Nome de classe para uma entidade que se comporta como erro.
     /// </summary>
     Error,
-
-    /// <summary>
-    /// Nome de classe para uma entidade que se comporta como lista.
-    /// </summary>
-    List,
-
-    /// <summary>
-    /// Nome de classe para uma entidade que se comporta como um único objeto.
-    /// </summary>
-    Single,
-
-    /// <summary>
-    /// Nome de classe para uma entidade que se comporta como um item de lista.
-    /// </summary>
-    Item,
 
     /// <summary>
     /// Nome de classe para uma ação que se comporta como filtro de lista.
@@ -100,10 +57,44 @@ namespace Paper.Media
     /// </summary>
     Field,
 
+    #endregion
+
+    #region Estruturais avançadas
+
     /// <summary>
-    /// Classe de uma entidade contendo dados editados pelo usuário e enviados do cliente
-    /// para o serviço.
+    /// Nome de classe para ume entidade que representa a configuração de um site.
     /// </summary>
-    FormData,
+    Blueprint,
+
+    /// <summary>
+    /// Nome de classe para ume entidade que se comporta como uma coleção de registros.
+    /// </summary>
+    Table,
+
+    /// <summary>
+    /// Nome de classe para uma entidade que se comporta como lista.
+    /// </summary>
+    List,
+
+    /// <summary>
+    /// Nome de classe para uma entidade que representa um item de lista.
+    /// </summary>
+    Item,
+
+    /// <summary>
+    /// Nome de classe para ume entidade que se comporta como uma coleção de cards.
+    /// </summary>
+    Cards,
+
+    /// <summary>
+    /// Nome de classe para ume entidade que se comporta como um registro de coleção de cards.
+    /// </summary>
+    Card
+
+    #endregion
+
+    #region Extensões
+
+    #endregion
   }
 }

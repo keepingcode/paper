@@ -22,20 +22,50 @@ namespace Paper.Media
     public const string Describes = "describes";
     public const string Edit = "edit";
     public const string EditForm = "editForm";
+
+    /// <summary>
+    /// Relaciona um elemento como primeiro termo ou uma ação de navegação ao primeiro termo.
+    /// </summary>
     public const string First = "first";
+
     public const string Glossary = "glossary";
     public const string Help = "help";
+
+    /// <summary>
+    /// Relaciona um elemento como um ícone.
+    /// </summary>
     public const string Icon = "icon";
+
     public const string Index = "index";
+
+    /// <summary>
+    /// Relaciona uma entidade como item de uma coleção.
+    /// Como uma linha de uma tabela, um cartão em uma lista de cartões ou um item em uma lista.
+    /// </summary>
     public const string Item = "item";
+
+    /// <summary>
+    /// Relaciona um elemento como último termo ou uma ação de navegação ao último termo.
+    /// </summary>
     public const string Last = "last";
+
     public const string LatestVersion = "latestVersion";
     public const string License = "license";
     public const string Memento = "memento";
+
+    /// <summary>
+    /// Relaciona uma ação de avanço ou navegação para frente.
+    /// </summary>
     public const string Next = "next";
+
     public const string Original = "original";
     public const string Payment = "payment";
+
+    /// <summary>
+    /// Relaciona uma ação de retorno ou navegação para trás.
+    /// </summary>
     public const string Prev = "prev";
+
     public const string Preview = "preview";
     public const string Previous = "previous";
     public const string Profile = "profile";
@@ -43,7 +73,12 @@ namespace Paper.Media
     public const string Replies = "replies";
     public const string Search = "search";
     public const string Section = "section";
+
+    /// <summary>
+    /// Relaciona um objeto a ele mesmo ou uma característica ao seu objeto.
+    /// </summary>
     public const string Self = "self";
+
     public const string Service = "service";
     public const string Start = "start";
     public const string Subsection = "subsection";
@@ -53,73 +88,32 @@ namespace Paper.Media
 
     #endregion
 
-    #region Personalizados
-    
-    public const string Blueprint = "blueprint";
+    #region Estruturais básicos
 
-    public const string Record = "record";
-
+    /// <summary>
+    /// Relaciona um elemento como link em um objeto.
+    /// </summary>
     public const string Link = "link";
-    
-    /// <summary>
-    /// Relacionamento entre um link e um cabeçalho.
-    /// </summary>
-    public const string HeaderLink = "HeaderLink";
 
     /// <summary>
-    /// Estabecele relacionamento entre o alvo e uma proprieade da entidade.
+    /// Relaciona um elemento como primário em seu grupo de elementos.
     /// </summary>
-    public const string Property = "property";
+    public const string Primary = "primary";
 
     /// <summary>
-    /// Estabelece relacionamento entre o alvo e um registro de uma lista de registros.
+    /// Relaciona um elemento como secundário em seu grupo de elementos.
     /// </summary>
-    public const string Row = "row";
+    public const string Secondary = "secondary";
 
     /// <summary>
-    /// Relacionamento entre o registro e a entidade cards.
+    /// Relaciona um elemento como terciário em seu grupo de elementos.
     /// </summary>
-    public const string Card = "card";
+    public const string Tertiary = "tertiary";
 
     /// <summary>
-    /// Estabelece relacionamento entre o alvo e o dado.
+    /// Relaciona um elemento de ação ou dá um significado de ação a um link.
     /// </summary>
-    public const string Data = "data";
-
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e a tabela.
-    /// </summary>
-    public const string Rows = "rows";
-
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e a lista de cartões.
-    /// </summary>
-    public const string Cards = "cargs";
-
-    /// <summary>
-    /// Relaciona um link a um dado.
-    /// </summary>
-    public const string DataLink = "DataLink";
-
-    /// <summary>
-    /// Relaciona um link a um registro.
-    /// </summary>
-    public const string RowLink = "RowLink";
-
-    /// <summary>
-    /// Representação de um link primário, numa coleção de links
-    /// </summary>
-    public const string PrimaryLink = "PrimaryLink";
-
-    /// <summary>
-    /// Representação de um link secundário, numa coleção de links
-    /// </summary>
-    public const string SecondaryLink = "SecondaryLink";
-
-    /// <summary>
-    /// Representação de um link terciário, numa coleção de links
-    /// </summary>
-    public const string TertiaryLink = "TertiaryLink";
+    public const string Action = "action";
 
     #endregion
   }

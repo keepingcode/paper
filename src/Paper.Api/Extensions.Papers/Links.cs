@@ -12,13 +12,10 @@ namespace Paper.Api.Extensions.Papers
 {
   public static class Links
   {
-    internal class CustomLink : Link, IFormatter
+    public class CustomLink : Link, IFormatter
     {
-      public event Format OnFormat;
-
-      public void Format(IObjectFactory factory, Entity entity)
+      public void Format(IPaperContext context, IObjectFactory factory, Entity entity)
       {
-        OnFormat?.Invoke(factory, entity);
         if (Rel?.Any() != true)
         {
           this.AddRel(RelNames.Link);
@@ -26,7 +23,7 @@ namespace Paper.Api.Extensions.Papers
       }
     }
 
-    internal class PaperLink : CustomLink, IFormatter
+    public class PaperLink : Link, IFormatter
     {
       private readonly Type paperType;
       private readonly object[] paperArgs;
@@ -37,10 +34,8 @@ namespace Paper.Api.Extensions.Papers
         this.paperArgs = paperArgs;
       }
 
-      public void Format(IObjectFactory factory, Entity entity)
+      public void Format(IPaperContext context, IObjectFactory factory, Entity entity)
       {
-        base.Format(factory, entity);
-
         // TODO: deveriamos consultar o catalogo
         // var paperCatalog = factory.GetInstance<IPaperCatalog>();
         // paperCatalog.FindByType(typeof(TPaper));
@@ -58,43 +53,48 @@ namespace Paper.Api.Extensions.Papers
           }
         }
 
+        if (Rel?.Any() != true)
+        {
+          this.AddRel(RelNames.Link);
+        }
+
         this.Href = href;
       }
     }
 
     #region SelfLink
 
-    public static Link Self<TPaper>(params object[] args)
+    public static PaperLink Self<TPaper>(params object[] args)
       where TPaper : IPaper
     {
       return new PaperLink(typeof(TPaper), args).AddRel(RelNames.Self);
     }
 
-    public static Link Self(Type paperType, params object[] args)
+    public static PaperLink Self(Type paperType, params object[] args)
     {
       return new PaperLink(paperType, args).AddRel(RelNames.Self);
     }
 
-    public static Link Self(Href href)
+    public static CustomLink Self(Href href)
     {
-      return new Link().SetHref(href).AddRel(RelNames.Self);
+      return new CustomLink().SetHref(href).AddRel(RelNames.Self);
     }
 
     #endregion
 
     #region Link
 
-    public static Link Link<TPaper>(params object[] args)
+    public static PaperLink Link<TPaper>(params object[] args)
     {
       return new PaperLink(typeof(TPaper), args);
     }
 
-    public static Link Link(Type paperType, params object[] args)
+    public static PaperLink Link(Type paperType, params object[] args)
     {
       return new PaperLink(paperType, args);
     }
 
-    public static Link Link(Href href)
+    public static CustomLink Link(Href href)
     {
       return new CustomLink().SetHref(href);
     }

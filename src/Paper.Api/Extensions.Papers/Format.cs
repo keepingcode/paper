@@ -7,5 +7,5 @@ using Paper.Media;
 
 namespace Paper.Api.Extensions.Papers
 {
-  public delegate void Format(IObjectFactory factory, Entity entity);
+  public delegate void Format(IPaperContext context, IObjectFactory factory, Entity entity);
 }

@@ -11,10 +11,7 @@ namespace Paper.Media
   /// </summary>
   public static class ClassNames
   {
-    /// <summary>
-    /// Nome de classe para ume entidade que representa a configuração de um site.
-    /// </summary>
-    public const string Blueprint = "blueprint";
+    #region Estruturais básicas
 
     /// <summary>
     /// Nome de classe que representa um registro.
@@ -25,31 +22,6 @@ namespace Paper.Media
     /// Nome de classe que representa dados de um formulário de edição.
     /// </summary>
     public const string Form = "form";
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como dados.
-    /// </summary>
-    public const string Data = "data";
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como uma coleção de registros.
-    /// </summary>
-    public const string Rows = "rows";
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como um registro de coleção de registros.
-    /// </summary>
-    public const string Row = "row";
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como uma coleção de cards.
-    /// </summary>
-    public const string Cards = "cards";
-
-    /// <summary>
-    /// Nome de classe para ume entidade que se comporta como um registro de coleção de cards.
-    /// </summary>
-    public const string Card = "card";
 
     /// <summary>
     /// Nome de classe para ume entidade que se comporta como um cabeçalho.
@@ -65,21 +37,6 @@ namespace Paper.Media
     /// Nome de classe para uma entidade que se comporta como erro.
     /// </summary>
     public const string Error = "error";
-
-    /// <summary>
-    /// Nome de classe para uma entidade que se comporta como lista.
-    /// </summary>
-    public const string List = "list";
-
-    /// <summary>
-    /// Nome de classe para uma entidade que se comporta como um único objeto.
-    /// </summary>
-    public const string Single = "single";
-
-    /// <summary>
-    /// Nome de classe para uma entidade que se comporta como um item de lista.
-    /// </summary>
-    public const string Item = "item";
 
     /// <summary>
     /// Nome de classe para uma ação que se comporta como filtro de lista.
@@ -102,11 +59,47 @@ namespace Paper.Media
     /// </summary>
     public const string Field = "field";
 
+    #endregion
+
+    #region Estruturais avançadas
+
     /// <summary>
-    /// Classe de uma entidade contendo dados editados pelo usuário e enviados do cliente
-    /// para o serviço.
+    /// Nome de classe para ume entidade que representa a configuração de um site.
     /// </summary>
-    public const string FormData = "formData";
+    public const string Blueprint = "blueprint";
+
+    /// <summary>
+    /// Nome de classe para ume entidade que se comporta como uma coleção de registros.
+    /// </summary>
+    public const string Table = "table";
+
+    /// <summary>
+    /// Nome de classe para uma entidade que se comporta como lista.
+    /// </summary>
+    public const string List = "list";
+
+    /// <summary>
+    /// Nome de classe para uma entidade que representa um item de lista.
+    /// </summary>
+    public const string Item = "item";
+
+    /// <summary>
+    /// Nome de classe para ume entidade que se comporta como uma coleção de cards.
+    /// </summary>
+    public const string Cards = "cards";
+
+    /// <summary>
+    /// Nome de classe para ume entidade que se comporta como um registro de coleção de cards.
+    /// </summary>
+    public const string Card = "card";
+
+    #endregion
+
+    #region Extensões
+
+    #endregion
+
+    #region Métodos
 
     /// <summary>
     /// Determina o nome de classe da entidade.
@@ -193,5 +186,7 @@ namespace Paper.Media
     {
       return classes?.Where(IsUserClass) ?? Enumerable.Empty<string>();
     }
+
+    #endregion
   }
 }

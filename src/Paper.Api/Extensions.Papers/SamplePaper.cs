@@ -49,9 +49,10 @@ namespace Paper.Api.Extensions.Papers
         return DB.Tasks.FilterBy(filter).SortBy(sort).PaginateBy(page).ToArray();
       }
 
-      public IEnumerable<Link> Link()
+      public IEnumerable<IFormatter> Format(Task[] tasks)
       {
         yield return Links.Link("http://www.google.com").SetTitle("Google Search");
+        yield return Tables.MakeTable(tasks);
       }
 
       public IEnumerable<Link> Link(Task task)

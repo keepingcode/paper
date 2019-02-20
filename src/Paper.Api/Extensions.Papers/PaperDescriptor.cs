@@ -21,7 +21,6 @@ namespace Paper.Api.Extensions.Papers
       this.IndexMethod = this.PaperType._GetMethodInfo("Index");
       this.PaperParameters = MakePaperParameters();
       this.PathTemplate = MakePath();
-      this.Linkers = MakeLinkers().ToArray();
       this.Formatters = MakeFormatters().ToArray();
     }
 
@@ -36,8 +35,6 @@ namespace Paper.Api.Extensions.Papers
     public MethodInfo IndexMethod { get; }
 
     public ICollection<ParameterInfo> IndexArgs => IndexMethod.GetParameters();
-
-    public ICollection<MethodInfo> Linkers { get; }
 
     public ICollection<MethodInfo> Formatters { get; }
 
@@ -60,24 +57,19 @@ namespace Paper.Api.Extensions.Papers
       return path;
     }
 
-    private IEnumerable<MethodInfo> MakeLinkers()
-    {
-      foreach (var method in PaperType.GetMethods())
-      {
-        if (typeof(Link).IsAssignableFrom(method.ReturnType)
-         || typeof(ICollection<Link>).IsAssignableFrom(method.ReturnType)
-         || typeof(IEnumerable<Link>).IsAssignableFrom(method.ReturnType))
-        {
-          yield return method;
-        }
-      }
-    }
-
     private IEnumerable<MethodInfo> MakeFormatters()
     {
       foreach (var method in PaperType.GetMethods())
       {
-        if (typeof(Format).IsAssignableFrom(method.ReturnType)
+        if (typeof(IFormatter).IsAssignableFrom(method.ReturnType)
+         || typeof(ICollection<IFormatter>).IsAssignableFrom(method.ReturnType)
+         || typeof(IEnumerable<IFormatter>).IsAssignableFrom(method.ReturnType)
+         
+         || typeof(Link).IsAssignableFrom(method.ReturnType)
+         || typeof(ICollection<Link>).IsAssignableFrom(method.ReturnType)
+         || typeof(IEnumerable<Link>).IsAssignableFrom(method.ReturnType)
+         
+         || typeof(Format).IsAssignableFrom(method.ReturnType)
          || typeof(ICollection<Format>).IsAssignableFrom(method.ReturnType)
          || typeof(IEnumerable<Format>).IsAssignableFrom(method.ReturnType))
         {

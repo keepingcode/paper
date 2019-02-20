@@ -12,7 +12,7 @@ namespace Paper.Browser.Base.Pages
   {
     private static readonly List<string> Classes = new List<string>
     {
-      ClassNames.Rows,
+      ClassNames.Table,
       ClassNames.Error
     };
 

@@ -6,7 +6,7 @@ using Toolset.Collections;
 
 namespace Paper.Api.Extensions.Papers
 {
-  internal class PaperContext
+  internal class PaperContext : IPaperContext
   {
     public PaperDescriptor Paper { get; set; }
 

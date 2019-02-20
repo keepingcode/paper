@@ -39,85 +39,18 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
-  [Expose]
-  public class UsuarioPapers
+  public static class Program
   {
-    public static TBusuario[] DB =
+    [STAThread]
+    public static void Main(string[] args)
     {
-      new TBusuario { DFid_usuario = 1, DFnome_usuario = "Fulano" },
-      new TBusuario { DFid_usuario = 2, DFnome_usuario = "Beltrano" },
-      new TBusuario { DFid_usuario = 2, DFnome_usuario = "Cicrano" }
-    };
-
-    public class TBusuario
-    {
-      public int DFid_usuario { get; set; }
-      public string DFnome_usuario { get; set; }
-    }
-
-    public class UsuarioForm
-    {
-      public string DFnome_usuario { get; set; }
-    }
-
-    public class UsuarioFilter : IFilter
-    {
-      public Var<int> DFid_usuario { get; set; }
-      public Var<string> DFnome_usuario { get; set; }
-    }
-
-    public class OlaPaper : IPaper
-    {
-      public object Index() => new { Texto = "Olá, mundo!" };
-    }
-
-    public class UsuariosPaper : IPaper
-    {
-      public void CreateSort(Sort sort) => sort.AddFieldsFrom<TBusuario>();
-      public void CreateForm(UsuarioFilter filter) => new UsuarioFilter();
-
-      public Ret<TBusuario[]> Index(Sort sort, Page page, UsuarioFilter filter)
+      try
       {
-        try
-        {
-          var rows = DB.FilterBy(filter).SortBy(sort).PaginateBy(page).ToArray();
-          if (rows.Length > 0)
-          {
-            return rows;
-          }
-          else
-          {
-            return Redirect.To<OlaPaper>();
-          }
-        }
-        catch (Exception ex)
-        {
-          throw ex;
-        }
+        
       }
-
-      public Ret Save(UsuarioForm form, IEnumerable<TBusuario> usuarios)
+      catch (Exception ex)
       {
-        return Redirect.To<OlaPaper>();
-      }
-    }
-
-    public class UsuarioPaper : IPaper
-    {
-
-      // métodos Create
-      // métodos Format
-
-      public void CreteForm(UsuarioFilter filter) => new UsuarioFilter();
-
-      public Ret<TBusuario> Index(int id)
-      {
-        return Redirect.To<OlaPaper>();
-      }
-
-      public Ret Save(UsuarioForm form, TBusuario usuario)
-      {
-        return Redirect.To<OlaPaper>();
+        ex.Trace();
       }
     }
   }

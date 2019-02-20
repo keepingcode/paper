@@ -11,26 +11,26 @@ namespace Paper.Media.Design
   {
     #region Header
 
-    public static Entity AddHeader(this Entity entity, string name, Rel rel, Action<HeaderDesign> options = null)
+    public static Entity AddHeader(this Entity entity, string name, Class @class, Action<HeaderDesign> options = null)
     {
-      return AddHeader(entity, name, rel.GetName(), options);
+      return AddHeader(entity, name, @class.GetName(), options);
     }
 
-    public static Entity AddHeader(this Entity entity, string name, string rel, Action<HeaderDesign> options = null)
+    public static Entity AddHeader(this Entity entity, string name, string @class, Action<HeaderDesign> options = null)
     {
       var headerBag = entity.WithProperties(HeaderDesign.BagName);
-      var headerNames = headerBag.WithCollection(rel);
+      var headerNames = headerBag.WithCollection(@class);
 
-      var nameExists = headerNames.Any(x => ((string)x).EqualsIgnoreCase(name));
+      var nameExists = headerNames.Any(x => (x as CaseVariantString)?.Value.EqualsIgnoreCase(name) == true);
       if (!nameExists)
       {
-        headerNames.Add(name);
+        headerNames.Add((CaseVariantString)name);
       }
 
       var headerEntity = (
         from e in entity.WithEntities()
-        where e.Rel.Has(rel)
-        where name.EqualsIgnoreCase(e.Properties?["Name"] as string)
+        where e.Rel.Has(@class)
+        where name.EqualsIgnoreCase((e.Properties?["Name"] as CaseVariantString)?.Value)
         select e
       ).FirstOrDefault();
 
@@ -39,9 +39,9 @@ namespace Paper.Media.Design
         var title = name.ChangeCase(TextCase.ProperCase);
         headerEntity = new Entity();
         headerEntity.AddClass(Class.Header);
-        headerEntity.AddRel(rel);
+        headerEntity.AddRel(@class);
         headerEntity.SetTitle(title);
-        headerEntity.SetProperty("Name", name);
+        headerEntity.SetProperty("Name", (CaseVariantString)name);
         headerEntity.SetProperty("Title", title);
         entity.WithEntities().Add(headerEntity);
       }
@@ -55,12 +55,22 @@ namespace Paper.Media.Design
 
     #region Headers
 
-    public static Entity AddHeaders(this Entity entity, object graphOrType, Rel rel, IEnumerable<string> select = null, IEnumerable<string> except = null)
+    public static Entity AddHeaders<TGraph>(this Entity entity, Class @class, IEnumerable<string> select = null, IEnumerable<string> except = null)
     {
-      return AddHeaders(entity, graphOrType, rel.GetName(), select, except);
+      return AddHeaders(entity, typeof(TGraph), @class, @select, except);
     }
 
-    public static Entity AddHeaders(this Entity entity, object graphOrType, string rel, IEnumerable<string> select = null, IEnumerable<string> except = null)
+    public static Entity AddHeaders<TGraph>(this Entity entity, string @class, IEnumerable<string> select = null, IEnumerable<string> except = null)
+    {
+      return AddHeaders(entity, typeof(TGraph), @class, @select, except);
+    }
+
+    public static Entity AddHeaders(this Entity entity, object graphOrType, Class @class, IEnumerable<string> select = null, IEnumerable<string> except = null)
+    {
+      return AddHeaders(entity, graphOrType, @class.GetName(), select, except);
+    }
+
+    public static Entity AddHeaders(this Entity entity, object graphOrType, string @class, IEnumerable<string> select = null, IEnumerable<string> except = null)
     {
       var type = graphOrType is Type ? (Type)graphOrType : graphOrType.GetType();
 
@@ -75,7 +85,7 @@ namespace Paper.Media.Design
       {
         var title = Conventions.MakeTitle(property);
         var hidden = property.Name.StartsWith("_");
-        entity.AddHeader(property.Name, rel, opt => opt
+        entity.AddHeader(property.Name, @class, opt => opt
           .SetTitle(title)
           .SetHidden(hidden)
           .SetDataType(property.PropertyType)

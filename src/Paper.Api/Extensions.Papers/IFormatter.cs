@@ -9,6 +9,6 @@ namespace Paper.Api.Extensions.Papers
 {
   public interface IFormatter
   {
-    void Format(IObjectFactory factory, Entity entity);
+    void Format(IPaperContext context, IObjectFactory factory, Entity entity);
   }
 }

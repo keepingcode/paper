@@ -42,46 +42,49 @@ namespace Paper.Api.Extensions.Papers
 
       var entity = new Entity();
 
-      var isList = typeof(IEnumerable).IsAssignableFrom(result.ValueType);
+      var value = result.Value;
+      var valueType = result.ValueType;
+
+      var isList = typeof(IEnumerable).IsAssignableFrom(valueType);
       if (isList)
       {
-        var list = (IEnumerable)result.Value;
-        entity.AddEntities(list, (item, e) => BuildRecord(context, e, item, args));
+        var list = (IEnumerable)value;
+
+        entity.SetTitle(Conventions.MakeTitle(context.Paper.PaperType));
+        entity.AddEntities(list, (item, e) => RenderRecord(context, e, args, item));
+        FormatEntity(context, entity, args, value);
       }
       else
       {
-        BuildRecord(context, entity, result, args);
+        RenderRecord(context, entity, args, value);
       }
 
-      LinkAndFormat(context, entity, args);
+      FormatEntity(context, entity, args);
 
       return entity;
     }
 
-    private void BuildRecord(PaperContext context, Entity entity, object record, object[] args)
+    private void RenderRecord(PaperContext context, Entity entity, object[] args, object record)
     {
       entity.AddClass(ClassNames.Record);
       entity.AddClass(record.GetType());
+      entity.SetTitle(Conventions.MakeTitle(record.GetType()));
       entity.AddProperties(record);
+      entity.AddHeaders(record, ClassNames.Record);
 
-      LinkAndFormat(context, entity, args, record);
-
-      if (entity.Properties[HeaderDesign.BagName] == null)
-      {
-        entity.AddHeaders(record, RelNames.Record);
-      }
+      FormatEntity(context, entity, args, record);
     }
 
-    private void LinkAndFormat(PaperContext context, Entity entity, object[] args, object graph = null)
+    private void FormatEntity(PaperContext context, Entity entity, object[] args, object graph = null)
     {
-      AppendMedia(context, entity, args, graph);
+      RunFormatters(context, entity, args, graph);
       if (args.Length > 0)
       {
-        AppendMedia(context, entity, new object[0], graph);
+        RunFormatters(context, entity, new object[0], graph);
       }
     }
 
-    private void AppendMedia(PaperContext context, Entity entity, object[] args, object graph = null)
+    private void RunFormatters(PaperContext context, Entity entity, object[] args, object graph = null)
     {
       var path = context.Path;
       var paper = context.Paper;
@@ -90,40 +93,40 @@ namespace Paper.Api.Extensions.Papers
 
       var allArgs = args.Append(graph).NonNull().ToArray();
 
-      var appenders = MatchAppenders(paper, allArgs);
-      foreach (var appender in appenders)
+      var callers = MatchCallers(paper, allArgs);
+      foreach (var caller in callers)
       {
-        var result = objectFactory.Invoke(paper.Paper, appender.Method, appender.Args);
+        var result = objectFactory.Invoke(paper.Paper, caller.Method, caller.Args);
         if (result == null)
           continue;
 
-        IEnumerable builders;
+        IEnumerable items;
 
-        if (result is IEnumerable items)
+        if (result is IEnumerable enumerable)
         {
-          builders = items;
+          items = enumerable;
         }
-        else if (result is ICollection list)
+        else if (result is ICollection collection)
         {
-          builders = list;
+          items = collection;
         }
         else
         {
-          builders = new[] { result };
+          items = new[] { result };
         }
 
-        foreach (var builder in builders)
+        foreach (var item in items)
         {
-          if (builder is IFormatter formatter)
+          if (item is IFormatter formatter)
           {
-            formatter.Format(objectFactory, entity);
+            formatter.Format(context, objectFactory, entity);
           }
-          else if (builder is Format format)
+          else if (item is Format format)
           {
-            format.Invoke(objectFactory, entity);
+            format.Invoke(context, objectFactory, entity);
           }
 
-          if (builder is Link link)
+          if (item is Link link)
           {
             entity.AddLink(link);
           }
@@ -131,17 +134,15 @@ namespace Paper.Api.Extensions.Papers
       }
     }
 
-    private bool IsTypeMatch(Type source, Type target)
+    private ICollection<Caller> MatchCallers(PaperDescriptor paper, object[] args)
     {
-      if (source == null || target == null)
-        return false;
-
-      var sourceIsList = typeof(IEnumerable).IsAssignableFrom(source) || typeof(ICollection).IsAssignableFrom(source);
-      var targetIsList = typeof(IEnumerable).IsAssignableFrom(target) || typeof(ICollection).IsAssignableFrom(target);
-      if (sourceIsList != targetIsList)
-        return false;
-
-      return target.IsAssignableFrom(source);
+      var callers = (
+        from method in paper.Formatters
+        let caller = MatchCaller(method, args)
+        where caller != null
+        select caller.Value
+      ).ToArray();
+      return callers;
     }
 
     private Caller? MatchCaller(MethodInfo method, object[] args)
@@ -183,15 +184,17 @@ namespace Paper.Api.Extensions.Papers
       return new Caller { Method = method, Args = values };
     }
 
-    private ICollection<Caller> MatchAppenders(PaperDescriptor paper, object[] args)
+    private bool IsTypeMatch(Type source, Type target)
     {
-      var callers = (
-        from method in paper.Linkers.Concat(paper.Formatters)
-        let caller = MatchCaller(method, args)
-        where caller != null
-        select caller.Value
-      ).ToArray();
-      return callers;
+      if (source == null || target == null)
+        return false;
+
+      var sourceIsList = typeof(IEnumerable).IsAssignableFrom(source) || typeof(ICollection).IsAssignableFrom(source);
+      var targetIsList = typeof(IEnumerable).IsAssignableFrom(target) || typeof(ICollection).IsAssignableFrom(target);
+      if (sourceIsList != targetIsList)
+        return false;
+
+      return target.IsAssignableFrom(source);
     }
   }
 }

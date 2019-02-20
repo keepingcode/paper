@@ -15,12 +15,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Sandbox\**" />
     <Compile Remove="Server\Demo\**" />
     <Compile Remove="Server\Proxies\**" />
+    <Content Remove="Sandbox\**" />
     <Content Remove="Server\Demo\**" />
     <Content Remove="Server\Proxies\**" />
+    <EmbeddedResource Remove="Sandbox\**" />
     <EmbeddedResource Remove="Server\Demo\**" />
     <EmbeddedResource Remove="Server\Proxies\**" />
+    <None Remove="Sandbox\**" />
     <None Remove="Server\Demo\**" />
     <None Remove="Server\Proxies\**" />
   </ItemGroup>

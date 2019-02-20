@@ -13,7 +13,8 @@ namespace Paper.Media.Design
   /// </summary>
   public static class LinkExtensions
   {
-    public static Link SetHref(this Link link, Href href)
+    public static TLink SetHref<TLink>(this TLink link, Href href)
+      where TLink : Link
     {
       link.Href = href;
       return link;
@@ -26,7 +27,8 @@ namespace Paper.Media.Design
     /// <param name="link">O link a ser modificado.</param>
     /// <param name="mediaType">O mime type do link.</param>
     /// <returns>A própria instância do link modificado.</returns>
-    public static Link SetType(this Link link, string mediaType)
+    public static TLink SetType<TLink>(this TLink link, string mediaType)
+      where TLink : Link
     {
       link.Type = mediaType;
       return link;

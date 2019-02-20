@@ -23,20 +23,50 @@ namespace Paper.Media
     Describes,
     Edit,
     EditForm,
+
+    /// <summary>
+    /// Relaciona um elemento como primeiro termo ou uma ação de navegação ao primeiro termo.
+    /// </summary>
     First,
+
     Glossary,
     Help,
+
+    /// <summary>
+    /// Relaciona um elemento como um ícone.
+    /// </summary>
     Icon,
+
     Index,
+
+    /// <summary>
+    /// Relaciona uma entidade como item de uma coleção.
+    /// Como uma linha de uma tabela, um cartão em uma lista de cartões ou um item em uma lista.
+    /// </summary>
     Item,
+
+    /// <summary>
+    /// Relaciona um elemento como último termo ou uma ação de navegação ao último termo.
+    /// </summary>
     Last,
+
     LatestVersion,
     License,
     Memento,
+
+    /// <summary>
+    /// Relaciona uma ação de avanço ou navegação para frente.
+    /// </summary>
     Next,
+
     Original,
     Payment,
+
+    /// <summary>
+    /// Relaciona uma ação de retorno ou navegação para trás.
+    /// </summary>
     Prev,
+
     Preview,
     Previous,
     Profile,
@@ -44,7 +74,12 @@ namespace Paper.Media
     Replies,
     Search,
     Section,
+
+    /// <summary>
+    /// Relaciona um objeto a ele mesmo ou uma característica ao seu objeto.
+    /// </summary>
     Self,
+
     Service,
     Start,
     Subsection,
@@ -54,73 +89,40 @@ namespace Paper.Media
 
     #endregion
 
-    #region Personalizados
-
-    Blueprint = 1000,
-
-    Record,
-
-    Link,
+    #region Estruturais básicos
 
     /// <summary>
-    /// Relacionamento entre um link e um cabeçalho.
+    /// Relaciona um elemento como link em um objeto.
     /// </summary>
-    HeaderLink,
+    Link = 1000,
 
     /// <summary>
-    /// Estabecele relacionamento entre o alvo e uma proprieade da entidade.
+    /// Relaciona um elemento como primário em seu grupo de elementos.
     /// </summary>
-    Property,
+    Primary,
 
     /// <summary>
-    /// Relacionamento entre o registro e a entidade pai.
+    /// Relaciona um elemento como secundário em seu grupo de elementos.
     /// </summary>
-    Row,
+    Secondary,
 
     /// <summary>
-    /// Relacionamento entre o registro e a entidade cards.
+    /// Relaciona um elemento como terciário em seu grupo de elementos.
     /// </summary>
-    Card,
+    Tertiary,
 
     /// <summary>
-    /// Estabelece relacionamento entre o alvo e o dado.
+    /// Relaciona um elemento de ação ou dá um significado de ação a um link.
     /// </summary>
-    Data,
+    Action,
 
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e a tabela.
-    /// </summary>
-    Rows,
+    #endregion
 
-    /// <summary>
-    /// Estabelece relacionamento entre o alvo e a lista de cartões.
-    /// </summary>
-    Cards,
+    #region Estruturais avançados
 
-    /// <summary>
-    /// Relaciona um link a um dado.
-    /// </summary>
-    DataLink,
+    #endregion
 
-    /// <summary>
-    /// Relaciona um link a um registro.
-    /// </summary>
-    RowLink,
-
-    /// <summary>
-    /// Representação de um link primário, numa coleção de links
-    /// </summary>
-    PrimaryLink,
-
-    /// <summary>
-    /// Representação de um link secundário, numa coleção de links
-    /// </summary>
-    SecondaryLink,
-
-    /// <summary>
-    /// Representação de um link terciário, numa coleção de links
-    /// </summary>
-    TertiaryLink,
+    #region Extensões
 
     #endregion
   }
