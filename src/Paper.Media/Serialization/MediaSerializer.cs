@@ -122,7 +122,7 @@ namespace Paper.Media.Serialization
 
       if (element is CaseVariantString caseString)
       {
-        var text = caseString.ChangeCase(writer.Settings.TextCase);
+        var text = caseString.ChangeCase(writer.Settings.TextCase | TextCase.PreserveSpecialCharacters);
         writer.WriteValue(text);
         return;
       }
@@ -149,25 +149,6 @@ namespace Paper.Media.Serialization
         return;
       }
 
-      //if (element is PropertyCollection properties)
-      //{
-      //  writer.WriteObjectStart(elementName ?? element.GetType().Name);
-      //  foreach (var item in properties)
-      //  {
-      //    Write(writer, item);
-      //  }
-      //  writer.WriteObjectEnd();
-      //  return;
-      //}
-      //
-      //if (element is Property property)
-      //{
-      //  writer.WritePropertyStart(property.Name);
-      //  Write(writer, property.Value);
-      //  writer.WritePropertyEnd();
-      //  return;
-      //}
-
       if (element is IEnumerable list)
       {
         var attr = element._GetAttribute<CollectionDataContractAttribute>();
@@ -185,10 +166,23 @@ namespace Paper.Media.Serialization
       writer.WriteObjectStart(element.GetType().Name);
       foreach (var name in element._GetPropertyNames())
       {
+
         var value = element._Get(name);
         if (value != null)
         {
-          writer.WritePropertyStart(name);
+          if (value is string text)
+          {
+            var caseAttr = element._GetAttribute<CaseVariantStringAttribute>(name);
+            if (caseAttr != null)
+            {
+              value = (CaseVariantString)text;
+            }
+          }
+
+          var memberAttr = element._GetAttribute<DataMemberAttribute>(name);
+          var propertyName = memberAttr?.Name ?? name;
+
+          writer.WritePropertyStart(propertyName);
           Write(writer, value);
           writer.WritePropertyEnd();
         }

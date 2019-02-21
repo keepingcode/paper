@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="CaseVariantStringExtensions.cs" />
     <Compile Remove="Design\DataExtensions.cs" />
     <Compile Remove="Design\EntityDesign.cs" />
     <Compile Remove="Design\ExposePaperAttribute.cs" />

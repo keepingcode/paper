@@ -9,6 +9,7 @@ using Toolset.Reflection;
 using Paper.Media.Data;
 using Toolset;
 using Paper.Media.Design;
+using Toolset.Collections;
 
 namespace Paper.Api.Extensions.Papers
 {
@@ -22,6 +23,7 @@ namespace Paper.Api.Extensions.Papers
       this.PaperParameters = MakePaperParameters();
       this.PathTemplate = MakePath();
       this.Formatters = MakeFormatters().ToArray();
+      this.Actions = MakeActions().ToArray();
     }
 
     public IPaper Paper { get; }
@@ -37,6 +39,8 @@ namespace Paper.Api.Extensions.Papers
     public ICollection<ParameterInfo> IndexArgs => IndexMethod.GetParameters();
 
     public ICollection<MethodInfo> Formatters { get; }
+
+    public ICollection<MethodInfo> Actions { get; }
 
     private ParameterInfo[] MakePaperParameters()
     {
@@ -59,7 +63,8 @@ namespace Paper.Api.Extensions.Papers
 
     private IEnumerable<MethodInfo> MakeFormatters()
     {
-      foreach (var method in PaperType.GetMethods())
+      var methods = PaperType.GetMethods(BindingFlags.Public | BindingFlags.Instance).Except(IndexMethod);
+      foreach (var method in methods)
       {
         if (typeof(IFormatter).IsAssignableFrom(method.ReturnType)
          || typeof(ICollection<IFormatter>).IsAssignableFrom(method.ReturnType)
@@ -72,6 +77,33 @@ namespace Paper.Api.Extensions.Papers
          || typeof(Format).IsAssignableFrom(method.ReturnType)
          || typeof(ICollection<Format>).IsAssignableFrom(method.ReturnType)
          || typeof(IEnumerable<Format>).IsAssignableFrom(method.ReturnType))
+        {
+          yield return method;
+        }
+      }
+    }
+
+    private IEnumerable<MethodInfo> MakeActions()
+    {
+      var knownMethods = IndexMethod.AsSingle().Concat(Formatters);
+      var methods = PaperType.GetMethods(BindingFlags.Public | BindingFlags.Instance).Except(knownMethods);
+      foreach (var method in methods)
+      {
+        if (method.DeclaringType.Namespace.StartsWith("System"))
+          continue;
+
+        if (typeof(void).IsAssignableFrom(method.ReturnType)
+         || typeof(Ret).IsAssignableFrom(method.ReturnType)
+         
+         || typeof(string).IsAssignableFrom(method.ReturnType)
+         || typeof(Href).IsAssignableFrom(method.ReturnType)
+         || typeof(Uri).IsAssignableFrom(method.ReturnType)
+         || typeof(UriString).IsAssignableFrom(method.ReturnType)
+
+         || typeof(Ret<string>).IsAssignableFrom(method.ReturnType)
+         || typeof(Ret<Href>).IsAssignableFrom(method.ReturnType)
+         || typeof(Ret<Uri>).IsAssignableFrom(method.ReturnType)
+         || typeof(Ret<UriString>).IsAssignableFrom(method.ReturnType))
         {
           yield return method;
         }

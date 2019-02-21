@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -8,8 +9,10 @@ using System.Threading.Tasks;
 using Paper.Api.Rendering;
 using Paper.Media;
 using Paper.Media.Design;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Reflection;
 
 namespace Paper.Api.Extensions.Papers
 {
@@ -32,12 +35,6 @@ namespace Paper.Api.Extensions.Papers
 
     public async Task<Ret<Entity>> RenderAsync(PaperContext context, Result result)
     {
-      var entity = RenderEntity(context, result);
-      return await Task.FromResult(entity);
-    }
-
-    public Entity RenderEntity(PaperContext context, Result result)
-    {
       var args = context.Args.Values.ToArray();
 
       var entity = new Entity();
@@ -52,6 +49,7 @@ namespace Paper.Api.Extensions.Papers
 
         entity.SetTitle(Conventions.MakeTitle(context.Paper.PaperType));
         entity.AddEntities(list, (item, e) => RenderRecord(context, e, args, item));
+
         FormatEntity(context, entity, args, value);
       }
       else
@@ -61,7 +59,7 @@ namespace Paper.Api.Extensions.Papers
 
       FormatEntity(context, entity, args);
 
-      return entity;
+      return await Task.FromResult(entity);
     }
 
     private void RenderRecord(PaperContext context, Entity entity, object[] args, object record)
@@ -78,9 +76,11 @@ namespace Paper.Api.Extensions.Papers
     private void FormatEntity(PaperContext context, Entity entity, object[] args, object graph = null)
     {
       RunFormatters(context, entity, args, graph);
+      RunActionBuilders(context, entity, args, graph);
       if (args.Length > 0)
       {
         RunFormatters(context, entity, new object[0], graph);
+        RunActionBuilders(context, entity, new object[0], graph);
       }
     }
 
@@ -93,7 +93,7 @@ namespace Paper.Api.Extensions.Papers
 
       var allArgs = args.Append(graph).NonNull().ToArray();
 
-      var callers = MatchCallers(paper, allArgs);
+      var callers = MatchCallers(paper.Formatters, allArgs);
       foreach (var caller in callers)
       {
         var result = objectFactory.Invoke(paper.Paper, caller.Method, caller.Args);
@@ -134,21 +134,129 @@ namespace Paper.Api.Extensions.Papers
       }
     }
 
-    private ICollection<Caller> MatchCallers(PaperDescriptor paper, object[] args)
+    private void RunActionBuilders(PaperContext context, Entity entity, object[] args, object graph = null)
+    {
+      var path = context.Path;
+      var paper = context.Paper;
+      var req = context.Request;
+      var res = context.Response;
+
+      var allArgs = args.Append(graph).NonNull().ToArray();
+
+      var callers = MatchCallers(paper.Actions, allArgs, ignore: new[] { typeof(IForm) });
+      foreach (var caller in callers)
+      {
+        RenderForm(caller, context, entity, args, graph);
+      }
+    }
+
+    private void RenderForm(Caller caller, PaperContext context, Entity entity, object[] args, object graph = null)
+    {
+      var action = new EntityAction();
+      action.Name = caller.Method.Name;
+      action.Title = caller.Method.Name.ChangeCase(TextCase.ProperCase);
+      action.Href = context.Path.Substring(1);
+      action.Method = MethodNames.Post;
+
+      action.AddField("Action", opt => opt
+        .SetHidden(true)
+        .SetDataType(DataType.Text)
+        .SetValue(action.Name)
+      );
+
+      var parameters = caller.Method.GetParameters();
+      for (var i = 0; i < parameters.Length; i++)
+      {
+        var parameter = parameters[i];
+        var parameterValue = caller.Args[i];
+
+        var name = Conventions.MakeName(parameter.Name);
+
+        var isValue = IsValue(parameter.ParameterType);
+        var isArray = !isValue && typeof(IEnumerable).IsAssignableFrom(parameter.ParameterType);
+        var isForm = !isValue && !isArray && typeof(IForm).IsAssignableFrom(parameter.ParameterType);
+
+        if (isValue)
+        {
+          action.AddField($"Form.{name}", opt => opt
+            .SetTitle(name.ChangeCase(TextCase.ProperCase))
+            .SetDataType(parameter.ParameterType)
+            .SetHidden(true)
+            .SetValue(parameterValue)
+          );
+        }
+        else if (isArray)
+        {
+          // TODO: VALIDAR ESTE SUPORTE
+          // - Devera suportar a selecao de multiplos registros pelo cliente
+          //
+          action.AddField("Rows[]", opt => opt
+            .SetHidden(true)
+            .SetDataType("collection")
+          );
+        }
+        else if (isForm)
+        {
+          var properties = parameter.ParameterType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+          foreach (var property in properties)
+          {
+            var subname = Conventions.MakeName(property.Name);
+            action.AddField($"Form.{name}.{subname}", opt => opt
+              .SetTitle(subname.ChangeCase(TextCase.ProperCase))
+              .SetDataType(property.PropertyType)
+            );
+          }
+        }
+        else
+        {
+          foreach (var propertyName in parameterValue._GetPropertyNames())
+          {
+            var property = parameterValue._GetPropertyInfo(propertyName);
+            var propertyValue = property.GetValue(parameterValue);
+
+            var subname = Conventions.MakeName(propertyName);
+            action.AddField($"Data.{subname}", opt => opt
+              .SetTitle(subname.ChangeCase(TextCase.ProperCase))
+              .SetDataType(property.PropertyType)
+              .SetHidden(true)
+              .SetValue(propertyValue)
+            );
+          }
+        }
+      }
+
+      entity.AddAction(action);
+    }
+
+    private bool IsValue(Type type)
+    {
+      return type.IsValueType
+          || type == typeof(string)
+          || type == typeof(Href)
+          || type == typeof(Uri)
+          || type == typeof(UriString);
+    }
+
+    private ICollection<Caller> MatchCallers(ICollection<MethodInfo> methods, object[] args, Type[] ignore = null)
     {
       var callers = (
-        from method in paper.Formatters
-        let caller = MatchCaller(method, args)
+        from method in methods
+        let caller = MatchCaller(method, args, ignore)
         where caller != null
         select caller.Value
       ).ToArray();
       return callers;
     }
 
-    private Caller? MatchCaller(MethodInfo method, object[] args)
+    private Caller? MatchCaller(MethodInfo method, object[] args, Type[] ignore)
     {
       var parameters = method.GetParameters();
-      if (parameters.Length != args.Length)
+
+      var parameterCount = (ignore != null)
+          ? parameters.Count(x => !IsIgnored(x.ParameterType, ignore))
+          : parameters.Length;
+
+      if (parameterCount != args.Length)
         return null;
 
       var values = new object[parameters.Length];
@@ -157,6 +265,12 @@ namespace Paper.Api.Extensions.Papers
       {
         var parameter = parameters[i];
         var type = parameter.ParameterType;
+
+        if (IsIgnored(type, ignore))
+        {
+          values[i] = null;
+          continue;
+        }
 
         int? argIndex;
 
@@ -182,6 +296,11 @@ namespace Paper.Api.Extensions.Papers
         cache[argIndex.Value] = null;
       }
       return new Caller { Method = method, Args = values };
+    }
+
+    private bool IsIgnored(Type type, Type[] ignore)
+    {
+      return ignore?.Any(x => x.IsAssignableFrom(type)) == true;
     }
 
     private bool IsTypeMatch(Type source, Type target)

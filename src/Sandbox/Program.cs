@@ -46,7 +46,17 @@ namespace Sandbox
     {
       try
       {
-        
+        var text = "My.FirstAttempt.Of.Doing_it";
+
+        Debug.WriteLine(text.ChangeCase(TextCase.ProperCase));
+        Debug.WriteLine(text.ChangeCase(TextCase.PascalCase));
+        Debug.WriteLine(text.ChangeCase(TextCase.CamelCase));
+
+        Debug.WriteLine("- - -");
+        Debug.WriteLine(text.ChangeCase(TextCase.PreserveSpecialCharacters | TextCase.ProperCase));
+        Debug.WriteLine(text.ChangeCase(TextCase.PreserveSpecialCharacters | TextCase.Underscore));
+        Debug.WriteLine(text.ChangeCase(TextCase.PreserveSpecialCharacters | TextCase.CamelCase));
+
       }
       catch (Exception ex)
       {

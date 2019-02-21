@@ -331,6 +331,12 @@ namespace Paper.Media.Design
 
     #region AddField
 
+    public static EntityAction AddField(this EntityAction action, Field field)
+    {
+      action.WithFields().Add(field);
+      return action;
+    }
+
     public static EntityAction AddField(this EntityAction action, string name, Action<Field> options)
     {
       DoAddField(

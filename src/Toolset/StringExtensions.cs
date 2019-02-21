@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Toolset.Collections;
 
 namespace Toolset
 {
@@ -75,6 +76,29 @@ namespace Toolset
     #region Name Conventions
 
     public static string ChangeCase(this string sentence, TextCase textCase)
+    {
+      var isPreserveData = textCase.HasFlag(TextCase.PreserveSpecialCharacters);
+      if (isPreserveData)
+      {
+        var separators = delimiters.Substring(1);
+        var matches = Regex.Matches(sentence, $"([^{separators}]+)([{separators}]+)?");
+        var sentences = (
+          from match in matches.Cast<Match>()
+          select new[]
+          {
+            DoChangeCase(match.Groups[1].Value, textCase),
+            match.Groups[2].Value
+          }
+        ).SelectMany();
+        return string.Join("", sentences);
+      }
+      else
+      {
+        return DoChangeCase(sentence, textCase);
+      }
+    }
+
+    private static string DoChangeCase(this string sentence, TextCase textCase)
     {
       if (sentence == null)
         return null;
@@ -255,20 +279,20 @@ namespace Toolset
       return split;
     }
 
-    /// <summary>
-    /// Aplica uma substituição no texto usando regras de expressão regular.
-    /// </summary>
-    /// <param name="text">O texto a ser modificado.</param>
-    /// <param name="regex">A expressão regular aplicada.</param>
-    /// <param name="replacement">
-    /// O texto substituto segundo as regeras de <see cref="Regex.Replace(string, string, string, RegexOptions)"/>
-    /// </param>
-    /// <param name="options">Opções de aplicação da expressão regular.</param>
-    /// <returns>O texto com a substituição aplicada.</returns>
-    public static string ReplacePattern(this string text, string regex, string replacement, RegexOptions options = default(RegexOptions))
-    {
-      return Regex.Replace(text, regex, replacement, options);
-    }
+    ///// <summary>
+    ///// Aplica uma substituição no texto usando regras de expressão regular.
+    ///// </summary>
+    ///// <param name="text">O texto a ser modificado.</param>
+    ///// <param name="regex">A expressão regular aplicada.</param>
+    ///// <param name="replacement">
+    ///// O texto substituto segundo as regeras de <see cref="Regex.Replace(string, string, string, RegexOptions)"/>
+    ///// </param>
+    ///// <param name="options">Opções de aplicação da expressão regular.</param>
+    ///// <returns>O texto com a substituição aplicada.</returns>
+    //public static string ReplacePattern(this string text, string regex, string replacement, RegexOptions options = default(RegexOptions))
+    //{
+    //  return Regex.Replace(text, regex, replacement, options);
+    //}
 
     /// <summary>
     /// Extrai um trecho de uma sentença pela aplicação de uma expressão regular.

@@ -26,7 +26,7 @@ namespace Paper.Api.Extensions.Papers
       public Var<string> Description { get; set; }
     }
 
-    public class TaskForm
+    public class TaskForm : IForm
     {
       public string Title { get; set; }
       public string Description { get; set; }
@@ -129,6 +129,10 @@ namespace Paper.Api.Extensions.Papers
         {
           task.Description = form.Description;
         }
+      }
+
+      public void Edit(TaskForm form, Task task)
+      {
       }
 
       public Ret Remove(int taskId)
