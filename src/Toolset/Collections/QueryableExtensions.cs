@@ -148,7 +148,7 @@ namespace Toolset.Collections
       }
     }
 
-#if !NETCOREAPP2_0
+#if !NETCOREAPP
 
     /// <summary>
     /// Adiciona um item ao fim de um enumerado.

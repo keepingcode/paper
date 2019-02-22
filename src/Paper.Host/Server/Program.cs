@@ -19,6 +19,8 @@ namespace Paper.Host.Server
     {
       try
       {
+        var host = new WebHostBuilder();
+
         WebHost.CreateDefaultBuilder(args)
           .ConfigureAppConfiguration((hostingContext, config) =>
           {

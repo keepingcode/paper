@@ -172,7 +172,7 @@ namespace Toolset.Collections
       }
     }
 
-#if !NETCOREAPP2_0 && !NETCOREAPP2_1
+#if !NETCOREAPP
 
     /// <summary>
     /// Salta os últimos itens do enumerado.
