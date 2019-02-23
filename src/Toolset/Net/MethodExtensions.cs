@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Toolset;
 
-namespace Paper.Media
+namespace Toolset.Net
 {
   public static class MethodExtensions
   {

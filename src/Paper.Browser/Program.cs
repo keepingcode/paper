@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Paper.Browser.Base;
-using Paper.Browser.Base.Forms;
-using Paper.Browser.Commons;
+using Paper.Browser.Lib;
 
 namespace Paper.Browser
 {
@@ -20,9 +18,9 @@ namespace Paper.Browser
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 
-      Navigator.Form.Load += (o, e) => Navigator.NewWindow().OpenAsync("~/Index");
+      //Navigator.Form.Load += (o, e) => Navigator.NewWindow().OpenAsync("~/Index");
 
-      Application.Run(Navigator.Form);
+      Application.Run(Navigator.Current.Form);
     }
   }
 }

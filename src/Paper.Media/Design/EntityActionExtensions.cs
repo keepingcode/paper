@@ -8,6 +8,7 @@ using System.Text;
 using Paper.Media.Utilities;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Net;
 
 namespace Paper.Media.Design
 {

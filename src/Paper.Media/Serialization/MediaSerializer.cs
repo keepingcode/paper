@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using Paper.Media.Utilities;
 using Toolset;
+using Toolset.Net;
 using Toolset.Reflection;
 using Toolset.Serialization;
 using Toolset.Serialization.Csv;
@@ -22,12 +23,12 @@ namespace Paper.Media.Serialization
 {
   public class MediaSerializer : ISerializer
   {
-    public const string Json = "application/json";
-    public const string JsonSiren = "application/vnd.siren+json";
-    public const string Xml = "application/xml";
-    public const string XmlSiren = "application/vnd.siren+xml";
-    public const string Csv = "text/csv";
-    public const string Excel = "application/vnd.ms-excel";
+    public const string Json = MimeTypeNames.Json;
+    public const string JsonSiren = MimeTypeNames.Siren;
+    public const string Xml = MimeTypeNames.Xml;
+    public const string XmlSiren = MimeTypeNames.SirenXml;
+    public const string Csv = MimeTypeNames.Csv;
+    public const string Excel = MimeTypeNames.Excel;
 
     /// <summary>
     ///  Todos os tipos suportados em ordem de precedencia.
@@ -43,10 +44,14 @@ namespace Paper.Media.Serialization
       // Use o outro construtor.
     }
 
+    public MediaSerializer(MimeType mimeType)
+      : this(mimeType.GetName(), null)
+    {
+    }
+
     public MediaSerializer(string mimeType)
       : this(mimeType, null)
     {
-      // Use o outro construtor.
     }
 
     public MediaSerializer(string mimeType, SerializationOptions options)

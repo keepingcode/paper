@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Toolset
+namespace Toolset.Net
 {
   /// <summary>
   /// Coleção dos principais mime types conforme especificados pelo IANA.
@@ -12,22 +12,16 @@ namespace Toolset
   /// Referência:
   ///    http://www.iana.org/assignments/media-types/media-types.xhtml
   /// </summary>
-  public static class MimeTypes
+  public static class MimeTypeNames
   {
-    /// <summary>
-    /// MimeType padrão arquivos XML.
-    /// </summary>
-    public const string Xml = "application/xml";
-    
-    /// <summary>
-    /// MimeType padrão arquivos JSON.
-    /// </summary>
+    public const string Plain = "text/plain";
     public const string Json = "application/json";
-
-    /// <summary>
-    /// MimeType padrão arquivos binários.
-    /// </summary>
-    public const string Bynary = "application/octet-stream";
+    public const string Xml = "application/xml";
+    public const string Csv = "text/csv";
+    public const string OctetStream = "application/octet-stream";
+    public const string Siren = "application/vnd.siren+json";
+    public const string SirenXml = "application/vnd.siren+xml";
+    public const string Excel = "application/vnd.ms-excel";
 
     private static Dictionary<string, string> _catalog;
     private static string[] _all;
@@ -35,25 +29,25 @@ namespace Toolset
     /// <summary>
     /// Catálogo de mime types conhecidos por extensão.
     /// </summary>
-    public static Dictionary<string, string> Catalog
+    public static Dictionary<string, string> Extensions
       => _catalog ?? (_catalog = CreateCatalog());
 
     /// <summary>
     /// Lista todos os mime types conhecidos.
     /// </summary>
     /// <returns>Os mime types conhecidos.</returns>
-    public static string[] All()
-      => _all ?? (_all = Catalog.Select(x => x.Value).OrderBy(x => x).Distinct().ToArray());
+    public static string[] All
+      => _all ?? (_all = Extensions.Values.OrderBy(x => x).Distinct().ToArray());
 
     /// <summary>
     /// Determina o mime type apropriado para o nome de arquivo indicado.
     /// </summary>
     /// <param name="filenameOrExtension">O nome do arquivo.</param>
     /// <returns>O mime type apropriado.</returns>
-    public static string Get(string filenameOrExtension)
+    public static string FromExtension(string filenameOrExtension)
     {
       var extension = filenameOrExtension.Split('.').Last();
-      return Catalog.ContainsKey(extension) ? Catalog[extension] : null;
+      return Extensions.ContainsKey(extension) ? Extensions[extension] : null;
     }
 
     /// <summary>
@@ -65,9 +59,9 @@ namespace Toolset
     /// O mime type apropriado. Caso o mime type não seja detectado o valor
     /// padrão é retornado.
     /// </returns>
-    public static string Get(string filenameOrExtension, string defaultMimeType)
+    public static string FromExtension(string filenameOrExtension, string defaultMimeType)
     {
-      return Get(filenameOrExtension) ?? defaultMimeType;
+      return FromExtension(filenameOrExtension) ?? defaultMimeType;
     }
 
     /// <summary>
@@ -75,10 +69,10 @@ namespace Toolset
     /// </summary>
     /// <param name="mimeType">O mime type.</param>
     /// <returns>As extensões possíveis.</returns>
-    public static string[] GetKnownExtensions(string mimeType)
+    public static string[] GetMimeTypeExtensions(string mimeType)
     {
       return (
-        from mime in Catalog
+        from mime in Extensions
         where mime.Value == mimeType
         select mime.Key
       ).ToArray();
@@ -481,6 +475,8 @@ namespace Toolset
         {"sh", "application/x-sh"},
         {"shar", "application/x-shar"},
         {"shtml", "text/html"},
+        {"siren", "application/vnd.siren+json"},
+        {"siren.xml", "application/vnd.siren+xml"},
         {"sit", "application/x-stuffit"},
         {"sitemap", "application/xml"},
         {"skin", "application/xml"},

@@ -21,7 +21,7 @@ namespace Paper.Media
       }
     }
 
-    public static Ret<Entity> CreateFromRet(Route route, Ret ret)
+    public static Ret<Entity> CreateFromRet(UriString route, Ret ret)
     {
       if (ret.Value is Entity entity)
         return Ret.OK(entity);
@@ -29,7 +29,7 @@ namespace Paper.Media
         return Create(route, ret.Status.Code, ret.Fault.Message, ret.Fault.Exception);
     }
 
-    public static Ret<Entity> Create(Route route, HttpStatusCode status, string message, Exception exception)
+    public static Ret<Entity> Create(UriString route, HttpStatusCode status, string message, Exception exception)
     {
       var causes = EnumerateCauses(message, exception).Distinct();
       var description =
@@ -65,42 +65,42 @@ namespace Paper.Media
       return Ret.Create(entity, status);
     }
 
-    public static Ret<Entity> Create(Route route, HttpStatusCode status, string message)
+    public static Ret<Entity> Create(UriString route, HttpStatusCode status, string message)
     {
       return Create(route, status, message, null);
     }
 
-    public static Ret<Entity> Create(Route route, HttpStatusCode status, Exception exception)
+    public static Ret<Entity> Create(UriString route, HttpStatusCode status, Exception exception)
     {
       return Create(route, status, null, exception);
     }
 
-    public static Ret<Entity> Create(Route route, HttpStatusCode status)
+    public static Ret<Entity> Create(UriString route, HttpStatusCode status)
     {
       return Create(route, status, null, null);
     }
 
-    public static Ret<Entity> Create(Route route, int status, string message, Exception exception)
+    public static Ret<Entity> Create(UriString route, int status, string message, Exception exception)
     {
       return Create(route, (HttpStatusCode)status, message, exception);
     }
 
-    public static Ret<Entity> Create(Route route, int status, string message)
+    public static Ret<Entity> Create(UriString route, int status, string message)
     {
       return Create(route, (HttpStatusCode)status, message, null);
     }
 
-    public static Ret<Entity> Create(Route route, int status, Exception exception)
+    public static Ret<Entity> Create(UriString route, int status, Exception exception)
     {
       return Create(route, (HttpStatusCode)status, null, exception);
     }
 
-    public static Ret<Entity> Create(Route route, int status)
+    public static Ret<Entity> Create(UriString route, int status)
     {
       return Create(route, (HttpStatusCode)status, null, null);
     }
 
-    public static Ret<Entity> Create(Route route, string message, Exception exception)
+    public static Ret<Entity> Create(UriString route, string message, Exception exception)
     {
       var status =
         exception is NotImplementedException
@@ -109,12 +109,12 @@ namespace Paper.Media
       return Create(route, status, message, exception);
     }
 
-    public static Ret<Entity> Create(Route route, string message)
+    public static Ret<Entity> Create(UriString route, string message)
     {
       return Create(route, HttpStatusCode.InternalServerError, message, null);
     }
 
-    public static Ret<Entity> Create(Route route, Exception exception)
+    public static Ret<Entity> Create(UriString route, Exception exception)
     {
       var status =
         exception is NotImplementedException
@@ -123,7 +123,7 @@ namespace Paper.Media
       return Create(route, status, null, exception);
     }
 
-    public static Ret<Entity> Create(Route route)
+    public static Ret<Entity> Create(UriString route)
     {
       return Create(route, HttpStatusCode.InternalServerError, null, null);
     }

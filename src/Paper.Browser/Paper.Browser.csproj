@@ -47,66 +47,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\Forms\NavigatorForm.cs">
+    <Compile Include="Gui\NavigatorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Base\Forms\NavigatorForm.Designer.cs">
+    <Compile Include="Gui\NavigatorForm.Designer.cs">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Base\Forms\SettingsDialog.cs">
+    <Compile Include="Gui\SettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Base\Forms\SettingsDialog.Designer.cs">
+    <Compile Include="Gui\SettingsDialog.Designer.cs">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Base\Forms\WindowForm.cs">
+    <Compile Include="Gui\WindowForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Base\Forms\WindowForm.Designer.cs">
+    <Compile Include="Gui\WindowForm.Designer.cs">
       <DependentUpon>WindowForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Base\Pages\DataPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Base\Pages\DataPage.Designer.cs">
-      <DependentUpon>DataPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Base\Pages\ErrorPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Base\Pages\ErrorPage.Designer.cs">
-      <DependentUpon>ErrorPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Base\Pages\IPage.cs" />
-    <Compile Include="Base\Pages\PageFactory.cs" />
-    <Compile Include="Base\Pages\RowsPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Base\Pages\RowsPage.Designer.cs">
-      <DependentUpon>RowsPage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Base\Navigator.cs" />
-    <Compile Include="Base\Window.cs" />
-    <Compile Include="Commons\Http.cs" />
-    <Compile Include="Commons\SessionStore.cs" />
-    <Compile Include="Commons\WindowsFormsExtensions.cs" />
+    <Compile Include="Gui\FormsExtensions.cs" />
+    <Compile Include="Lib\HttpExtensions.cs" />
+    <Compile Include="Lib\Http.cs" />
+    <Compile Include="Lib\Navigator.cs" />
+    <Compile Include="Lib\NavigatorExtensions.cs" />
+    <Compile Include="Lib\Result.cs" />
+    <Compile Include="Lib\TargetExtensions.cs" />
+    <Compile Include="Lib\Target.cs" />
+    <Compile Include="Lib\TargetNames.cs" />
+    <Compile Include="Lib\Window.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
-    <EmbeddedResource Include="Base\Forms\NavigatorForm.resx">
+    <EmbeddedResource Include="Gui\NavigatorForm.resx">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Base\Forms\SettingsDialog.resx">
+    <EmbeddedResource Include="Gui\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Base\Forms\WindowForm.resx">
+    <EmbeddedResource Include="Gui\WindowForm.resx">
       <DependentUpon>WindowForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Base\Pages\ErrorPage.resx">
-      <DependentUpon>ErrorPage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Base\Pages\RowsPage.resx">
-      <DependentUpon>RowsPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -141,8 +120,6 @@
       <Name>Toolset</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

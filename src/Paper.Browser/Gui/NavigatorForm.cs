@@ -7,20 +7,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Paper.Browser.Commons;
+using Paper.Browser.Lib;
 using Toolset;
 
-namespace Paper.Browser.Base.Forms
+namespace Paper.Browser.Gui
 {
   public partial class NavigatorForm : Form
   {
-    public NavigatorForm()
+    public NavigatorForm(Navigator navigator)
     {
+      Navigator = navigator;
       InitializeComponent();
-
+      InitializeEvents();
       SetBounds();
       this.WindowState = FormWindowState.Maximized;
     }
+
+    private void InitializeEvents()
+    {
+      txLocation.KeyUp += async (o, e) => await Navigator.NavigateAsync(txLocation.Text, TargetNames.Blank);
+    }
+
+    public Navigator Navigator { get; }
 
     private void SetBounds()
     {
@@ -46,11 +54,6 @@ namespace Paper.Browser.Base.Forms
       new SettingsDialog().ShowDialog(this);
     }
 
-    private void Navigate(string text)
-    {
-      Navigator.NewWindow().OpenAsync("~/Index");
-    }
-
     private void mnClose_Click(object sender, EventArgs e)
     {
       Close();
@@ -59,11 +62,6 @@ namespace Paper.Browser.Base.Forms
     private void mnSettings_Click(object sender, EventArgs e)
     {
       OpenSettings();
-    }
-
-    private void txLocation_KeyUp(object sender, KeyEventArgs e)
-    {
-      Navigate(txLocation.Text);
     }
   }
 }

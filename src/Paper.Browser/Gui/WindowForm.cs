@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Paper.Browser.Commons;
+using Paper.Browser.Lib;
 
-namespace Paper.Browser.Base.Forms
+namespace Paper.Browser.Gui
 {
   public partial class WindowForm : Form
   {

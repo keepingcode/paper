@@ -43,7 +43,7 @@ namespace Paper.Api.Extensions.Papers
       if (noResult)
       {
         ret = Ret.Create(HttpStatusCode.Found);
-        ret.Status.Data[HeaderNames.Location] = req.RequestUri;
+        ret.Status.Headers[HeaderNames.Location] = req.RequestUri;
         return await Task.FromResult(ret);
       }
 
@@ -55,7 +55,7 @@ namespace Paper.Api.Extensions.Papers
       {
         var href = (result.Value as Href)?.ToString() ?? result.Value?.ToString();
         ret = Ret.Create(HttpStatusCode.Found);
-        ret.Status.Data[HeaderNames.Location] = href;
+        ret.Status.Headers[HeaderNames.Location] = href;
         return await Task.FromResult(ret);
       }
 

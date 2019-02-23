@@ -77,7 +77,7 @@ namespace Paper.Api.Extensions.Papers
     private async Task SendAsync(Response res, Ret ret, Entity entity)
     {
       res.Status = ret.Status.Code;
-      foreach (var entry in ret.Status.Data)
+      foreach (var entry in ret.Status.Headers)
       {
         res.Headers[entry.Key] = entry.Value;
       }

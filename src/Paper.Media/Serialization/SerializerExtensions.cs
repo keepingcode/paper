@@ -41,6 +41,18 @@ namespace Paper.Media.Serialization
     /// </summary>
     /// <param name="serializer">Serializador de documento.</param>
     /// <param name="entity">Entidade a ser serializada.</param>
+    /// <param name="output">Stream de saída.</param>
+    /// <param name="encoding">Codificação de dados.</param>
+    public static void Serialize(this ISerializer serializer, Entity entity, Stream output, string encoding)
+    {
+      serializer.Serialize(entity, output, Encoding.GetEncoding(encoding));
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="serializer">Serializador de documento.</param>
+    /// <param name="entity">Entidade a ser serializada.</param>
     /// <param name="writer">Stream de saída.</param>
     public static void Serialize(this ISerializer serializer, Entity entity, TextWriter writer)
     {
@@ -78,6 +90,17 @@ namespace Paper.Media.Serialization
         var entity = serializer.Deserialize(memory, Encoding.UTF8);
         return entity;
       }
+    }
+
+    /// <summary>
+    /// Serializa a entidade para a saída indicada.
+    /// </summary>
+    /// <param name="serializer">Serializador de documento.</param>
+    /// <param name="input">Stream de entrada.</param>
+    /// <param name="encoding">Codificação de dados.</param>
+    public static Entity Deserialize(this ISerializer serializer, Stream input, string encoding)
+    {
+      return serializer.Deserialize(input, Encoding.GetEncoding(encoding));
     }
 
     /// <summary>

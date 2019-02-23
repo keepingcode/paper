@@ -33,6 +33,7 @@
     <Compile Remove="IRet.cs" />
     <Compile Remove="RetFault.cs" />
     <Compile Remove="RetStatus.cs" />
+    <Compile Remove="Route.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,6 +14,6 @@ namespace Paper.Browser
 
     public static int Port = 8080;
 
-    public static string Endpoint => $"http://{Host}:{Port}/";
+    public static string Endpoint => $"http://{Host}:{Port}";
   }
 }

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Paper.Media
+namespace Toolset.Net
 {
   public enum Method
   {
+    Head,
     Get,
     Post,
     Put,

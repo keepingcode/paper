@@ -1,4 +1,4 @@
-﻿namespace Paper.Browser.Base.Forms
+﻿namespace Paper.Browser.Gui
 {
   partial class NavigatorForm
   {
@@ -39,8 +39,8 @@
       this.ferramentasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.mnSettings = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-      this.txLocation = new System.Windows.Forms.ToolStripTextBox();
       this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+      this.txLocation = new System.Windows.Forms.ToolStripTextBox();
       this.mnMenu.SuspendLayout();
       this.toolStrip1.SuspendLayout();
       this.SuspendLayout();
@@ -134,21 +134,21 @@
       this.toolStrip1.TabIndex = 2;
       this.toolStrip1.Text = "toolStrip1";
       // 
+      // toolStripLabel1
+      // 
+      this.toolStripLabel1.Name = "toolStripLabel1";
+      this.toolStripLabel1.Size = new System.Drawing.Size(46, 22);
+      this.toolStripLabel1.Text = "Página:";
+      // 
       // txLocation
       // 
       this.txLocation.AutoCompleteCustomSource.AddRange(new string[] {
             "/Index"});
       this.txLocation.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
       this.txLocation.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+      this.txLocation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.txLocation.Name = "txLocation";
       this.txLocation.Size = new System.Drawing.Size(200, 25);
-      this.txLocation.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txLocation_KeyUp);
-      // 
-      // toolStripLabel1
-      // 
-      this.toolStripLabel1.Name = "toolStripLabel1";
-      this.toolStripLabel1.Size = new System.Drawing.Size(46, 22);
-      this.toolStripLabel1.Text = "Página:";
       // 
       // NavigatorForm
       // 

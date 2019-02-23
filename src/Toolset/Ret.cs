@@ -53,7 +53,7 @@ namespace Toolset
 
     public struct RetStatus
     {
-      private HashMap<string> _data;
+      private HashMap<string> _headers;
 
       public HttpStatusCode Code { get; set; }
 
@@ -68,10 +68,10 @@ namespace Toolset
         get => (HttpStatusClass)(CodeValue / 100);
       }
 
-      public HashMap<string> Data
+      public HashMap<string> Headers
       {
-        get => _data ?? (_data = new HashMap<string>());
-        set => _data = value;
+        get => _headers ?? (_headers = new HashMap<string>());
+        set => _headers = value;
       }
     }
 

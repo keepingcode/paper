@@ -483,12 +483,6 @@ namespace Toolset
       return terms.FirstOrDefault(x => !string.IsNullOrEmpty(x));
     }
 
-    [Obsolete("No futuro UriString irá substituir Toolset.Route.")]
-    public Toolset.Route ToRoute()
-    {
-      return new Toolset.Route(ToString());
-    }
-
     public Uri ToUri()
     {
       return new Uri(ToString(), UriKind.RelativeOrAbsolute);
@@ -511,12 +505,6 @@ namespace Toolset
       return new UriString(uri);
     }
 
-    [Obsolete("No futuro UriString irá substituir Toolset.Route.")]
-    public static implicit operator UriString(Toolset.Route uri)
-    {
-      return new UriString(uri.ToString());
-    }
-
     public static implicit operator string(UriString uri)
     {
       return uri.ToString();
@@ -525,12 +513,6 @@ namespace Toolset
     public static implicit operator Uri(UriString uri)
     {
       return new Uri(uri.ToString(), UriKind.RelativeOrAbsolute);
-    }
-
-    [Obsolete("No futuro UriString irá substituir Toolset.Route.")]
-    public static implicit operator Toolset.Route(UriString uri)
-    {
-      return new Toolset.Route(uri.ToString());
     }
   }
 }

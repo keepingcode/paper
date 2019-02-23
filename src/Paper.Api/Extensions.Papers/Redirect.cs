@@ -18,7 +18,7 @@ namespace Paper.Api.Extensions.Papers
         Status = new Ret.RetStatus
         {
           Code = HttpStatusCode.RedirectKeepVerb,
-          Data = new HashMap<string> { { HeaderNames.Location, location } }
+          Headers = new HashMap<string> { { HeaderNames.Location, location } }
         }
       };
     }
