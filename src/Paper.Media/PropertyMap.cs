@@ -20,7 +20,7 @@ namespace Paper.Media
     , ValueName = "Value"
   )]
   [KnownType(typeof(PropertyMap))]
-  [KnownType(typeof(NameCollection))]
+  //[KnownType(typeof(NameCollection))]
   [KnownType(typeof(DictionaryEntry))]
   [KnownType(typeof(PropertyValueCollection))]
   public class PropertyMap : HashMap<object>, IPropertyMap
@@ -45,7 +45,7 @@ namespace Paper.Media
 
     private static object UnwrapTerm(object value, IEnumerable<IEnumerable<string>> select, IEnumerable<IEnumerable<string>> except)
     {
-      if (!SerializationUtilities.IsSerializable(value) || value is PropertyMap)
+      if (!SerializationUtilities.IsSerializable(value) && !(value is PropertyMap))
       {
         if (value is IDictionary dictionary)
         {

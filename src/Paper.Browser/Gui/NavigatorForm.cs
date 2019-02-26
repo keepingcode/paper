@@ -25,10 +25,25 @@ namespace Paper.Browser.Gui
 
     private void InitializeEvents()
     {
-      txLocation.KeyUp += async (o, e) => await Navigator.NavigateAsync(txLocation.Text, TargetNames.Blank);
     }
 
     public Navigator Navigator { get; }
+
+    private async Task NavigateAsync(string location = null)
+    {
+      if (location == null)
+      {
+        location = txLocation.Text.Trim();
+        txLocation.Text = null;
+      }
+
+      if (string.IsNullOrWhiteSpace(location))
+      {
+        return;
+      }
+
+      await Navigator.NavigateAsync(location, TargetNames.Blank);
+    }
 
     private void SetBounds()
     {
@@ -62,6 +77,14 @@ namespace Paper.Browser.Gui
     private void mnSettings_Click(object sender, EventArgs e)
     {
       OpenSettings();
+    }
+
+    private void txLocation_KeyUp(object sender, KeyEventArgs e)
+    {
+      if (e.Modifiers == Keys.None && e.KeyCode == Keys.Enter)
+      {
+        NavigateAsync().NoAwait();
+      }
     }
   }
 }

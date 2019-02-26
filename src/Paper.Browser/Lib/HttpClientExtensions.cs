@@ -13,15 +13,15 @@ using Toolset.Net;
 
 namespace Paper.Browser.Lib
 {
-  public static class HttpExtensions
+  public static class HttpClientExtensions
   {
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData: (byte[])null
@@ -32,15 +32,15 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , string downType
       , string downCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData: (byte[])null
@@ -51,15 +51,15 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , string downType
       , Encoding downCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData: (byte[])null
@@ -70,14 +70,14 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , Entity upData
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData
@@ -88,8 +88,8 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , Entity upData
@@ -97,7 +97,7 @@ namespace Paper.Browser.Lib
       , string downCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData
@@ -108,8 +108,8 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , Entity upData
@@ -117,7 +117,7 @@ namespace Paper.Browser.Lib
       , Encoding downCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData
@@ -128,8 +128,8 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , byte[] upData
@@ -137,7 +137,7 @@ namespace Paper.Browser.Lib
       , string upCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData
@@ -148,8 +148,8 @@ namespace Paper.Browser.Lib
       );
     }
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , byte[] upData
@@ -157,7 +157,7 @@ namespace Paper.Browser.Lib
       , Encoding upCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData
@@ -169,8 +169,8 @@ namespace Paper.Browser.Lib
     }
 
 
-    public static async Task<Ret<Result>> RequestAsync(
-        this Http http
+    public static async Task<Ret<Content>> RequestAsync(
+        this HttpClient httpClient
       , string uri
       , string method
       , byte[] upData
@@ -180,7 +180,7 @@ namespace Paper.Browser.Lib
       , Encoding downCharset
       )
     {
-      return await http.RequestAsync(
+      return await httpClient.RequestAsync(
           uri
         , method
         , upData

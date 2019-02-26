@@ -24,33 +24,7 @@ namespace Paper.Browser.Lib
     public string Prefix { get; }
     public string Endpoint { get; }
 
-    public async Task<Ret<Result>> RequestAsync(
-        string uri
-      , string method
-      , Entity upData
-      , string upType
-      , string upCharset
-      , string downType
-      , string downCharset
-      )
-    {
-      return await SendAsync(uri, method, upData, upType, upCharset, downType, downCharset);
-    }
-
-    public async Task<Ret<Result>> RequestAsync(
-        string uri
-      , string method
-      , byte[] upData
-      , string upType
-      , string upCharset
-      , string downType
-      , string downCharset
-      )
-    {
-      return await SendAsync(uri, method, upData, upType, upCharset, downType, downCharset);
-    }
-
-    private async Task<Ret<Result>> SendAsync(
+    public async Task<Ret<Content>> RequestAsync(
         string uri
       , string method
       , object upData
@@ -68,27 +42,17 @@ namespace Paper.Browser.Lib
         }
 
         var request = HttpWebRequest.CreateHttp(uri);
-
-        if (upData is Entity entity)
-        {
-          request.Headers[HeaderNames.ContentType] = $"{upType}; charset={upCharset}";
-          using (var stream = await request.GetRequestStreamAsync())
-          {
-            var serializer = new MediaSerializer(upType);
-            serializer.Serialize(entity, stream, upCharset);
-          }
-        }
-        else if (upData is byte[] bytes)
-        {
-          request.Headers[HeaderNames.ContentType] = $"{upType}; charset={upCharset}";
-          using (var stream = await request.GetRequestStreamAsync())
-          {
-            await stream.WriteAsync(bytes, 0, bytes.Length);
-          }
-        }
-
-        request.Headers[HeaderNames.Accept] = downType;
+        request.Accept = downType;
         request.Headers[HeaderNames.AcceptCharset] = downCharset;
+
+        if (upData != null)
+        {
+          request.Headers[HeaderNames.ContentType] = $"{upType}; charset={upCharset}";
+          using (var stream = await request.GetRequestStreamAsync())
+          {
+            await SerializeAsync(upData, upType, upCharset, stream);
+          }
+        }
 
         HttpWebResponse response;
 
@@ -107,32 +71,11 @@ namespace Paper.Browser.Lib
 
         using (response)
         {
-          byte[] bytes;
+          var downData = new Content { Href = uri };
 
           using (var stream = response.GetResponseStream())
-          using (var memory = new MemoryStream())
           {
-            await stream.CopyToAsync(memory);
-            bytes = memory.Length > 0 ? memory.ToArray() : null;
-          }
-
-          Result downData = null;
-          if (bytes.Length > 0)
-          {
-            if (downType.Contains("siren"))
-            {
-              using (var memory = new MemoryStream())
-              {
-                await memory.WriteAsync(bytes, 0, bytes.Length);
-                memory.Position = 0;
-                var serializer = new MediaSerializer(downType);
-                downData = serializer.Deserialize(memory, downCharset);
-              }
-            }
-            else
-            {
-              downData = bytes;
-            }
+            downData.Data = await DeserializeAsync(stream, downType, downCharset);
           }
 
           var headers = new HashMap<string>(response.Headers.Count);
@@ -141,7 +84,7 @@ namespace Paper.Browser.Lib
             headers[key] = response.Headers[key];
           }
 
-          return new Ret<Result>
+          return new Ret<Content>
           {
             Status = new Ret.RetStatus
             {
@@ -154,7 +97,57 @@ namespace Paper.Browser.Lib
       }
       catch (Exception ex)
       {
+        ex.Trace();
         return ex;
+      }
+    }
+
+    private async Task SerializeAsync(object source, string type, string charset, Stream target)
+    {
+      if (source is Entity entity)
+      {
+        var serializer = new MediaSerializer(type);
+        serializer.Serialize(entity, target, charset);
+        return;
+      }
+
+      if (source is byte[] bytes)
+      {
+        await target.WriteAsync(bytes, 0, bytes.Length);
+        return;
+      }
+
+      if (source is string body)
+      {
+        using (var writer = new StreamWriter(target))
+        {
+          await writer.WriteAsync(body);
+          await writer.FlushAsync();
+        }
+        return;
+      }
+
+      throw new MediaException("Formato de dados não suportado: " + source.GetType().FullName);
+    }
+
+    private async Task<object> DeserializeAsync(Stream source, string type, string charset)
+    {
+      using (var memory = new MemoryStream())
+      {
+        await source.CopyToAsync(memory);
+        memory.Position = 0;
+
+        if (memory.Length == 0)
+          return null;
+
+        if (type.Contains("siren"))
+        {
+          var serializer = new MediaSerializer(type);
+          var entity = serializer.Deserialize(memory, charset);
+          return entity;
+        }
+
+        return memory.ToArray();
       }
     }
   }

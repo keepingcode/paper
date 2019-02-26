@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -27,23 +28,18 @@ namespace Paper.Browser.Lib
     public async Task<Window> NavigateAsync(string uri, string target, Window reference = null)
     {
       var window = CreateWindow(target, reference);
+      window.Invalidate();
 
-      var http = new Http();
+      var http = new HttpClient();
       var ret = await http.RequestAsync(uri, MethodNames.Get);
 
-      if (ret.Ok)
-      {
-        // TODO: continuna
-      }
-      else
-      {
-        // TODO: continuna
-      }
+      window.SetContent(ret);
+      window.Validate();
 
       return window;
     }
 
-    private Window CreateWindow(string target, Window reference = null)
+    public Window CreateWindow(string target, Window reference = null)
     {
       string frameName;
       switch (target)
@@ -76,6 +72,8 @@ namespace Paper.Browser.Lib
         window = new Window(frameName);
         window.Form.Show(Form);
       }
+
+      window.Form.Select();
 
       return window;
     }

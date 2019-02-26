@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
+using Toolset.Collections;
 using Toolset.Reflection;
 
 namespace Toolset.Serialization.Graph
@@ -186,6 +188,25 @@ namespace Toolset.Serialization.Graph
           return;
         }
 
+        if ((value is Bag bag) && (Host is IDictionary map))
+        {
+          var type = TypeOf.DictionaryValue(map);
+          if (type == typeof(object))
+          {
+            var attrs = Host._GetAttributes<KnownTypeAttribute>();
+            type = (
+              from attr in attrs
+              where typeof(ICollection).IsAssignableFrom(attr.Type)
+                 && !typeof(IDictionary).IsAssignableFrom(attr.Type)
+              select attr.Type
+            ).FirstOrDefault();
+
+            if (type == null)
+              throw new NotSupportedException("Tipo de mapeamento não suportado: " + Host.GetType().FullName);
+          }
+          value = Change.To(value, type);
+        }
+
         var realName = properties.Last();
 
         if (adders != null)
@@ -203,7 +224,14 @@ namespace Toolset.Serialization.Graph
           }
         }
 
-        var propName = realName.Replace("@", "");
+        var alias = realName.Replace("@", "");
+        var propName = (
+          from property in Host.GetType().GetProperties()
+          from attribute in property.GetCustomAttributes<DataMemberAttribute>()
+          where attribute.Name.EqualsIgnoreCase(alias)
+          select property.Name
+        ).FirstOrDefault() ?? alias;
+
         Host._Set(propName, value);
       }
 
@@ -214,6 +242,26 @@ namespace Toolset.Serialization.Graph
           var value = Activator.CreateInstance(Bag.ElementType);
           Bag.Add(value);
           return value;
+        }
+        else if (Host is IDictionary map)
+        {
+          var type = TypeOf.DictionaryValue(map);
+          if (type == typeof(object))
+          {
+            var attrs = Host._GetAttributes<KnownTypeAttribute>();
+            type = (
+              from attr in attrs
+              where typeof(IDictionary).IsAssignableFrom(attr.Type)
+              select attr.Type
+            ).FirstOrDefault();
+
+            if (type == null)
+              throw new NotSupportedException("Tipo de mapeamento não suportado: " + Host.GetType().FullName);
+          }
+          var instance = Activator.CreateInstance(type);
+          var property = properties.LastOrDefault();
+          map[property] = instance;
+          return instance;
         }
         else
         {
@@ -234,6 +282,10 @@ namespace Toolset.Serialization.Graph
     private class Bag : ArrayList
     {
       public Type ElementType { get; set; }
+    }
+
+    private class Map : HashMap
+    {
     }
   }
 }

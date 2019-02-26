@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Browser.Lib;
+using Toolset;
 
 namespace Paper.Browser.Gui
 {
@@ -17,8 +18,9 @@ namespace Paper.Browser.Gui
     {
       this.Window = window;
       InitializeComponent();
-      Overlay = true;
       StatusLabel.TextChanged += (o, e) => lbStatus.Text = StatusLabel.Text;
+
+      Overlay = true;
     }
 
     public Window Window { get; }
@@ -45,6 +47,43 @@ namespace Paper.Browser.Gui
       }
     }
 
+    public void Pack()
+    {
+      var control = PageContainer.Controls.Cast<Control>().FirstOrDefault();
+      if (control == null)
+        return;
+      
+      if (control.AutoSize)
+      {
+        control.Dock = DockStyle.Fill;
+        this.AutoSize = false;
+        this.PageContainer.Controls.Add(control);
+        this.Expand();
+      }
+      else
+      {
+        this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        this.AutoSize = true;
+        this.PageContainer.Controls.Add(control);
+
+        var size = this.Size;
+
+        this.SuspendLayout();
+        control.Dock = DockStyle.Fill;
+        this.AutoSizeMode = AutoSizeMode.GrowOnly;
+        this.AutoSize = false;
+        this.MinimumSize = size;
+        this.Size = size;
+        this.FormBorderStyle = FormBorderStyle.Sizable;
+        this.ResumeLayout();
+      }
+    }
+
+    public void Reload()
+    {
+      Window.NavigateAsync(Window.Content.Href).NoAwait();
+    }
+
     private void FeedbackMinimumSize()
     {
       btReduce.Enabled = (this.MinimumSize != Size.Empty);
@@ -63,6 +102,16 @@ namespace Paper.Browser.Gui
     private void WindowForm_MinimumSizeChanged(object sender, EventArgs e)
     {
       FeedbackMinimumSize();
+    }
+
+    private void btViewSource_Click(object sender, EventArgs e)
+    {
+      Window.ViewSource();
+    }
+
+    private void mnRefresh_Click(object sender, EventArgs e)
+    {
+      Reload();
     }
   }
 }

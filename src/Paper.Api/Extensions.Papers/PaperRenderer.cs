@@ -12,6 +12,7 @@ using Paper.Media.Design;
 using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Net;
 using Toolset.Reflection;
 
 namespace Paper.Api.Extensions.Papers

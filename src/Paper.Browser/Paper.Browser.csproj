@@ -53,6 +53,32 @@
     <Compile Include="Gui\NavigatorForm.Designer.cs">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Papers\PaperFactory.cs" />
+    <Compile Include="Gui\Papers\RecordPaper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Papers\RecordPaper.Designer.cs">
+      <DependentUpon>RecordPaper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Papers\StatusPaper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Papers\StatusPaper.Designer.cs">
+      <DependentUpon>StatusPaper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Papers\IPaper.cs" />
+    <Compile Include="Gui\Papers\TablePaper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Papers\TablePaper.Designer.cs">
+      <DependentUpon>TablePaper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Papers\TextPlainPaper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Papers\TextPlainPaper.Designer.cs">
+      <DependentUpon>TextPlainPaper.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\SettingsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,20 +92,33 @@
       <DependentUpon>WindowForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\FormsExtensions.cs" />
-    <Compile Include="Lib\HttpExtensions.cs" />
+    <Compile Include="Lib\HttpClientExtensions.cs" />
     <Compile Include="Lib\Http.cs" />
     <Compile Include="Lib\Navigator.cs" />
     <Compile Include="Lib\NavigatorExtensions.cs" />
-    <Compile Include="Lib\Result.cs" />
+    <Compile Include="Lib\Content.cs" />
     <Compile Include="Lib\TargetExtensions.cs" />
     <Compile Include="Lib\Target.cs" />
     <Compile Include="Lib\TargetNames.cs" />
+    <Compile Include="Lib\HttpClient.cs" />
     <Compile Include="Lib\Window.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <EmbeddedResource Include="Gui\NavigatorForm.resx">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Papers\RecordPaper.resx">
+      <DependentUpon>RecordPaper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Papers\StatusPaper.resx">
+      <DependentUpon>StatusPaper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Papers\TablePaper.resx">
+      <DependentUpon>TablePaper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Papers\TextPlainPaper.resx">
+      <DependentUpon>TextPlainPaper.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>

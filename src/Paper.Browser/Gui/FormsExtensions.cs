@@ -45,7 +45,8 @@ namespace Paper.Browser.Gui
           var area = screen.WorkingArea;
 
           var bounds = new Rectangle(area.Location, area.Size);
-          bounds.Inflate(-50, -50);
+          bounds.Inflate(-10, -10 - 40);
+          bounds.Offset(0, 40);
 
           form.Bounds = bounds;
           form.WindowState = FormWindowState.Normal;

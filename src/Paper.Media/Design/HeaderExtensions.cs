@@ -28,7 +28,7 @@ namespace Paper.Media.Design
       }
 
       var headerEntity = (
-        from e in entity.WithEntities()
+        from e in entity?.Entities ?? Enumerable.Empty<Entity>()
         where e.Rel.Has(@class)
         where name.EqualsIgnoreCase((e.Properties?["Name"] as CaseVariantString)?.Value)
         select e

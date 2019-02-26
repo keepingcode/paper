@@ -86,17 +86,19 @@ namespace Paper.Media.Design
       foreach (var token in keyPath)
       {
         var current = map[token];
+        if (current == null)
+        {
+          current = map[token] = new PropertyMap();
+        }
+
         if (current is PropertyMap currentMap)
         {
           map = currentMap;
-          continue;
         }
-        if (current == null)
+        else
         {
-          map = (PropertyMap)(map[token] = new PropertyMap());
-          continue;
+          throw new MediaException("A propriedade não é um mapa: " + token);
         }
-        throw new MediaException("A propriedade não é um mapa: " + token);
       }
       return map;
     }

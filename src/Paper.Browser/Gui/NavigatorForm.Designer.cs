@@ -149,6 +149,8 @@
       this.txLocation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.txLocation.Name = "txLocation";
       this.txLocation.Size = new System.Drawing.Size(200, 25);
+      this.txLocation.Text = "Paper/Api/Extensions/Papers/SamplePaper/TasksPaper";
+      this.txLocation.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txLocation_KeyUp);
       // 
       // NavigatorForm
       // 

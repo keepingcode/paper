@@ -46,17 +46,14 @@ namespace Sandbox
     {
       try
       {
-        var text = "My.FirstAttempt.Of.Doing_it";
+        var entity = new Entity();
+        entity.AddHeader("id", Class.Record);
+        entity.AddHeader("name", Class.Record);
+        entity.AddHeader("date", Class.Record);
 
-        Debug.WriteLine(text.ChangeCase(TextCase.ProperCase));
-        Debug.WriteLine(text.ChangeCase(TextCase.PascalCase));
-        Debug.WriteLine(text.ChangeCase(TextCase.CamelCase));
-
-        Debug.WriteLine("- - -");
-        Debug.WriteLine(text.ChangeCase(TextCase.PreserveSpecialCharacters | TextCase.ProperCase));
-        Debug.WriteLine(text.ChangeCase(TextCase.PreserveSpecialCharacters | TextCase.Underscore));
-        Debug.WriteLine(text.ChangeCase(TextCase.PreserveSpecialCharacters | TextCase.CamelCase));
-
+        var json = entity.ToJson();
+        var result = new MediaSerializer(MimeType.Siren).Deserialize(json);
+        Debug.WriteLine(result.ToJson());
       }
       catch (Exception ex)
       {

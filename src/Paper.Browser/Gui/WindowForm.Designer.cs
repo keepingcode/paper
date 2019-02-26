@@ -38,9 +38,12 @@
       this.ToolBar = new System.Windows.Forms.ToolStrip();
       this.btExpand = new System.Windows.Forms.ToolStripButton();
       this.btReduce = new System.Windows.Forms.ToolStripButton();
+      this.btViewSource = new System.Windows.Forms.ToolStripButton();
       this.pnOverlay = new System.Windows.Forms.Panel();
       this.pgProgress = new System.Windows.Forms.ProgressBar();
       this.lbStatus = new System.Windows.Forms.Label();
+      this.mnRefresh = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.StatusBar.SuspendLayout();
       this.ToolBar.SuspendLayout();
       this.pnOverlay.SuspendLayout();
@@ -84,7 +87,10 @@
       this.ToolBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
       this.ToolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btExpand,
-            this.btReduce});
+            this.btReduce,
+            this.btViewSource,
+            this.toolStripSeparator1,
+            this.mnRefresh});
       this.ToolBar.Location = new System.Drawing.Point(0, 0);
       this.ToolBar.Name = "ToolBar";
       this.ToolBar.Size = new System.Drawing.Size(322, 25);
@@ -114,6 +120,18 @@
       this.btReduce.Text = "Reduzir";
       this.btReduce.Click += new System.EventHandler(this.btReduce_Click);
       // 
+      // btViewSource
+      // 
+      this.btViewSource.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.btViewSource.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.btViewSource.Image = ((System.Drawing.Image)(resources.GetObject("btViewSource.Image")));
+      this.btViewSource.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.btViewSource.Name = "btViewSource";
+      this.btViewSource.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+      this.btViewSource.Size = new System.Drawing.Size(127, 19);
+      this.btViewSource.Text = "Exibir Fonte da Página";
+      this.btViewSource.Click += new System.EventHandler(this.btViewSource_Click);
+      // 
       // pnOverlay
       // 
       this.pnOverlay.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -121,16 +139,16 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pnOverlay.Controls.Add(this.pgProgress);
       this.pnOverlay.Controls.Add(this.lbStatus);
-      this.pnOverlay.Location = new System.Drawing.Point(12, 12);
+      this.pnOverlay.Location = new System.Drawing.Point(12, 31);
       this.pnOverlay.Name = "pnOverlay";
-      this.pnOverlay.Size = new System.Drawing.Size(298, 81);
+      this.pnOverlay.Size = new System.Drawing.Size(298, 59);
       this.pnOverlay.TabIndex = 3;
       this.pnOverlay.Visible = false;
       // 
       // pgProgress
       // 
       this.pgProgress.Anchor = System.Windows.Forms.AnchorStyles.Top;
-      this.pgProgress.Location = new System.Drawing.Point(0, 51);
+      this.pgProgress.Location = new System.Drawing.Point(0, 32);
       this.pgProgress.Name = "pgProgress";
       this.pgProgress.Size = new System.Drawing.Size(298, 10);
       this.pgProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
@@ -139,11 +157,28 @@
       // lbStatus
       // 
       this.lbStatus.Anchor = System.Windows.Forms.AnchorStyles.Top;
-      this.lbStatus.Location = new System.Drawing.Point(-3, 35);
+      this.lbStatus.Location = new System.Drawing.Point(-3, 16);
       this.lbStatus.Name = "lbStatus";
       this.lbStatus.Size = new System.Drawing.Size(301, 13);
       this.lbStatus.TabIndex = 1;
       this.lbStatus.Text = ". . .";
+      // 
+      // mnRefresh
+      // 
+      this.mnRefresh.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.mnRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.mnRefresh.Image = ((System.Drawing.Image)(resources.GetObject("mnRefresh.Image")));
+      this.mnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.mnRefresh.Name = "mnRefresh";
+      this.mnRefresh.Size = new System.Drawing.Size(57, 22);
+      this.mnRefresh.Text = "&Atualizar";
+      this.mnRefresh.Click += new System.EventHandler(this.mnRefresh_Click);
+      // 
+      // toolStripSeparator1
+      // 
+      this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+      this.toolStripSeparator1.Name = "toolStripSeparator1";
+      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
       // 
       // WindowForm
       // 
@@ -181,5 +216,8 @@
     private System.Windows.Forms.Panel pnOverlay;
     private System.Windows.Forms.ProgressBar pgProgress;
     private System.Windows.Forms.Label lbStatus;
+    private System.Windows.Forms.ToolStripButton btViewSource;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+    private System.Windows.Forms.ToolStripButton mnRefresh;
   }
 }
