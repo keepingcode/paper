@@ -8,6 +8,7 @@ using Paper.Browser.Gui;
 using Paper.Browser.Gui.Papers;
 using Paper.Media;
 using Toolset;
+using Toolset.Collections;
 using static Toolset.Ret;
 
 namespace Paper.Browser.Lib
@@ -17,6 +18,7 @@ namespace Paper.Browser.Lib
     private readonly object synclock = new object();
 
     private Ret<Content> contentRet;
+    private IPaper paper;
 
     public Window(string name)
     {
@@ -32,25 +34,75 @@ namespace Paper.Browser.Lib
 
     public void SetContent(Ret<Content> contentRet, Func<Window, Content, IPaper> paperFactory = null)
     {
-      this.contentRet = contentRet;
-
-      var entity = contentRet.Value?.Data as Entity;
-      if (entity != null)
+      if (this.paper != null)
       {
-        this.Form.Text = entity.Title;
+        DisconnectEvents(paper);
       }
 
-      IPaper paper;
+      this.contentRet = contentRet;
+      Form.Call(() =>
+      {
+        this.paper = CreatePaper(contentRet.Value, paperFactory);
+        CreateActions(this.paper, contentRet.Value);
+      });
 
+      if (this.paper != null)
+      {
+        ConnectEvents(paper);
+      }
+    }
+
+    private void ConnectEvents(IPaper paper)
+    {
+      if (paper is ISelectable selelectable)
+      {
+        selelectable.SelectionChanged += Paper_SelectionChanged;
+      }
+    }
+
+    private void DisconnectEvents(IPaper paper)
+    {
+      if (paper is ISelectable selelectable)
+      {
+        selelectable.SelectionChanged -= Paper_SelectionChanged;
+      }
+    }
+
+    private void Paper_SelectionChanged(object sender, EventArgs e)
+    {
+      Form.Call(() =>
+      {
+        var selectable = (ISelectable)paper;
+        var count = selectable.GetSelection().Count();
+
+        Form.SelectionLabel.Text =
+          (count == 0) ? "" : (count == 1) ? "1 selecionado" : $"{count} selecionados";
+
+        var actionButtons =
+          from item in Form.ToolBar.Items.Cast<ToolStripItem>()
+          where item.Alignment == ToolStripItemAlignment.Left
+          select item;
+
+        actionButtons.ForEach(x => x.Visible = count > 0);
+      });
+    }
+
+    private IPaper CreatePaper(Content content, Func<Window, Content, IPaper> paperFactory = null)
+    {
+      IPaper paper;
       try
       {
-        var content = contentRet.Value;
+        var entity = content.Data as Entity;
+        if (entity != null)
+        {
+          this.Form.Text = entity.Title;
+        }
         paper = paperFactory?.Invoke(this, content) ?? PaperFactory.CreatePaper(this, content);
       }
       catch (Exception ex)
       {
         var href = contentRet.Value?.Href;
-        var content = new Content
+        content = new Content
         {
           Href = href,
           Data = HttpEntity.Create(href, ex).Value
@@ -58,11 +110,53 @@ namespace Paper.Browser.Lib
         paper = new StatusPaper(this, content);
       }
 
-      Form.Call(() =>
+      Form.PageContainer.Controls.Clear();
+      Form.PageContainer.Controls.Add(paper.Control);
+
+      return paper;
+    }
+
+    private void CreateActions(IPaper paper, Content content)
+    {
+      var entity = content.Data as Entity;
+      if (entity == null)
+        return;
+
+      var actions = entity.Actions;
+      if (actions == null)
+        return;
+
+      var selectionBound = false;
+
+      foreach (var action in actions)
       {
-        Form.PageContainer.Controls.Clear();
-        Form.PageContainer.Controls.Add(paper.Control);
-      });
+        var fields = action.Fields ?? Enumerable.Empty<Field>();
+
+        var selectionField = fields.FirstOrDefault(x => x.Provider?.Rel.Has(RelNames.Self) == true);
+        var bindToSelection = (selectionField != null);
+
+        var button = new ToolStripButton();
+        button.Tag = action;
+        button.Text = action.Title;
+        button.Click += (o, e) => { MessageBox.Show(action.Href); };
+
+        if (bindToSelection)
+        {
+          selectionBound = true;
+          button.Visible = false;
+          Form.ToolBar.Items.Add(button);
+        }
+        else
+        {
+          button.Padding = new Padding(10, button.Padding.Top, 10, button.Padding.Bottom);
+          Form.ActionBar.Items.Add(button);
+        }
+      }
+
+      if (paper is ISelectable selectable)
+      {
+        selectable.SelectionEnabled = selectionBound;
+      }
     }
 
     public void Invalidate()

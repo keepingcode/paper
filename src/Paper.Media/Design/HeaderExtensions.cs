@@ -9,6 +9,38 @@ namespace Paper.Media.Design
 {
   public static class HeaderExtensions
   {
+    #region Headers
+
+    public static IEnumerable<IHeaderInfo> Headers(this Entity entity, Class @class)
+    {
+      return Headers(entity, @class.GetName());
+    }
+
+    public static IEnumerable<IHeaderInfo> Headers(this Entity entity, string @class)
+    {
+      var bag = entity?.Properties?[HeaderDesign.BagName] as PropertyMap;
+      var headerNames = bag?[@class] as PropertyValueCollection;
+      if (headerNames == null)
+        yield break;
+
+      foreach (string headerName in headerNames)
+      {
+        var header = (
+          from child in entity.Children()
+          where child.Class.Has(ClassNames.Header)
+             && child.Rel.Has(@class)
+             && headerName.EqualsIgnoreCase(child.Properties?["name"]?.ToString())
+          select child
+        ).FirstOrDefault();
+
+        yield return (header != null)
+          ? (IHeaderInfo)new HeaderDesign(header)
+          : (IHeaderInfo)new HeaderInfo(headerName);
+      }
+    }
+
+    #endregion
+
     #region Header
 
     public static Entity AddHeader(this Entity entity, string name, Class @class, Action<HeaderDesign> options = null)

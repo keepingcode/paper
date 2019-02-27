@@ -241,5 +241,30 @@ namespace Paper.Media.Design
       field.Provider.Keys = new NameCollection(keys);
       return field;
     }
+
+    /// <summary>
+    /// Víncula um provedor de dados para o campo.
+    /// </summary>
+    /// <param name="field">O campo a ser modificado.</param>
+    /// <param name="provider">Provedor de dados do campo.</param>
+    /// <returns>A própria instância do campo modificado.</returns>
+    public static Field SetProvider(this Field field, FieldProvider provider)
+    {
+      field.Provider = provider;
+      return field;
+    }
+
+    /// <summary>
+    /// Víncula um provedor de dados para o campo.
+    /// </summary>
+    /// <param name="field">O campo a ser modificado.</param>
+    /// <param name="options">Configurador do provedor.</param>
+    /// <returns>A própria instância do campo modificado.</returns>
+    public static Field SetProvider(this Field field, Action<FieldProvider> options)
+    {
+      field.Provider = new FieldProvider();
+      options?.Invoke(field.Provider);
+      return field;
+    }
   }
 }

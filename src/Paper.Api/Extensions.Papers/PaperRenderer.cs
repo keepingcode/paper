@@ -188,12 +188,23 @@ namespace Paper.Api.Extensions.Papers
         }
         else if (isArray)
         {
-          // TODO: VALIDAR ESTE SUPORTE
-          // - Devera suportar a selecao de multiplos registros pelo cliente
-          //
-          action.AddField("Rows[]", opt => opt
-            .SetHidden(true)
-            .SetDataType("collection")
+          var elementType = TypeOf.CollectionElement(parameter.ParameterType);
+          var properties = elementType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+          var keys = (
+            from property in properties
+            select Conventions.MakeName(property.Name)
+          ).ToArray();
+
+          action.AddField("__records__", opt => opt
+            .SetTitle("Registros Afetados")
+            .SetPlaceholder("Selecione os registros afetados")
+            .SetDataType(DataTypeNames.ArrayOfRecords)
+            .SetProvider(provider => provider
+              .AddRel(RelNames.Self)
+              .SetKeys(keys)
+            )
+            .SetAllowMany()
+            .SetRequired()
           );
         }
         else if (isForm)

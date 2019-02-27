@@ -71,6 +71,12 @@ namespace Paper.Media
     public const string Datetime = "datetime";
 
     /// <summary>
+    /// Tipo especial para a coleção de registros selecionados.
+    /// Este tipo tem efeito apenas para ações do Paper e não possui correspondência no HTML.
+    /// </summary>
+    public const string ArrayOfRecords = "arrayOfRecords";
+
+    /// <summary>
     /// Determina o DataType apropriado para representar o tipo ou instância indicado.
     /// </summary>
     /// <param name="typeOrInstance">O tipo ou a instância testada.</param>

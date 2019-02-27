@@ -4,17 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Paper.Browser.Lib;
 
 namespace Paper.Browser.Gui.Papers
 {
-  public interface IPaper
+  public interface ISelectable
   {
-    Control Control { get; }
+    event EventHandler SelectionChanged;
 
-    Window Window { get; }
+    bool SelectionEnabled { get; set; }
 
-    Content Content { get; }
+    IEnumerable<object> GetSelection();
   }
 }

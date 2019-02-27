@@ -33,13 +33,14 @@ namespace Paper.Media
     public const string Checkbox = "checkbox";
     public const string Radio = "radio";
     public const string File = "file";
+    public const string Submit = "submit";
 
     #endregion
 
-    #region Tipos adicionais
+    #region Tipos especiais do Paper
 
-    public const string Submit = "submit";
-    
+    public const string Binding = "binding";
+
     #endregion
 
     /// <summary>

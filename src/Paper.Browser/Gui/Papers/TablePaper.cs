@@ -17,8 +17,13 @@ using System.Diagnostics;
 
 namespace Paper.Browser.Gui.Papers
 {
-  public partial class TablePaper : UserControl, IPaper
+  public partial class TablePaper : UserControl, IPaper, ISelectable
   {
+    public event EventHandler SelectionChanged;
+
+    private DataGridViewButtonColumn menuColumn;
+    private DataGridViewCheckBoxColumn checkColumn;
+
     public TablePaper(Window window, Content content)
     {
       this.Window = window;
@@ -33,19 +38,58 @@ namespace Paper.Browser.Gui.Papers
 
     public Content Content { get; }
 
+    public bool SelectionEnabled
+    {
+      get => checkColumn.Visible;
+      set => checkColumn.Visible = value;
+    }
+
+    public IEnumerable<object> GetSelection()
+    {
+      var selectedRows =
+        from row in dgContent.Rows.Cast<DataGridViewRow>()
+        let entity = row.Tag as Entity
+        where entity != null
+        let checkBox = row.Cells[checkColumn.Index]
+        where checkBox.Value.Equals(true)
+        select entity;
+      return selectedRows;
+    }
+
     private void InitializeData()
     {
       dgContent.AutoGenerateColumns = false;
       dgContent.Rows.Clear();
       dgContent.Columns.Clear();
 
-      var menuColumn = new DataGridViewButtonColumn();
+      menuColumn = new DataGridViewButtonColumn();
       menuColumn.Visible = false;
       dgContent.Columns.Add(menuColumn);
 
-      var checkColumn = new DataGridViewCheckBoxColumn();
+      checkColumn = new DataGridViewCheckBoxColumn();
       checkColumn.Visible = false;
       dgContent.Columns.Add(checkColumn);
+      dgContent.CellContentClick += (o, e) =>
+      {
+        if (SelectionEnabled && (e.ColumnIndex == checkColumn.Index))
+        {
+          SelectionChanged?.Invoke(this, EventArgs.Empty);
+        }
+      };
+      dgContent.ColumnHeaderMouseClick += (o, e) =>
+      {
+        if (SelectionEnabled && (e.ColumnIndex == checkColumn.Index))
+        {
+          var count = GetSelection().Count();
+          var isAllSelected = (count == dgContent.RowCount);
+
+          dgContent.Rows.Cast<DataGridViewRow>().ForEach(
+            x => x.Cells[checkColumn.Index].Value = !isAllSelected
+          );
+
+          SelectionChanged?.Invoke(this, EventArgs.Empty);
+        }
+      };
 
       var entity = (Entity)Content.Data;
       var bag = (PropertyMap)entity.GetProperty(HeaderDesign.BagName);
@@ -116,10 +160,9 @@ namespace Paper.Browser.Gui.Papers
       foreach (var record in records)
       {
         var cellValues = headerNames.Select(name => record.Properties[name]);
-        var link = record?.Links.FirstOrDefault(x => x.Rel.Has(RelNames.Self));
 
         var row = new DataGridViewRow();
-        row.Tag = link?.Href;
+        row.Tag = record;
         row.CreateCells(dgContent);
 
         var i = 0;
@@ -164,13 +207,20 @@ namespace Paper.Browser.Gui.Papers
 
     private void DetailCell(int colIndex, int rowIndex)
     {
-      var row = dgContent.Rows[rowIndex];
-      var href = row?.Tag?.ToString();
-      if (href != null)
-      {
-        var target = new UriString(href).Path;
-        Window.NavigateAsync(href, target).NoAwait();
-      }
+      if (!colIndex.InRange(0, dgContent.ColumnCount) || !rowIndex.InRange(0, dgContent.RowCount))
+        return;
+
+      var entity = dgContent.Rows[rowIndex].Tag as Entity;
+      if (entity == null)
+        return;
+
+      var link = entity.Links?.FirstOrDefault(x => x.Rel.Has(RelNames.Self));
+      var href = link?.Href;
+      if (href == null)
+        return;
+
+      var target = new UriString(href.ToString()).Path;
+      Window.NavigateAsync(href, target).NoAwait();
     }
 
     private void dgContent_CellContentClick(object sender, DataGridViewCellEventArgs e)

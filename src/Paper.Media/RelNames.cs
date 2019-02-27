@@ -115,6 +115,11 @@ namespace Paper.Media
     /// </summary>
     public const string Action = "action";
 
+    /// <summary>
+    /// Relaciona um elemento a uma lista de itens selecionados.
+    /// </summary>
+    public const string Selection = "selection";
+
     #endregion
   }
 }

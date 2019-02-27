@@ -171,7 +171,6 @@ namespace Paper.Media.Serialization
       writer.WriteObjectStart(element.GetType().Name);
       foreach (var name in element._GetPropertyNames())
       {
-
         var value = element._Get(name);
         if (value != null)
         {
@@ -181,6 +180,14 @@ namespace Paper.Media.Serialization
             if (caseAttr != null)
             {
               value = (CaseVariantString)text;
+            }
+          }
+          else if (value is IEnumerable items)
+          {
+            var caseAttr = element._GetAttribute<CaseVariantStringAttribute>(name);
+            if (caseAttr != null)
+            {
+              value = items.Cast<object>().Select(x => (CaseVariantString)x?.ToString());
             }
           }
 

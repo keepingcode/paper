@@ -47,12 +47,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gui\Controls\FieldBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Controls\FieldBox.Designer.cs">
+      <DependentUpon>FieldBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Formatter.cs" />
     <Compile Include="Gui\NavigatorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Gui\NavigatorForm.Designer.cs">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Papers\ISelectable.cs" />
     <Compile Include="Gui\Papers\PaperFactory.cs" />
     <Compile Include="Gui\Papers\RecordPaper.cs">
       <SubType>UserControl</SubType>
@@ -105,6 +113,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="Gui\Controls\FieldBox.resx">
+      <DependentUpon>FieldBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Gui\NavigatorForm.resx">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
     </EmbeddedResource>

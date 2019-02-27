@@ -224,13 +224,7 @@ namespace Toolset.Serialization.Graph
           }
         }
 
-        var alias = realName.Replace("@", "");
-        var propName = (
-          from property in Host.GetType().GetProperties()
-          from attribute in property.GetCustomAttributes<DataMemberAttribute>()
-          where attribute.Name.EqualsIgnoreCase(alias)
-          select property.Name
-        ).FirstOrDefault() ?? alias;
+        var propName = ResolvePropertyName(Host, realName);
 
         Host._Set(propName, value);
       }
@@ -266,7 +260,8 @@ namespace Toolset.Serialization.Graph
         else
         {
           var property = properties.LastOrDefault();
-          return Host._SetNew(property);
+          var propName = ResolvePropertyName(Host, property);
+          return Host._SetNew(propName);
         }
       }
 
@@ -276,6 +271,18 @@ namespace Toolset.Serialization.Graph
         var propertyType = Host._GetPropertyType(property);
         var elementType = TypeOf.CollectionElement(propertyType);
         return new Bag { ElementType = elementType };
+      }
+
+      private string ResolvePropertyName(object host, string propertyName)
+      {
+        var alias = propertyName.Replace("@", "");
+        var propName = (
+          from property in host.GetType().GetProperties()
+          from attribute in property.GetCustomAttributes<DataMemberAttribute>()
+          where attribute.Name.EqualsIgnoreCase(alias)
+          select property.Name
+        ).FirstOrDefault() ?? alias;
+        return propName;
       }
     }
 

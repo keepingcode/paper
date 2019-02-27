@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Paper.Media.Design
 {
-  public class HeaderDesign : PropertyDesign
+  public class HeaderDesign : PropertyDesign, IHeaderInfo
   {
     public const string BagName = "__headers";
 

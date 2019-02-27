@@ -17,7 +17,10 @@ namespace Paper.Browser.Gui
     public WindowForm(Window window)
     {
       this.Window = window;
+
       InitializeComponent();
+      this.Size = new Size(270, 150);
+
       StatusLabel.TextChanged += (o, e) => lbStatus.Text = StatusLabel.Text;
 
       Overlay = true;
@@ -42,8 +45,8 @@ namespace Paper.Browser.Gui
         pnOverlay.Top = 0;
         pnOverlay.Width = this.ClientSize.Width;
         pnOverlay.Height = this.ClientSize.Height;
-        pnOverlay.BringToFront();
         pnOverlay.Enabled = pnOverlay.Visible;
+        pnOverlay.BringToFront();
       }
     }
 

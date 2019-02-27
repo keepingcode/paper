@@ -11,6 +11,7 @@ using Paper.Browser.Lib;
 using Paper.Media;
 using Paper.Media.Design;
 using Toolset;
+using Paper.Browser.Gui.Controls;
 
 namespace Paper.Browser.Gui.Papers
 {
@@ -32,74 +33,68 @@ namespace Paper.Browser.Gui.Papers
 
     private void InitializeData()
     {
-      dgContent.AutoGenerateColumns = false;
-      dgContent.Rows.Clear();
-      dgContent.Columns.Clear();
-      dgContent.ColumnHeadersVisible = false;
-
-      var titleColumn = new DataGridViewTextBoxColumn();
-      titleColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-      dgContent.Columns.Add(titleColumn);
-
-      var valueColumn = new DataGridViewTextBoxColumn();
-      valueColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-      valueColumn.MinimumWidth = 100;
-      dgContent.Columns.Add(valueColumn);
+      pnContent.Controls.Clear();
 
       var entity = (Entity)Content.Data;
-      var bag = (PropertyMap)entity.GetProperty(HeaderDesign.BagName);
-      var headers = (PropertyValueCollection)bag[ClassNames.Record];
 
-      var headerNames = headers.Select(x => x.ToString()).ToArray();
-      foreach (var headerName in headerNames)
+      var rowCount = 1;
+      var colCount = 0;
+
+      var headers = entity.Headers(ClassNames.Record).Where(x => !x.Hidden);
+      foreach (var header in headers)
       {
-        var value = entity.Properties[headerName];
+        var value = header.GetValue(entity);
 
-        var info = (
-          from child in entity.Children()
-          where child.Class.Has(ClassNames.Header)
-          where headerName.EqualsIgnoreCase((string)child.Properties["name"])
-          select child
-        ).FirstOrDefault();
+        var field = new FieldBox();
+        field.Text = header.Title;
+        field.Value = value;
 
-        var headerTitle =
-          info?.Properties?["title"]?.ToString()
-          ?? headerName.ChangeCase(TextCase.ProperCase);
+        int colExtent;
 
-        var row = new DataGridViewRow();
-        row.CreateCells(dgContent);
-        row.Cells[0].Value = headerTitle;
-
-        var dataType = info?.Properties?["dataType"]?.ToString() ?? DataTypeNames.Text;
-        switch (dataType)
+        switch (header.DataType)
         {
           case DataTypeNames.Bit:
-            {
-              var bit = Change.To<bool>(value);
-              row.Cells[1].Value = bit ? "x" : "-";
-              break;
-            }
           case DataTypeNames.Number:
-            {
-              var number = Change.To<int>(value);
-              row.Cells[1].Value = number;
-              break;
-            }
           case DataTypeNames.Decimal:
-            {
-              var number = Change.To<decimal>(value);
-              row.Cells[1].Value = number.ToString("#,##0.00");
-              break;
-            }
+          case DataTypeNames.Date:
+          case DataTypeNames.Time:
+          case DataTypeNames.Datetime:
+            colExtent = 1;
+            break;
+
+          case DataTypeNames.Label:
+          case DataTypeNames.Text:
           default:
-            {
-              row.Cells[1].Value = value;
-              break;
-            }
+            colExtent = 3;
+            break;
         }
 
-        dgContent.Rows.Add(row);
+        // w = 82x + 6(x - 1)
+        // w = 88x - 6
+        field.Width = (88 * colExtent) - 6;
+
+        pnContent.Controls.Add(field);
+
+        if (colCount + colExtent <= 3)
+        {
+          colCount += colExtent;
+        }
+        else
+        {
+          rowCount++;
+          colCount = colExtent;
+        }
       }
+
+      // c = ⌈x / 10⌉
+      // r = ⌈x / c⌉
+      var margin = this.Padding.All;
+      var cols = Math.Ceiling(rowCount / 10M);
+      var rows = Math.Ceiling(rowCount / cols);
+      var w = (284 * cols) - 6 + (margin * 2);
+      var h = (42 * rows) - 6 + (margin * 2);
+
+      this.MinimumSize = new Size((int)w, (int)h);
     }
   }
 }

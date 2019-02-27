@@ -28,46 +28,33 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.dgContent = new System.Windows.Forms.DataGridView();
-      ((System.ComponentModel.ISupportInitialize)(this.dgContent)).BeginInit();
+      this.pnContent = new System.Windows.Forms.FlowLayoutPanel();
       this.SuspendLayout();
       // 
-      // dgContent
+      // pnContent
       // 
-      this.dgContent.AllowUserToAddRows = false;
-      this.dgContent.AllowUserToDeleteRows = false;
-      this.dgContent.AllowUserToOrderColumns = true;
-      this.dgContent.AllowUserToResizeColumns = false;
-      this.dgContent.AllowUserToResizeRows = false;
-      this.dgContent.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-      this.dgContent.BackgroundColor = System.Drawing.SystemColors.Control;
-      this.dgContent.BorderStyle = System.Windows.Forms.BorderStyle.None;
-      this.dgContent.ColumnHeadersHeight = 30;
-      this.dgContent.ColumnHeadersVisible = false;
-      this.dgContent.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.dgContent.Location = new System.Drawing.Point(10, 10);
-      this.dgContent.Name = "dgContent";
-      this.dgContent.RowHeadersVisible = false;
-      this.dgContent.RowTemplate.Height = 30;
-      this.dgContent.Size = new System.Drawing.Size(380, 280);
-      this.dgContent.TabIndex = 1;
+      this.pnContent.BackColor = System.Drawing.SystemColors.Control;
+      this.pnContent.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnContent.Location = new System.Drawing.Point(10, 10);
+      this.pnContent.Name = "pnContent";
+      this.pnContent.Size = new System.Drawing.Size(264, 80);
+      this.pnContent.TabIndex = 0;
       // 
       // RecordPaper
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Controls.Add(this.dgContent);
-      this.MinimumSize = new System.Drawing.Size(400, 300);
+      this.Controls.Add(this.pnContent);
+      this.MinimumSize = new System.Drawing.Size(284, 100);
       this.Name = "RecordPaper";
       this.Padding = new System.Windows.Forms.Padding(10);
-      this.Size = new System.Drawing.Size(400, 300);
-      ((System.ComponentModel.ISupportInitialize)(this.dgContent)).EndInit();
+      this.Size = new System.Drawing.Size(284, 100);
       this.ResumeLayout(false);
 
     }
 
     #endregion
 
-    private System.Windows.Forms.DataGridView dgContent;
+    private System.Windows.Forms.FlowLayoutPanel pnContent;
   }
 }
