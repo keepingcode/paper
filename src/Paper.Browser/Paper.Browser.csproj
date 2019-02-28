@@ -47,11 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Controls\FieldBox.cs">
+    <Compile Include="Gui\ActionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\ActionForm.Designer.cs">
+      <DependentUpon>ActionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\FieldWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Gui\Controls\FieldBox.Designer.cs">
-      <DependentUpon>FieldBox.cs</DependentUpon>
+    <Compile Include="Gui\Widgets\FieldWidget.Designer.cs">
+      <DependentUpon>FieldWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\Formatter.cs" />
     <Compile Include="Gui\NavigatorForm.cs">
@@ -93,6 +99,21 @@
     <Compile Include="Gui\SettingsDialog.Designer.cs">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Widgets\IInputWidget.cs" />
+    <Compile Include="Gui\Widgets\IWidget.cs" />
+    <Compile Include="Gui\Widgets\NumberWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\NumberWidget.Designer.cs">
+      <DependentUpon>NumberWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\TextWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\TextWidget.Designer.cs">
+      <DependentUpon>TextWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\WidgetBasics.cs" />
     <Compile Include="Gui\WindowForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -100,6 +121,7 @@
       <DependentUpon>WindowForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\FormsExtensions.cs" />
+    <Compile Include="Lib\Action.cs" />
     <Compile Include="Lib\HttpClientExtensions.cs" />
     <Compile Include="Lib\Http.cs" />
     <Compile Include="Lib\Navigator.cs" />
@@ -113,8 +135,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
-    <EmbeddedResource Include="Gui\Controls\FieldBox.resx">
-      <DependentUpon>FieldBox.cs</DependentUpon>
+    <EmbeddedResource Include="Gui\ActionForm.resx">
+      <DependentUpon>ActionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\FieldWidget.resx">
+      <DependentUpon>FieldWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\NavigatorForm.resx">
       <DependentUpon>NavigatorForm.cs</DependentUpon>
@@ -133,6 +158,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\SettingsDialog.resx">
       <DependentUpon>SettingsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\NumberWidget.resx">
+      <DependentUpon>NumberWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\TextWidget.resx">
+      <DependentUpon>TextWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\WindowForm.resx">
       <DependentUpon>WindowForm.cs</DependentUpon>

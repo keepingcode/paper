@@ -82,11 +82,6 @@ namespace Paper.Browser.Gui
       }
     }
 
-    public void Reload()
-    {
-      Window.NavigateAsync(Window.Content.Href).NoAwait();
-    }
-
     private void FeedbackMinimumSize()
     {
       btReduce.Enabled = (this.MinimumSize != Size.Empty);
@@ -114,7 +109,7 @@ namespace Paper.Browser.Gui
 
     private void mnRefresh_Click(object sender, EventArgs e)
     {
-      Reload();
+      Window.NavigateAsync(Window.Content.Href).NoAwait();
     }
   }
 }

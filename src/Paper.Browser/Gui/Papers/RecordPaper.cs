@@ -11,7 +11,7 @@ using Paper.Browser.Lib;
 using Paper.Media;
 using Paper.Media.Design;
 using Toolset;
-using Paper.Browser.Gui.Controls;
+using Paper.Browser.Gui.Widgets;
 
 namespace Paper.Browser.Gui.Papers
 {
@@ -43,11 +43,9 @@ namespace Paper.Browser.Gui.Papers
       var headers = entity.Headers(ClassNames.Record).Where(x => !x.Hidden);
       foreach (var header in headers)
       {
-        var value = header.GetValue(entity);
-
-        var field = new FieldBox();
+        var field = new FieldWidget();
         field.Text = header.Title;
-        field.Value = value;
+        field.Content = header.GetValue(entity);
 
         int colExtent;
 

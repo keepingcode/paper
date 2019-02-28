@@ -1,6 +1,6 @@
-﻿namespace Paper.Browser.Gui.Controls
+﻿namespace Paper.Browser.Gui.Widgets
 {
-  partial class FieldBox
+  partial class FieldWidget
   {
     /// <summary> 
     /// Required designer variable.

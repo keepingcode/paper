@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Paper.Host", "src\Paper.Hos
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paper.Browser", "src\Paper.Browser\Paper.Browser.csproj", "{298D802E-E00E-4DAB-9523-E6FBABBEB6AB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "docs", "docs\docs.csproj", "{30D67564-5C12-4AA0-95AC-2D638D11D422}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{298D802E-E00E-4DAB-9523-E6FBABBEB6AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{298D802E-E00E-4DAB-9523-E6FBABBEB6AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{298D802E-E00E-4DAB-9523-E6FBABBEB6AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30D67564-5C12-4AA0-95AC-2D638D11D422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30D67564-5C12-4AA0-95AC-2D638D11D422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30D67564-5C12-4AA0-95AC-2D638D11D422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30D67564-5C12-4AA0-95AC-2D638D11D422}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +103,7 @@ Global
 		{77B22C5A-47E2-4048-BE65-93532C68C23C} = {E1FC95F2-7EE0-439E-84EB-5E96EEA3D97C}
 		{CA619AB6-1EEE-486A-89F3-D20432E70AF9} = {95A4B702-E30C-4977-A0DB-28906481C6F6}
 		{298D802E-E00E-4DAB-9523-E6FBABBEB6AB} = {95A4B702-E30C-4977-A0DB-28906481C6F6}
+		{30D67564-5C12-4AA0-95AC-2D638D11D422} = {DC0723FF-A462-4947-B6A5-8A8E34E8E359}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BFDF9B8E-0286-4B26-BD6B-0213BB8E5A3A}

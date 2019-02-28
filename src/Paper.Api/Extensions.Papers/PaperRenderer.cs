@@ -153,17 +153,13 @@ namespace Paper.Api.Extensions.Papers
 
     private void RenderForm(Caller caller, PaperContext context, Entity entity, object[] args, object graph = null)
     {
+      var href = new UriString(context.Path.Substring(1)).Append($":{caller.Method.Name}");
+
       var action = new EntityAction();
       action.Name = caller.Method.Name;
       action.Title = caller.Method.Name.ChangeCase(TextCase.ProperCase);
-      action.Href = context.Path.Substring(1);
+      action.Href = href;
       action.Method = MethodNames.Post;
-
-      action.AddField("Action", opt => opt
-        .SetHidden(true)
-        .SetDataType(DataType.Text)
-        .SetValue(action.Name)
-      );
 
       var parameters = caller.Method.GetParameters();
       for (var i = 0; i < parameters.Length; i++)

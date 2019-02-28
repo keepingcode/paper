@@ -25,9 +25,9 @@ namespace Paper.Browser.Lib
 
     public NavigatorForm Form { get; }
 
-    public async Task<Window> NavigateAsync(string uri, string target, Window reference = null)
+    public async Task<Window> NavigateAsync(string uri, string target, Window current = null, IWin32Window parent = null)
     {
-      var window = CreateWindow(target, reference);
+      var window = CreateWindow(target, current, parent);
       window.Invalidate();
 
       var http = new HttpClient();
@@ -39,7 +39,7 @@ namespace Paper.Browser.Lib
       return window;
     }
 
-    public Window CreateWindow(string target, Window reference = null)
+    public Window CreateWindow(string target, Window reference = null, IWin32Window parent = null)
     {
       string frameName;
       switch (target)
@@ -70,7 +70,7 @@ namespace Paper.Browser.Lib
       if (window == null)
       {
         window = new Window(frameName);
-        window.Form.Show(Form);
+        window.Form.Show(parent ?? Form);
       }
 
       window.Form.Select();

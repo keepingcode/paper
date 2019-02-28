@@ -32,7 +32,7 @@ namespace Toolset
       return (T)ConvertAny(value, typeof(T), defaultValue);
     }
 
-    public static object ToOrDefault(object value, Type targetType)
+    public static object Try(object value, Type targetType)
     {
       try
       {
@@ -44,7 +44,7 @@ namespace Toolset
       }
     }
 
-    public static object ToOrDefault(object value, Type targetType, object defaultValue)
+    public static object Try(object value, Type targetType, object defaultValue)
     {
       try
       {
@@ -56,7 +56,7 @@ namespace Toolset
       }
     }
 
-    public static T ToOrDefault<T>(object value)
+    public static T Try<T>(object value)
     {
       try
       {
@@ -68,7 +68,7 @@ namespace Toolset
       }
     }
 
-    public static T ToOrDefault<T>(object value, T defaultValue)
+    public static T Try<T>(object value, T defaultValue)
     {
       try
       {
@@ -80,7 +80,7 @@ namespace Toolset
       }
     }
 
-    public static bool TryTo(object value, Type targetType, out object result)
+    public static bool Try(object value, Type targetType, out object result)
     {
       try
       {
@@ -94,7 +94,7 @@ namespace Toolset
       }
     }
 
-    public static bool TryTo<T>(object value, out T result)
+    public static bool Try<T>(object value, out T result)
     {
       try
       {

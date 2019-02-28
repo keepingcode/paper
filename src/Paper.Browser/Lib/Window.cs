@@ -44,47 +44,13 @@ namespace Paper.Browser.Lib
       {
         this.paper = CreatePaper(contentRet.Value, paperFactory);
         CreateActions(this.paper, contentRet.Value);
+        FeedbackSelection();
       });
 
       if (this.paper != null)
       {
         ConnectEvents(paper);
       }
-    }
-
-    private void ConnectEvents(IPaper paper)
-    {
-      if (paper is ISelectable selelectable)
-      {
-        selelectable.SelectionChanged += Paper_SelectionChanged;
-      }
-    }
-
-    private void DisconnectEvents(IPaper paper)
-    {
-      if (paper is ISelectable selelectable)
-      {
-        selelectable.SelectionChanged -= Paper_SelectionChanged;
-      }
-    }
-
-    private void Paper_SelectionChanged(object sender, EventArgs e)
-    {
-      Form.Call(() =>
-      {
-        var selectable = (ISelectable)paper;
-        var count = selectable.GetSelection().Count();
-
-        Form.SelectionLabel.Text =
-          (count == 0) ? "" : (count == 1) ? "1 selecionado" : $"{count} selecionados";
-
-        var actionButtons =
-          from item in Form.ToolBar.Items.Cast<ToolStripItem>()
-          where item.Alignment == ToolStripItemAlignment.Left
-          select item;
-
-        actionButtons.ForEach(x => x.Visible = count > 0);
-      });
     }
 
     private IPaper CreatePaper(Content content, Func<Window, Content, IPaper> paperFactory = null)
@@ -126,6 +92,15 @@ namespace Paper.Browser.Lib
       if (actions == null)
         return;
 
+      var actionButtons = (
+        from item in Form.ToolBar.Items.OfType<ToolStripButton>()
+        where item.Alignment == ToolStripItemAlignment.Left
+        select item
+      ).ToArray();
+
+      actionButtons.ForEach(x => Form.ToolBar.Items.Remove(x));
+      Form.ActionBar.Items.Clear();
+
       var selectionBound = false;
 
       foreach (var action in actions)
@@ -134,29 +109,81 @@ namespace Paper.Browser.Lib
 
         var selectionField = fields.FirstOrDefault(x => x.Provider?.Rel.Has(RelNames.Self) == true);
         var bindToSelection = (selectionField != null);
+        if (bindToSelection)
+        {
+          selectionBound = true;
+
+          var selectionButton = new ToolStripButton();
+          selectionButton.Tag = action;
+          selectionButton.Text = action.Title;
+          selectionButton.Click += (o, e) => PerformAction(action);
+          selectionButton.Visible = false;
+          Form.ToolBar.Items.Add(selectionButton);
+        }
 
         var button = new ToolStripButton();
         button.Tag = action;
         button.Text = action.Title;
-        button.Click += (o, e) => { MessageBox.Show(action.Href); };
-
-        if (bindToSelection)
-        {
-          selectionBound = true;
-          button.Visible = false;
-          Form.ToolBar.Items.Add(button);
-        }
-        else
-        {
-          button.Padding = new Padding(10, button.Padding.Top, 10, button.Padding.Bottom);
-          Form.ActionBar.Items.Add(button);
-        }
+        button.Click += (o, e) => PerformAction(action);
+        button.Padding = new Padding(10, button.Padding.Top, 10, button.Padding.Bottom);
+        Form.ActionBar.Items.Add(button);
       }
 
       if (paper is ISelectable selectable)
       {
         selectable.SelectionEnabled = selectionBound;
       }
+    }
+
+    private void ConnectEvents(IPaper paper)
+    {
+      if (paper is ISelectable selelectable)
+      {
+        selelectable.SelectionChanged += Paper_SelectionChanged;
+      }
+    }
+
+    private void DisconnectEvents(IPaper paper)
+    {
+      if (paper is ISelectable selelectable)
+      {
+        selelectable.SelectionChanged -= Paper_SelectionChanged;
+      }
+    }
+
+    private void Paper_SelectionChanged(object sender, EventArgs e)
+    {
+      FeedbackSelection();
+    }
+
+    private void FeedbackSelection()
+    {
+      Form.Call(() =>
+      {
+        var selectable = paper as ISelectable;
+        if (selectable == null)
+          return;
+
+        var count = selectable.GetSelection().Count();
+
+        Form.SelectionLabel.Text =
+          (count == 0) ? "" : (count == 1) ? "1 selecionado" : $"{count} selecionados";
+
+        var actionButtons =
+          from item in Form.ToolBar.Items.Cast<ToolStripItem>()
+          where item.Alignment == ToolStripItemAlignment.Left
+          select item;
+
+        actionButtons.ForEach(x => x.Visible = count > 0);
+      });
+    }
+
+    public void PerformAction(EntityAction entityAction)
+    {
+      var entity = (Entity)Content.Data;
+      var selection = (paper as ISelectable)?.GetSelection().OfType<Entity>().ToArray();
+      var action = new Action(this, entity, entityAction, selection);
+      action.Form.Show(this.Form);
     }
 
     public void Invalidate()
@@ -176,7 +203,7 @@ namespace Paper.Browser.Lib
     public void ViewSource()
     {
       var target = $"{Name}_source";
-      var window = Navigator.Current.CreateWindow(target);
+      var window = Navigator.Current.CreateWindow(target, parent: this.Form);
       window.SetContent(contentRet, (w, content) => new TextPlainPaper(w, contentRet.Value));
       window.Validate();
     }

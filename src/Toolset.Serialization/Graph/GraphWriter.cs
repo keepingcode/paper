@@ -216,7 +216,7 @@ namespace Toolset.Serialization.Graph
           {
             var keyType = adder.GetParameters().First().ParameterType;
             var valType = adder.GetParameters().Last().ParameterType;
-            if (Change.TryTo(realName, keyType, out key) && Change.TryTo(value, valType, out val))
+            if (Change.Try(realName, keyType, out key) && Change.Try(value, valType, out val))
             {
               Host._Call("Add", key, val);
               return;

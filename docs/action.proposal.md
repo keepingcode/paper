@@ -3,10 +3,13 @@ Action
 
 Action é o procedimento de alteração de dados do Paper.
 
-Um Action contém:
+Formato da URI
+--------------
 
-1.  Um form para a coleta de dados;
-2.  O algoritmo de envio dos dados coletados para um rota via POST.
+A URI de ação é formada pela URI do recurso mais o nome da ação em PascalCase precedida por dois-pontos.  
+Exemplo:
+
+    http://host.com/My/Resource/:SaveMyResource
 
 
 Formato dos Dados: Edição Mista

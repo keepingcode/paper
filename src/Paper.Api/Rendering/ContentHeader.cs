@@ -18,13 +18,13 @@ namespace Paper.Api.Rendering
 
     public string Type
     {
-      get => Change.ToOrDefault<string>(headers[HeaderNames.ContentType]);
+      get => Change.Try<string>(headers[HeaderNames.ContentType]);
       set => headers[HeaderNames.ContentType] = value;
     }
 
     public int Length
     {
-      get => Change.ToOrDefault<int>(headers[HeaderNames.ContentLength]);
+      get => Change.Try<int>(headers[HeaderNames.ContentLength]);
       set => headers[HeaderNames.ContentLength] = value.ToString();
     }
 
@@ -32,7 +32,7 @@ namespace Paper.Api.Rendering
     {
       get
       {
-        var value = Change.ToOrDefault<string>(headers[HeaderNames.ContentEncoding]);
+        var value = Change.Try<string>(headers[HeaderNames.ContentEncoding]);
         try
         {
           return (value != null) ? Encoding.GetEncoding(value) : Encoding.UTF8;
@@ -50,7 +50,7 @@ namespace Paper.Api.Rendering
 
     public string Disposition
     {
-      get => Change.ToOrDefault<string>(headers[HeaderNames.ContentDisposition]);
+      get => Change.Try<string>(headers[HeaderNames.ContentDisposition]);
       set => headers[HeaderNames.ContentDisposition] = value;
     }
   }

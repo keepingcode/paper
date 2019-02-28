@@ -22,6 +22,11 @@ namespace Paper.Media
       return href.Value;
     }
 
+    public static implicit operator UriString(Href href)
+    {
+      return new UriString(href.Value);
+    }
+
     public static implicit operator Uri(Href href)
     {
       return new Uri(href.Value, UriKind.RelativeOrAbsolute);
@@ -30,6 +35,11 @@ namespace Paper.Media
     public static implicit operator Href(string href)
     {
       return new Href { Value = href };
+    }
+
+    public static implicit operator Href(UriString href)
+    {
+      return new Href { Value = href.ToString() };
     }
 
     public static implicit operator Href(Uri href)

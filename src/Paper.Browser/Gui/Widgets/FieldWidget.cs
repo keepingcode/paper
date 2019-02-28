@@ -8,16 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Paper.Browser.Gui.Controls
+namespace Paper.Browser.Gui.Widgets
 {
-  public partial class FieldBox : UserControl
+  public partial class FieldWidget : UserControl, IWidget
   {
     private object _value;
 
-    public FieldBox()
+    public FieldWidget()
     {
       InitializeComponent();
     }
+
+    public Control Host => this;
 
     [Bindable(true)]
     [Browsable(true)]
@@ -29,13 +31,13 @@ namespace Paper.Browser.Gui.Controls
       set => lbCaption.Text = value;
     }
 
-    public object Value
+    public object Content
     {
       get => _value;
       set
       {
         _value = value;
-        txContent.Text = Formatter.Format(Value);
+        txContent.Text = Formatter.Format(Content);
       }
     }
 
