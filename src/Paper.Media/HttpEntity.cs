@@ -62,7 +62,7 @@ namespace Paper.Media
         Rel = RelNames.Self
       });
 
-      return Ret.Create(entity, status);
+      return Ret.Create(status, entity);
     }
 
     public static Ret<Entity> Create(UriString route, HttpStatusCode status, string message)

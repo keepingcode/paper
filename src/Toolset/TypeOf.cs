@@ -98,7 +98,7 @@ namespace Toolset
       return typeof(object);
     }
 
-    public static Type Ret(object graph)
+    public static Type RetValue(object graph)
     {
       var type = graph is Type t ? t : graph?.GetType();
       if (type == null)

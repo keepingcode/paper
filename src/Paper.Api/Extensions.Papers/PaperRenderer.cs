@@ -34,28 +34,38 @@ namespace Paper.Api.Extensions.Papers
       this.paperCatalog = paperCatalog;
     }
 
-    public async Task<Ret<Entity>> RenderAsync(PaperContext context, Result result)
+    public async Task<Ret<Entity>> RenderAsync(PaperContext context, Ret<Result> result)
     {
-      var args = context.Args.Values.ToArray();
+      var value = result.Value.Value;
+
+      if (value == null)
+      {
+        var status = HttpEntity.CreateFromRet(context.Request.RequestUri, result);
+        return await Task.FromResult(status);
+      }
 
       var entity = new Entity();
+      var args = context.Args.Values.ToArray();
 
-      var value = result.Value;
-      var valueType = result.ValueType;
-
+      var valueType = result.Value.ValueType;
       var isList = typeof(IEnumerable).IsAssignableFrom(valueType);
       if (isList)
       {
         var list = (IEnumerable)value;
 
         entity.SetTitle(Conventions.MakeTitle(context.Paper.PaperType));
-        entity.AddEntities(list, (item, e) => RenderRecord(context, e, args, item));
+        entity.AddEntities(list, (item, e) =>
+        {
+          RenderEntity(context, e, args, item);
+          FormatEntity(context, e, args, item);
+        });
 
         FormatEntity(context, entity, args, value);
       }
       else
       {
-        RenderRecord(context, entity, args, value);
+        RenderEntity(context, entity, args, value);
+        FormatEntity(context, entity, args, value);
       }
 
       FormatEntity(context, entity, args);
@@ -63,15 +73,13 @@ namespace Paper.Api.Extensions.Papers
       return await Task.FromResult(entity);
     }
 
-    private void RenderRecord(PaperContext context, Entity entity, object[] args, object record)
+    private void RenderEntity(PaperContext context, Entity entity, object[] args, object graph)
     {
       entity.AddClass(ClassNames.Record);
-      entity.AddClass(record.GetType());
-      entity.SetTitle(Conventions.MakeTitle(record.GetType()));
-      entity.AddProperties(record);
-      entity.AddHeaders(record, ClassNames.Record);
-
-      FormatEntity(context, entity, args, record);
+      entity.AddClass(graph.GetType());
+      entity.SetTitle(Conventions.MakeTitle(graph.GetType()));
+      entity.AddProperties(graph);
+      entity.AddHeaders(graph, ClassNames.Record);
     }
 
     private void FormatEntity(PaperContext context, Entity entity, object[] args, object graph = null)
@@ -153,7 +161,7 @@ namespace Paper.Api.Extensions.Papers
 
     private void RenderForm(Caller caller, PaperContext context, Entity entity, object[] args, object graph = null)
     {
-      var href = new UriString(context.Path.Substring(1)).Append($":{caller.Method.Name}");
+      var href = new UriString(context.Path.Substring(1)).Append($"-{caller.Method.Name}");
 
       var action = new EntityAction();
       action.Name = caller.Method.Name;

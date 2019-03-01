@@ -109,7 +109,30 @@ namespace Toolset
       };
     }
 
-    public static Ret<T> Create<T>(T value, HttpStatusCode status)
+    public static Ret NotFound()
+    {
+      return new Ret
+      {
+        Status = new RetStatus
+        {
+          Code = HttpStatusCode.NotFound
+        }
+      };
+    }
+
+    public static Ret<T> NotFound<T>(T value)
+    {
+      return new Ret<T>
+      {
+        Value = value,
+        Status = new RetStatus
+        {
+          Code = HttpStatusCode.NotFound
+        }
+      };
+    }
+
+    public static Ret<T> Create<T>(HttpStatusCode status, T value)
     {
       return new Ret<T>
       {
@@ -132,7 +155,7 @@ namespace Toolset
       };
     }
 
-    public static Ret Create(HttpStatusCode status, string faultMessage)
+    public static Ret Fail(HttpStatusCode status, string faultMessage)
     {
       return new Ret
       {
@@ -147,7 +170,7 @@ namespace Toolset
       };
     }
 
-    public static Ret Create(HttpStatusCode status, Exception exception)
+    public static Ret Fail(HttpStatusCode status, Exception exception)
     {
       return new Ret
       {
@@ -163,7 +186,7 @@ namespace Toolset
       };
     }
 
-    public static Ret Create(HttpStatusCode status, string faultMessage, Exception exception)
+    public static Ret Fail(HttpStatusCode status, string faultMessage, Exception exception)
     {
       return new Ret
       {

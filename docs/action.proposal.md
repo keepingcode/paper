@@ -7,10 +7,10 @@ Action é o procedimento de alteração de dados do Paper.
 Formato da URI
 --------------
 
-A URI de ação é formada pela URI do recurso mais o nome da ação em PascalCase precedida por dois-pontos.  
+A URI de ação é formada pela URI do recurso mais o nome da ação em PascalCase precedida por hífen.  
 Exemplo:
 
-    http://host.com/My/Resource/:SaveMyResource
+    http://host.com/My/Resource/-SaveMyResource
 
 
 Estrutura da classe "form"

@@ -38,8 +38,21 @@ namespace Paper.Api.Extensions.Papers
     public async Task RenderAsync(Request req, Response res, NextAsync next)
     {
       var path = req.Path.Substring(Route.Length);
-      var paper = paperCatalog.FindExact(path).FirstOrDefault();
+
+      // Destacando a ação de uma URI, como em /My/Path/-MyAction
+      var tokens = path.Split("/-");
+      var paperPath = tokens.First();
+      var paperAction = tokens.Skip(1).FirstOrDefault() ?? "Index";
+
+      var paper = paperCatalog.FindExact(paperPath).FirstOrDefault();
       if (paper == null)
+      {
+        await next.Invoke();
+        return;
+      }
+
+      var hasAction = paper.GetMethod(paperAction) != null;
+      if (!hasAction)
       {
         await next.Invoke();
         return;
@@ -47,7 +60,8 @@ namespace Paper.Api.Extensions.Papers
 
       var context = new PaperContext();
       context.Paper = paper;
-      context.Path = path;
+      context.Path = paperPath;
+      context.Action = paperAction;
       context.Args = CreateArgs(path, paper, req, res);
       context.Request = req;
       context.Response = res;
@@ -63,7 +77,7 @@ namespace Paper.Api.Extensions.Papers
         return;
       }
       
-      Ret<Entity> media = await renderer.RenderAsync(context, result.Value);
+      Ret<Entity> media = await renderer.RenderAsync(context, result);
       if (!media.Ok)
       {
         var entity = HttpEntity.CreateFromRet(req.RequestUri, result);

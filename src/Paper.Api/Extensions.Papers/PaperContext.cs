@@ -12,6 +12,8 @@ namespace Paper.Api.Extensions.Papers
 
     public string Path { get; set; }
 
+    public string Action { get; set; }
+
     public HashMap Args { get; set; }
 
     public Request Request { get; set; }

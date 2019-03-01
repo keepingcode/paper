@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Paper.Api.Rendering;
@@ -25,27 +27,34 @@ namespace Paper.Api.Extensions.Papers
 
     public async Task<Ret<Result>> CallAsync(PaperContext context)
     {
+      var descriptor = context.Paper;
       var req = context.Request;
       var res = context.Response;
-      var path = context.Path;
-      var args = context.Args.Values.ToArray();
-      var paper = context.Paper;
 
-      Ret<Result> ret = CallPaperMethod(path, paper, req, res, args);
-      if (ret.Status.CodeClass != HttpStatusClass.Success)
+      Entity form = null;
+      if (!req.Method.EqualsAnyIgnoreCase(MethodNames.Get, MethodNames.Delete))
+      {
+        form = req.ReadEntityAsync().RunSync();
+
+        // TODO: Uma entidade diferente de "form" não está sendo suportada, mas poderia,
+        // se houvesse um algoritmo de conversão.
+        var isValid = form.Class.Has(ClassNames.Form);
+        if (!isValid)
+        {
+          return Ret.Fail(HttpStatusCode.BadRequest, "Formato de dados não suportado. Os dados devem ser enviados em uma entidade do tipo \"form\".");
+        }
+      }
+
+      MethodInfo method = descriptor.GetMethod(context.Action);
+      Ret<Result> ret = CallPaperMethod(descriptor.Paper, method, context.Args, form);
+
+      var isFailure = (ret.Status.CodeClass != HttpStatusClass.Success);
+      if (isFailure)
       {
         return await Task.FromResult(ret);
       }
 
       Result result = ret.Value;
-
-      var noResult = result.ValueType == typeof(void);
-      if (noResult)
-      {
-        ret = Ret.Create(HttpStatusCode.Found);
-        ret.Status.Headers[HeaderNames.Location] = req.RequestUri;
-        return await Task.FromResult(ret);
-      }
 
       var isUri = typeof(string).IsAssignableFrom(result.ValueType)
                || typeof(Uri).IsAssignableFrom(result.ValueType)
@@ -62,31 +71,47 @@ namespace Paper.Api.Extensions.Papers
       return await Task.FromResult(ret);
     }
 
-    private Ret<Result> CallPaperMethod(string path, PaperDescriptor paper, Request req, Response res, object[] args)
+    private Ret<Result> CallPaperMethod(IPaper paper, MethodInfo method, HashMap args, Entity form)
     {
       object result = null;
       try
       {
-        // TODO escolher entre Index e outros metodos
-        var method = paper.IndexMethod;
-
-        result = objectFactory.Invoke(paper.Paper, method, args);
+        var methodArgs = CreateParameters(paper, method, args, form);
+        result = objectFactory.Invoke(paper, method, methodArgs);
       }
       catch (Exception ex)
       {
         result = Ret.Fail(ex);
       }
 
-      var resultType = paper.IndexMethod.ReturnType;
+      var resultType = method.ReturnType;
       if (Is.Ret(resultType))
       {
-        resultType = TypeOf.Ret(resultType);
+        resultType = TypeOf.RetValue(resultType);
       }
 
       Ret<Result> ret;
       if (result == null)
       {
-        ret = Ret.Create(HttpStatusCode.NotFound);
+        // Um método que resulta "void" é considerado OK quando não emite exceção.
+        // Um método que resulta nulo é considerado NotFound (Não encontrado).
+        var isVoid = method.ReturnType == typeof(void);
+        if (isVoid)
+        {
+          ret = Ret.OK(new Result
+          {
+            Value = result,
+            ValueType = resultType
+          });
+        }
+        else
+        {
+          ret = Ret.NotFound(new Result
+          {
+            Value = result,
+            ValueType = resultType
+          });
+        }
       }
       else if (Is.Ret(result))
       {
@@ -111,5 +136,80 @@ namespace Paper.Api.Extensions.Papers
       return ret;
     }
 
+    private object[] CreateParameters(IPaper paper, MethodInfo method, HashMap args, Entity form)
+    {
+      var methodArgs = new List<object>();
+
+      var argKeys = args?.Keys.ToList() ?? new List<string>();
+      var formKeys = form?.Properties?.Keys.ToList() ?? new List<string>();
+      foreach (var parameter in method.GetParameters())
+      {
+        var name = parameter.Name;
+
+        string key = null;
+
+        key = argKeys.FirstOrDefault(x => x.EqualsIgnoreCase(name));
+        if (key != null)
+        {
+          var value = args[key];
+          var compatibleValue = CreateCompatibleValue(value, parameter.ParameterType);
+          methodArgs.Add(compatibleValue);
+          argKeys.Remove(key);
+          continue;
+        }
+
+        key = formKeys.FirstOrDefault(x => x.EqualsIgnoreCase(name));
+        if (key != null)
+        {
+          var value = form.Properties[key];
+          var compatibleValue = CreateCompatibleValue(value, parameter.ParameterType);
+          methodArgs.Add(compatibleValue);
+          formKeys.Remove(key);
+          continue;
+        }
+
+        if (Is.Collection(parameter.ParameterType))
+        {
+          var records = form.Children();
+          var itemType = TypeOf.CollectionElement(parameter.ParameterType);
+          var items = records.Select(record => CreateCompatibleValue(record.Properties, itemType));
+          var compatibleValue = CreateCompatibleValue(items, parameter.ParameterType);
+          methodArgs.Add(compatibleValue);
+        }
+        else
+        {
+          var record = form.Children().FirstOrDefault();
+          var compatibleValue = CreateCompatibleValue(record.Properties, parameter.ParameterType);
+          methodArgs.Add(compatibleValue);
+        }
+      }
+
+      return methodArgs.ToArray();
+    }
+
+    private object CreateCompatibleValue(object sourceValue, Type targetType)
+    {
+      if (sourceValue is PropertyMap map)
+      {
+        var instance = objectFactory.CreateObject(targetType);
+
+        foreach (var key in map.Keys)
+        {
+          var property = targetType.GetProperties().FirstOrDefault(x => x.Name.EqualsIgnoreCase(key));
+          if (property == null)
+            continue;
+
+          var value = map[key];
+          var compatibleValue = CreateCompatibleValue(value, property.PropertyType);
+          property.SetValue(instance, compatibleValue);
+        }
+
+        return instance;
+      }
+      else
+      {
+        return Change.To(sourceValue, targetType);
+      }
+    }
   }
 }
