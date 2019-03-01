@@ -11,8 +11,8 @@ namespace Toolset.Net
     public static string GetName(this MimeType mimetype)
     {
       var name = mimetype.ToString();
-      var property = typeof(MimeTypeNames).GetProperty(name);
-      return property?.GetValue(null)?.ToString();
+      var field = typeof(MimeTypeNames).GetField(name);
+      return field?.GetValue(null)?.ToString();
     }
   }
 }

@@ -42,13 +42,14 @@ namespace Paper.Browser.Lib
         }
 
         var request = HttpWebRequest.CreateHttp(uri);
+        request.Method = method;
         request.Accept = downType;
         request.Headers[HeaderNames.AcceptCharset] = downCharset;
 
         if (upData != null)
         {
-          request.Headers[HeaderNames.ContentType] = $"{upType}; charset={upCharset}";
-          using (var stream = await request.GetRequestStreamAsync())
+          request.ContentType = $"{upType}; charset={upCharset}";
+          using (var stream = request.GetRequestStream())
           {
             await SerializeAsync(upData, upType, upCharset, stream);
           }
@@ -58,7 +59,7 @@ namespace Paper.Browser.Lib
 
         try
         {
-          response = (HttpWebResponse)await request.GetResponseAsync();
+          response = (HttpWebResponse)request.GetResponse();
         }
         catch (WebException ex)
         {

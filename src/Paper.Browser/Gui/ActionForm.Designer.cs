@@ -41,7 +41,7 @@
       this.ContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.ContentPanel.Location = new System.Drawing.Point(10, 10);
       this.ContentPanel.Name = "ContentPanel";
-      this.ContentPanel.Size = new System.Drawing.Size(264, 42);
+      this.ContentPanel.Size = new System.Drawing.Size(264, 65);
       this.ContentPanel.TabIndex = 1;
       // 
       // pnActions
@@ -51,7 +51,7 @@
       this.pnActions.Controls.Add(this.SubmitButton);
       this.pnActions.Dock = System.Windows.Forms.DockStyle.Bottom;
       this.pnActions.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-      this.pnActions.Location = new System.Drawing.Point(10, 52);
+      this.pnActions.Location = new System.Drawing.Point(10, 75);
       this.pnActions.Name = "pnActions";
       this.pnActions.Padding = new System.Windows.Forms.Padding(0, 6, 0, 0);
       this.pnActions.Size = new System.Drawing.Size(264, 35);
@@ -81,7 +81,7 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(284, 97);
+      this.ClientSize = new System.Drawing.Size(284, 120);
       this.ControlBox = false;
       this.Controls.Add(this.ContentPanel);
       this.Controls.Add(this.pnActions);

@@ -11,5 +11,15 @@ namespace Toolset
     {
       // Nada a fazer. A tarefa será executada em paralelo.
     }
+
+    public static T RunSync<T>(this Task<T> task)
+    {
+      return task.GetAwaiter().GetResult();
+    }
+
+    public static void RunSync(this Task task)
+    {
+      task.GetAwaiter().GetResult();
+    }
   }
 }

@@ -25,18 +25,9 @@ namespace Paper.Browser.Lib
 
     public NavigatorForm Form { get; }
 
-    public async Task<Window> NavigateAsync(string uri, string target, Window current = null, IWin32Window parent = null)
+    private string MakeFrameName()
     {
-      var window = CreateWindow(target, current, parent);
-      window.Invalidate();
-
-      var http = new HttpClient();
-      var ret = await http.RequestAsync(uri, MethodNames.Get);
-
-      window.SetContent(ret);
-      window.Validate();
-
-      return window;
+      return Guid.NewGuid().ToString("B");
     }
 
     public Window CreateWindow(string target, Window reference = null, IWin32Window parent = null)
@@ -78,9 +69,32 @@ namespace Paper.Browser.Lib
       return window;
     }
 
-    private string MakeFrameName()
+    public async Task<Ret<Content>> RequestAsync(string uri, string method, Entity data)
     {
-      return Guid.NewGuid().ToString("B");
+      Ret<Content> ret;
+      try
+      {
+        var http = new HttpClient();
+        ret = await http.RequestAsync(uri, method, data);
+      }
+      catch (Exception ex)
+      {
+        ret = Ret.Fail(uri, ex);
+      }
+      return ret;
+    }
+
+    private void InvokeIgnoringErrors<T>(Action<T> action, T argument)
+    {
+      try
+      {
+        action?.Invoke(argument);
+      }
+      catch (Exception ex)
+      {
+        // TODO: O que fazer com esse erro?
+        ex.Trace();
+      }
     }
   }
 }

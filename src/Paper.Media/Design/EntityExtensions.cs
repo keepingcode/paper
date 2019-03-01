@@ -870,8 +870,15 @@ namespace Paper.Media.Design
     {
       if (graph != null)
       {
-        var propertyMap = (PropertyMap)PropertyMap.CreateCompatibleValue(graph, select, except);
-        entity.WithProperties().AddMany(propertyMap);
+        var compatibleValue = PropertyMap.CreateCompatibleValue(graph, select, except);
+        if (compatibleValue is PropertyMap map)
+        {
+          entity.WithProperties().AddMany(map);
+        }
+        else
+        {
+          throw new NotSupportedException("Tipo não suportado: " + graph.GetType().FullName);
+        }
       }
       return entity;
     }

@@ -20,9 +20,8 @@ namespace Paper.Media
     , ValueName = "Value"
   )]
   [KnownType(typeof(PropertyMap))]
-  //[KnownType(typeof(NameCollection))]
-  [KnownType(typeof(DictionaryEntry))]
   [KnownType(typeof(PropertyValueCollection))]
+  [KnownType(typeof(DictionaryEntry))]
   public class PropertyMap : HashMap<object>, IPropertyMap
   {
     PropertyMap IPropertyMap.Properties
@@ -45,7 +44,7 @@ namespace Paper.Media
 
     private static object UnwrapTerm(object value, IEnumerable<IEnumerable<string>> select, IEnumerable<IEnumerable<string>> except)
     {
-      if (!SerializationUtilities.IsSerializable(value) && !(value is PropertyMap))
+      if (!SerializationUtilities.IsSerializable(value))
       {
         if (value is IDictionary dictionary)
         {
@@ -53,7 +52,15 @@ namespace Paper.Media
         }
         else if (value is IEnumerable list)
         {
-          value = UnwrapArray(list, select, except);
+          var type = TypeOf.CollectionElement(value.GetType());
+          if (type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+          {
+            value = UnwrapKeyValuePairs(list, select, except);
+          }
+          else
+          {
+            value = UnwrapArray(list, select, except);
+          }
         }
         else
         {
@@ -106,6 +113,37 @@ namespace Paper.Media
       foreach (string key in keys)
       {
         var value = dictionary[key];
+
+        var deepSelect =
+          select?.Where(x => x.FirstOrDefault()?.EqualsIgnoreCase(key) == true).Select(x => x.Skip(1));
+        var deepExcept =
+          except?.Where(x => x.FirstOrDefault()?.EqualsIgnoreCase(key) == true).Select(x => x.Skip(1));
+
+        value = UnwrapTerm(value, deepSelect, deepExcept);
+
+        map.Add(key, value);
+      }
+      return map;
+    }
+
+    private static PropertyMap UnwrapKeyValuePairs(IEnumerable keyValuePairs, IEnumerable<IEnumerable<string>> select, IEnumerable<IEnumerable<string>> except)
+    {
+      var map = new PropertyMap();
+      var accept = select?.Select(x => x.FirstOrDefault()).NonNull();
+      var ignore = except?.Where(x => x.Count() == 1).Select(x => x.First()).NonNull();
+
+      var pairs =
+        from entry in keyValuePairs.Cast<object>()
+        let key = entry._Get("Key")?.ToString()
+        let value = entry._Get("Value")
+        where accept?.Any() != true || key.EqualsAnyIgnoreCase(accept)
+        where ignore?.Any() != true || !key.EqualsAnyIgnoreCase(ignore)
+        select new { key, value };
+
+      foreach (var pair in pairs)
+      {
+        var key = pair.key;
+        var value = pair.value;
 
         var deepSelect =
           select?.Where(x => x.FirstOrDefault()?.EqualsIgnoreCase(key) == true).Select(x => x.Skip(1));

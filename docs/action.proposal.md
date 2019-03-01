@@ -3,6 +3,7 @@ Action
 
 Action é o procedimento de alteração de dados do Paper.
 
+
 Formato da URI
 --------------
 
@@ -12,217 +13,143 @@ Exemplo:
     http://host.com/My/Resource/:SaveMyResource
 
 
-Formato dos Dados: Edição Mista
--------------------------------
+Estrutura da classe "form"
+--------------------------
 
-Na edição mista o provedor mescla a entidade afetada com campos de edição e trata os campos como campos de edição.
+Os dados do formulário são dispostos na propriedade especial "__form":
 
-Neste formato temos:
-
--   Campos de edição estruturados com a classe: form
-
-Exemplo:
-
-    // entity
     {
-      class: [ "form" ],
-      properties: {
-        form: {
-          formField: value,
-          ...
-        }
+      "class": [ "form" ],
+      "properties": {
+        "campo1": "valor1",
+        "campo2": "valor2"
       }
     }
 
-    // payload
+Um form pode ser acompanhado de um ou vários registros afetados.
+Neste caso a relação do registro com o "form" precisa ser explicitada.
+
     {
-      form: {
-        formField: value,
-        ...
-      }
-    }
-
-    // form-data
-    form[formField]=value
-    ...
-
-
-Formato dos Dados: Edição em Linha
-----------------------------------
-
-Na edição em linha o provedor evidencia a entidade afetada e os campos de edição.
-
-Neste formato temos:
-
--   Campos de edição estruturados com a classe: form
--   Campos da entidade estruturados com a classe: data
-
-Exemplo:
-
-    // entity
-    {
-      class: [ form, data, Class ],
-      properties: {
-        dataField: value,
-        ...
-        form: {
-          formField: value,
-          ...
-        }
-      }
-    }
-
-    // payload
-    {
-      form: {
-        formField: value,
-        ...
+      "class": [ "form" ],
+      "properties": {
+        "campo1": "valor1",
+        "campo2": "valor2"
       },
-      data: {
-        @class: Class,
-        dataField: value,
-        ...
-      }
-    }
-
-    // form-data
-    form[formField]=value
-    ...
-    data[@class]=Class
-    data[dataField]=value
-    ...
-
-Formato dos Dados: Edição em Lote
----------------------------------
-
-Na edição em lote o provedor evidencia as entidades afetadas e os campos de edição.
-Essa forma de edição permite a aplicação de uma mesma alteração às várias entidades afetadas.
-
-Neste formato temos:
-
--   Campos de edição estruturados com a classe: form
--   Campos das entidades estruturados com a classe: rows
-
-Exemplo:
-
-    // entity
-    {
-      class: [ form, rows ],
-      properties: {
-        form: {
-          formField: value,
-          ...
-        }
-      },
-      entities: [
+      "entities": [
         {
-          class: [ data, Class ]
-          properties: {
-            dataField: value,
-            ...,
+          "class": [ "record", "MyClass" ],
+          "rel": [ "record" ],
+          "properties": {
+            "id": "1",
+            "name": "Foo"
+            "__headers": {
+              "record": [ "id", "name" ]
+            }
+          }
+        },
+        {
+          "class": [ "record", "MyClass" ],
+          "rel": [ "record" ],
+          "properties": {
+            "id": "2",
+            "name": "Bar"
+            "__headers": {
+              "record": [ "id", "name" ]
+            }
           }
         }
       ]
     }
+    
 
-    // payload
+Estrutura do Payload
+--------------------
+
+Embora o formulário seja representado internamente pelo servidor como um estrutura de entidade da
+classe "form" é esperado que o envio do formulário realizado pelo aplicativo cliente seja feito
+pela estrutura Payload.
+
+A estrutura Payload representa apenas os dados do formulário e os registros afetados.
+O tipo de classe de cada registro pode ser indicado pela propriedade especiao "@class".
+
     {
-      form: {
-        formField: value,
-        ...
+      "form": { ... }
+      "records": [
+        {
+          "@class": "ClassName",
+          ...
+        }
+      ]
+    }
+
+    // Representação em "multipart/form-data"
+    form.field=value
+    records[index].@class=ClassName
+    records[index].field=value
+
+Por exemplo:
+
+    {
+      "form": {
+        "field1": "value1",
+        "field2": "value2"
       },
-      rows: [
+      "records": [
         {
-          @class: Class,
-          dataField: value,
-          ...
+          "@class": "MyClass",
+          "id": "1",
+          "name": "Foo"
+        },
+        {
+          "@class": "MyClass",
+          "id": "2",
+          "name": "Bar"
         }
       ]
     }
 
-    // form-data
-    form[formField]=value
-    ...
-    rows[0][@class]=Class
-    rows[0][dataField]=value
-    ...
-    
-Formato dos Dados: Edição em Linha Alternativa
-----------------------------------------------
+    // Representação em "multipart/form-data"
+    form.field1=value1
+    form.field2=value2
+    records[0].@class=MyClass
+    records[0].id=1
+    records[0].name=foo
+    records[1].@class=MyClass
+    records[1].id=2
+    records[1].name=Bar
 
-Na edição em linha alternativa o provedir mescla a entidade afetada com os campos de edição e trata os campos como campos de dados.
 
-Neste formato temos:
+O Payload suporta uma sintaxe alternativa para o caso em que apenas um registro é afetado,
+embora na tradução do Payload para Entity o registro é lançado na coleção de registros relacionados.
 
--   Campos de dados estruturados com a classe: data
-
-Exemplo:
-
-    // entity
     {
-      class: [ data, Class ],
-      properties: {
-        dataField: value,
+      "form": { ... }
+      "record": {
+        "@class": "ClassName",
         ...
       }
     }
 
-    // payload
+Por exemplo:
+
     {
-      data: {
-        @class: Class,
-        dataField: value,
-        ...
+      "form": {
+        "field1": "value1",
+        "field2": "value2"
+      },
+      "record": {
+        "@class": "MyClass",
+        "id": "1",
+        "name": "Foo"
       }
     }
 
-    // form-data
-    data[@class]=Class
-    data[dataField]=value
-    ...
-    
-Formato dos Dados: Edição em Bloco
-----------------------------------
-
-Na edição em bloco o provedor mescla as entidades afetadas com os campos de edição.
-Essa forma de edição permite a aplicação de alterações diferentes para cada entidade afetada.
-
-Neste formato temos:
-
--   Campos de dados estruturados com a classe: rows
-
-Exemplo:
-
-    // entity
-    {
-      class: [ rows, Class ],
-      entities: [
-        {
-          class: [ data ]
-          properties: {
-            dataOrFormField: value,
-            ...
-          }
-        }
-      ]
-    }
-
-    // payload
-    {
-      rows: [
-        {
-          @class: Class,
-          dataField: value,
-          ...
-        }
-      ]
-    }
-
-    // form-data
-    rows[0][@class]=value
-    rows[0][dataField]=value
-    ...
-
+    // Representação em "multipart/form-data"
+    form.field1=value1
+    form.field2=value2
+    record.@class=MyClass
+    record.id=1
+    record.name=foo
 
 
 Mimetypes
@@ -244,23 +171,23 @@ Mimetypes suportados no envio de dados:
 Roteamento
 ----------
 
-(OBSOLETO: NAO SERA DESSA FORMA)
-
 Action é identificada na rota na forma:
 
-    /rota/:action
+    /Rota/:Action
 
 Como em:
 
-    /user/:edit
+    /User/1/:Edit
 
-Um GET na rota da ação produz como resposta a própria entidade relacionada.
-Um POST na rota da ação produz a execução da ação correspondente.
+Uma requisição via GET produz como resposta uma requisição na URL base da ação.  
+Por exemplo:
 
-Portanto:
+    GET /User/1/:Edit
+    produz como resposta o mesmo que:
+    GET /User/1
 
--   provedorGET /user/:editprovedor se torna provedorGET /userprovedor
--   provedorPOST /user/:editprovedorprovedor executa a ação de edição do usuário.
+O agente da requisição pode usar a porção :Action para selecionar a ação específica dentro
+da coleção de ações da entidade obtida.
 
 
 Roteamento no PaperBot

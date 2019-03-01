@@ -40,7 +40,8 @@ namespace Toolset
       var genericType = (
         from iface in type.GetInterfaces()
         where iface.IsGenericType
-        where iface.GetGenericTypeDefinition() == typeof(IList<>)
+        where iface.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+           || iface.GetGenericTypeDefinition() == typeof(IList<>)
            || iface.GetGenericTypeDefinition() == typeof(ICollection<>)
         select iface
       ).FirstOrDefault();

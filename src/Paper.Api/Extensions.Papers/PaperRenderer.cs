@@ -182,27 +182,6 @@ namespace Paper.Api.Extensions.Papers
             .SetValue(parameterValue)
           );
         }
-        else if (isArray)
-        {
-          var elementType = TypeOf.CollectionElement(parameter.ParameterType);
-          var properties = elementType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-          var keys = (
-            from property in properties
-            select Conventions.MakeName(property.Name)
-          ).ToArray();
-
-          action.AddField("__records__", opt => opt
-            .SetTitle("Registros Afetados")
-            .SetPlaceholder("Selecione os registros afetados")
-            .SetDataType(DataTypeNames.ArrayOfRecords)
-            .SetProvider(provider => provider
-              .AddRel(RelNames.Self)
-              .SetKeys(keys)
-            )
-            .SetAllowMany()
-            .SetRequired()
-          );
-        }
         else if (isForm)
         {
           var properties = parameter.ParameterType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -215,6 +194,27 @@ namespace Paper.Api.Extensions.Papers
             );
           }
         }
+        else if (isArray)
+        {
+          var elementType = TypeOf.CollectionElement(parameter.ParameterType);
+          var properties = elementType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+          var keys = (
+            from property in properties
+            select Conventions.MakeName(property.Name)
+          ).ToArray();
+
+          action.AddField("Records", opt => opt
+            .SetTitle("Registros Afetados")
+            .SetPlaceholder("Selecione os registros afetados")
+            .SetDataType(DataTypeNames.ArrayOfRecords)
+            .SetProvider(provider => provider
+              .AddRel(RelNames.Self)
+              .SetKeys(keys)
+            )
+            .SetAllowMany()
+            .SetRequired()
+          );
+        }
         else
         {
           foreach (var propertyName in parameterValue._GetPropertyNames())
@@ -223,7 +223,7 @@ namespace Paper.Api.Extensions.Papers
             var propertyValue = property.GetValue(parameterValue);
 
             var subname = Conventions.MakeName(propertyName);
-            action.AddField($"Data.{subname}", opt => opt
+            action.AddField($"Record.{subname}", opt => opt
               .SetTitle(subname.ChangeCase(TextCase.ProperCase))
               .SetDataType(property.PropertyType)
               .SetHidden(true)

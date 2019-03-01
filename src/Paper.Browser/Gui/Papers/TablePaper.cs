@@ -220,7 +220,7 @@ namespace Paper.Browser.Gui.Papers
         return;
 
       var target = new UriString(href.ToString()).Path;
-      Window.NavigateAsync(href, target).NoAwait();
+      this.Window.NavigateAsync(href, target).NoAwait();
     }
 
     private void dgContent_CellContentClick(object sender, DataGridViewCellEventArgs e)

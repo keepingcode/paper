@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using System.Windows.Forms;
 using Paper.Browser.Gui;
 using Paper.Browser.Gui.Widgets;
 using Paper.Media;
+using Paper.Media.Design;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
 
@@ -35,44 +38,97 @@ namespace Paper.Browser.Lib
 
     public bool Submit()
     {
-      bool ok;
+      try
+      {
+        Form.SetBusy(true);
 
-      ok = Validate();
-      if (!ok)
-        return false;
+        Ret ret;
 
-      ok = SendForm();
-      if (!ok)
-        return false;
+        ret = Validate();
+        if (!ret.Ok)
+          return false;
 
-      Window.NavigateAsync(Window.Content.Href).NoAwait();
-      return true;
+        ret = SendFormAsync().RunSync();
+        if (!ret.Ok)
+          return false;
+
+        Form.Widgets().ForEach(x => x.CommitChanges());
+        Form.Close();
+
+        Window.NavigateAsync(Window.Content.Href).NoAwait();
+
+        return true;
+      }
+      finally
+      {
+        Form.SetBusy(false);
+      }
     }
 
-    private bool Validate()
+    private Ret Validate()
     {
-      bool isValid = true;
-      foreach (var widget in Form.Widgets())
+      try
       {
-        if (!widget.ValidateContent())
+        bool isValid = true;
+        foreach (var widget in Form.Widgets())
         {
-          isValid = false;
+          if (!widget.ValidateContent())
+          {
+            isValid = false;
+          }
         }
+        return isValid;
       }
-      return isValid;
+      catch (Exception ex)
+      {
+        // TODO: O que fazer com essa exceção?
+        ex.Trace();
+        return ex;
+      }
     }
 
-    private bool SendForm()
+    private async Task<Ret> SendFormAsync()
     {
-      foreach (var widget in Form.Widgets())
+      try
       {
-        widget.Field.Value = widget.Content;
+        var action = this.EntityAction;
+
+        var payload = new Payload();
+        foreach (var widget in Form.Widgets())
+        {
+          var field = widget.Field;
+          var value = widget.Content;
+          payload.SetProperty(field.Name, value);
+        }
+
+        var ret = await Navigator.Current.RequestAsync(action.Href, action.Method, payload);
+
+        var entity = ret.Value?.Data as Entity;
+        var entityIsStatus = (entity != null) && entity.Class.Has(ClassNames.Status);
+        var entityIsContent = !entityIsStatus && ret.Ok && (entity != null);
+
+        if (entityIsContent)
+        {
+          var target = Navigator.Current.CreateWindow(TargetNames.Blank);
+          target.SetContent(ret);
+          target.SetBusy(false);
+        }
+
+        if (entityIsStatus)
+        {
+          var target = Navigator.Current.CreateWindow(TargetNames.Blank, parent: Form);
+          target.SetContent(ret);
+          target.SetBusy(false);
+        }
+
+        return ret;
       }
-
-      // TODO: enviar para o servidor
-
-      Form.Widgets().ForEach(x => x.CommitChanges());
-      return true;
+      catch (Exception ex)
+      {
+        // TODO: O que fazer com essa exceção?
+        ex.Trace();
+        return ex;
+      }
     }
   }
 }

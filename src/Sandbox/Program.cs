@@ -46,14 +46,44 @@ namespace Sandbox
     {
       try
       {
-        var entity = new Entity();
-        entity.AddHeader("id", Class.Record);
-        entity.AddHeader("name", Class.Record);
-        entity.AddHeader("date", Class.Record);
+        var payload = new Payload();
+        payload.SetProperty("form.edit.field1", "one");
+        payload.SetProperty("form.edit.field2", "two");
+        payload.SetProperty("record.@class", "MyClass");
+        payload.SetProperty("record.id", "1");
+        payload.SetProperty("record.name", "one");
+        payload.SetProperty("records[0].@class", "MyClass");
+        payload.SetProperty("records[0].id", "1");
+        payload.SetProperty("records[0].name", "one");
+        payload.SetProperty("records[2].@class", "MyClass");
+        payload.SetProperty("records[2].id", "2");
+        payload.SetProperty("records[2].name", "two");
 
-        var json = entity.ToJson();
-        var result = new MediaSerializer(MimeType.Siren).Deserialize(json);
-        Debug.WriteLine(result.ToJson());
+        Debug.WriteLine("---");
+        Debug.WriteLine(payload.GetProperty("form.edit.field1"));
+        Debug.WriteLine(payload.GetProperty("form.edit.field2"));
+        Debug.WriteLine(payload.GetProperty("record.@class"));
+        Debug.WriteLine(payload.GetProperty("record.id"));
+        Debug.WriteLine(payload.GetProperty("record.name"));
+        Debug.WriteLine(payload.GetProperty("records[0].@class"));
+        Debug.WriteLine(payload.GetProperty("records[0].id"));
+        Debug.WriteLine(payload.GetProperty("records[0].name"));
+        Debug.WriteLine(payload.GetProperty("records[2].@class"));
+        Debug.WriteLine(payload.GetProperty("records[2].id"));
+        Debug.WriteLine(payload.GetProperty("records[2].name"));
+        Debug.WriteLine("---");
+
+        //Debug.WriteLine(payload.ToEntity().ToJson());
+
+
+        // var entity = new Entity();
+        // entity.AddHeader("id", Class.Record);
+        // entity.AddHeader("name", Class.Record);
+        // entity.AddHeader("date", Class.Record);
+        // 
+        // var json = entity.ToJson();
+        // var result = new MediaSerializer(MimeType.Siren).Deserialize(json);
+        // Debug.WriteLine(result.ToJson());
       }
       catch (Exception ex)
       {

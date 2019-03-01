@@ -186,17 +186,15 @@ namespace Paper.Browser.Lib
       action.Form.Show(this.Form);
     }
 
-    public void Invalidate()
-    {
-      Form.Call(() => Form.Overlay = true);
-    }
-
-    public void Validate()
+    public void SetBusy(bool busy)
     {
       Form.Call(() =>
       {
-        Form.Pack();
-        Form.Overlay = false;
+        Form.Overlay = busy;
+        if (!busy)
+        {
+          Form.Pack();
+        }
       });
     }
 
@@ -205,12 +203,13 @@ namespace Paper.Browser.Lib
       var target = $"{Name}_source";
       var window = Navigator.Current.CreateWindow(target, parent: this.Form);
       window.SetContent(contentRet, (w, content) => new TextPlainPaper(w, contentRet.Value));
-      window.Validate();
+      window.SetBusy(false);
     }
 
-    public async Task<Window> NavigateAsync(string uri, string target = TargetNames.Self)
+    public async Task NavigateAsync(string uri, string target = TargetNames.Self)
     {
-      return await Navigator.Current.NavigateAsync(uri, target, this);
+      var window = Navigator.Current.CreateWindow(target, this);
+      await Navigator.Current.NavigateAsync(uri, window);
     }
   }
 }

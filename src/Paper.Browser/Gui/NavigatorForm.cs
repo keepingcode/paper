@@ -34,7 +34,9 @@ namespace Paper.Browser.Gui
       if (location == null)
       {
         location = txLocation.Text.Trim();
-        txLocation.Text = null;
+
+        //TODO: Desativado apenas para os testes
+        //txLocation.Text = null;
       }
 
       if (string.IsNullOrWhiteSpace(location))
@@ -42,7 +44,8 @@ namespace Paper.Browser.Gui
         return;
       }
 
-      await Navigator.NavigateAsync(location, TargetNames.Blank);
+      var window = Navigator.CreateWindow(TargetNames.Blank);
+      await Navigator.NavigateAsync(location, window);
     }
 
     private void SetBounds()

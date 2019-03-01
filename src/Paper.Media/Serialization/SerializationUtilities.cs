@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Paper.Media.Utilities;
+using Toolset;
 
 namespace Paper.Media.Serialization
 {
@@ -16,6 +17,9 @@ namespace Paper.Media.Serialization
     /// <returns>Verdadeiro se o item é serializável; Falso caso contrário.</returns>
     public static bool IsSerializable(object item)
     {
+      if (item == null || item is PropertyMap)
+        return true;
+
       if (item is IEnumerable list && !(item is string))
       {
         if (item is IDictionary map)
@@ -25,17 +29,18 @@ namespace Paper.Media.Serialization
             && map.Values.Cast<object>().All(IsSerializable);
           return isSerializable;
         }
-        else
-        {
-          return list.Cast<object>().All(IsSerializable);
-        }
+
+        var elementType = TypeOf.CollectionElement(item);
+        if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+          return false;
+
+        return list.Cast<object>().All(IsSerializable);
       }
-      else
-      {
-        return item == null
-            || item.GetType().IsValueType
-            || IsStringCompatible(item);
-      }
+
+      if (item.GetType().IsGenericType && item.GetType().GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+        return false;
+
+      return item.GetType().IsValueType || IsStringCompatible(item);
     }
 
     /// <summary>

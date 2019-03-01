@@ -275,9 +275,9 @@ namespace Paper.Media.Serialization
             if (e.Node.Type.HasFlag(NodeType.Property))
             {
               var isPayload =
-                   "data".EqualsIgnoreCase(e.Node.Value as string)
-                || "rows".EqualsIgnoreCase(e.Node.Value as string)
-                || "form".EqualsIgnoreCase(e.Node.Value as string);
+                   "form".EqualsIgnoreCase(e.Node.Value as string)
+                || "record".EqualsIgnoreCase(e.Node.Value as string)
+                || "records".EqualsIgnoreCase(e.Node.Value as string);
 
               graphWriter = isPayload ? new GraphWriter(typeof(Payload)) : new GraphWriter(typeof(Entity));
               writer.SetWriter(graphWriter);

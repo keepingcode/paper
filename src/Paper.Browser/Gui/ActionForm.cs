@@ -26,6 +26,12 @@ namespace Paper.Browser.Gui
 
     public Lib.Action Action { get; }
 
+    public void SetBusy(bool busy)
+    {
+      SubmitButton.Enabled = !busy;
+      CancelButton.Enabled = !busy;
+    }
+
     public IEnumerable<IInputWidget> Widgets()
     {
       return ContentPanel.Controls.Cast<Control>().OfType<IInputWidget>();
@@ -47,29 +53,37 @@ namespace Paper.Browser.Gui
 
         int colExtent;
 
-        switch (field.DataType)
+        if (field.Type == FieldTypeNames.Hidden)
         {
-          //case DataTypeNames.Bit:
-          //case DataTypeNames.Decimal:
-          //case DataTypeNames.Date:
-          //case DataTypeNames.Time:
-          //case DataTypeNames.Datetime:
+          colExtent = 0;
+          widget = new HiddenWidget();
+        }
+        else
+        {
+          switch (field.DataType)
+          {
+            //case DataTypeNames.Bit:
+            //case DataTypeNames.Decimal:
+            //case DataTypeNames.Date:
+            //case DataTypeNames.Time:
+            //case DataTypeNames.Datetime:
 
-          case DataTypeNames.Number:
-            {
-              colExtent = 1;
-              widget = new NumberWidget();
-              break;
-            }
+            case DataTypeNames.Number:
+              {
+                colExtent = 1;
+                widget = new NumberWidget();
+                break;
+              }
 
-          case DataTypeNames.Label:
-          case DataTypeNames.Text:
-          default:
-            {
-              colExtent = 3;
-              widget = new TextWidget();
-              break;
-            }
+            case DataTypeNames.Label:
+            case DataTypeNames.Text:
+            default:
+              {
+                colExtent = 3;
+                widget = new TextWidget();
+                break;
+              }
+          }
         }
 
         widget.Field = field;

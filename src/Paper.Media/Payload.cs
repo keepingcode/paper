@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using Paper.Media.Design;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Collections;
 
@@ -13,37 +14,55 @@ namespace Paper.Media
   public class Payload
   {
     [DataMember]
-    public PropertyMap Data { get; set; }
-
-    [DataMember]
-    public RowCollection Rows { get; set; }
-
-    // TODO: Ainda nao suportado.
-    [DataMember]
     public PropertyMap Form { get; set; }
+
+    [DataMember]
+    public PropertyMap Record { get; set; }
+
+    [DataMember]
+    public RecordCollection Records { get; set; }
 
     public Entity ToEntity()
     {
       var entity = new Entity();
 
-      if (Data != null)
-      {
-        CopyMapToEntity(Data, entity, ClassNames.Record);
-      }
+      var hasForm = (Form != null);
+      var hasRecord = (Record != null);
+      var hasRecords = (Records != null);
 
-      if (Rows != null)
+      var allRecords = Enumerable.Empty<PropertyMap>();
+
+      if (hasForm)
       {
-        foreach (var row in Rows)
+        entity.AddClass(ClassNames.Form);
+        CopyMapToEntity(Form, entity);
+
+        if (hasRecord)
         {
-          var record = new Entity();
-          CopyMapToEntity(row, entity, ClassNames.Record);
-          entity.AddEntity(record);
+          allRecords = allRecords.Append(Record);
         }
       }
-
-      if (Form != null)
+      else if (hasRecord)
       {
-        CopyMapToEntity(Data, entity, ClassNames.Form);
+        entity.AddClass(ClassNames.Record);
+        CopyMapToEntity(Record, entity);
+      }
+      
+      if (hasRecords)
+      {
+        allRecords = allRecords.Concat(Records);
+      }
+
+      foreach (var record in allRecords)
+      {
+        var child = new Entity();
+        child.AddClass(ClassNames.Record);
+        if (hasForm)
+        {
+          child.AddRel(ClassNames.Form);
+        }
+        CopyMapToEntity(record, child);
+        entity.AddEntity(child);
       }
 
       return entity;
@@ -52,41 +71,44 @@ namespace Paper.Media
     public static Payload FromEntity(Entity entity)
     {
       var payload = new Payload();
-
-      var hasData = entity.Class.Has(ClassNames.Record);
-      if (hasData)
-      {
-        payload.Data = new PropertyMap();
-        CopyEntityToMap(entity, payload.Data, ClassNames.Record);
-      }
-
-      var hasRows = entity.Entities?.Any(e => e.Class.Has(ClassNames.Record)) == true;
-      if (hasRows)
-      {
-        payload.Rows = new RowCollection();
-
-        var records = entity.Entities.Where(e => e.Class.Has(ClassNames.Record));
-        foreach (var record in records)
-        {
-          var map = new PropertyMap();
-          CopyEntityToMap(record, map, ClassNames.Record);
-          payload.Rows.Add(map);
-        }
-      }
+      var children = entity.Children().Where(e => e.Class.Has(ClassNames.Record));
 
       var hasForm = entity.Class.Has(ClassNames.Form);
+      var hasRecord = entity.Class.Has(ClassNames.Record);
+
       if (hasForm)
       {
         payload.Form = new PropertyMap();
-        CopyEntityToMap(entity, payload.Form, ClassNames.Form);
+        CopyEntityToMap(entity, payload.Form);
+
+        if (hasRecord)
+        {
+          children = entity.AsSingle().Concat(children);
+        }
+      }
+      else if (hasRecord)
+      {
+        payload.Record = new PropertyMap();
+        CopyEntityToMap(entity, payload.Record);
+      }
+
+      if (children.Any())
+      {
+        payload.Records = new RecordCollection();
+        foreach (var child in children)
+        {
+          var map = new PropertyMap();
+          CopyEntityToMap(child, map);
+          payload.Records.Add(map);
+        }
       }
 
       return payload;
     }
 
-    private static void CopyEntityToMap(Entity entity, PropertyMap map, string defaultClass)
+    private static void CopyEntityToMap(Entity entity, PropertyMap map)
     {
-      var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First())) ?? defaultClass;
+      var @class = entity.Class?.FirstOrDefault(x => char.IsUpper(x.First()));
       if (@class != null)
       {
         map.Add("@class", @class);
@@ -100,16 +122,18 @@ namespace Paper.Media
       }
     }
 
-    private static void CopyMapToEntity(PropertyMap map, Entity entity, string defaultClass)
+    private static void CopyMapToEntity(PropertyMap map, Entity entity)
     {
-      var @class = map["@class"];
+      if (map["@class"] is string @class)
+      {
+        entity.AddClass(@class);
+      }
       var properties = map.Where(x => !x.Key.EqualsAnyIgnoreCase("@class"));
-      entity.AddClass(new[] { defaultClass, @class?.ToString() }.NonNull());
       entity.AddProperties(properties);
     }
 
-    [CollectionDataContract(Namespace = Namespaces.Default, Name = "Rows", ItemName = "Row")]
-    public class RowCollection : List<PropertyMap>
+    [CollectionDataContract(Namespace = Namespaces.Default, Name = "Records", ItemName = "Record")]
+    public class RecordCollection : List<PropertyMap>
     {
     }
   }
