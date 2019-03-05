@@ -116,6 +116,16 @@ namespace Paper.Media
     /// </summary>
     Action,
 
+    /// <summary>
+    /// Relaciona um elemento a uma lista de itens selecionados.
+    /// </summary>
+    Selection,
+
+    /// <summary>
+    /// Relaciona um elemento à uma ordenação.
+    /// </summary>
+    Sort
+
     #endregion
 
     #region Estruturais avançados

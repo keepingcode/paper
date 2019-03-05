@@ -14,6 +14,9 @@ namespace Paper.Media
   public class Payload
   {
     [DataMember]
+    public PropertyMap Error { get; set; }
+
+    [DataMember]
     public PropertyMap Form { get; set; }
 
     [DataMember]
@@ -26,43 +29,52 @@ namespace Paper.Media
     {
       var entity = new Entity();
 
+      var hasError = (Error != null);
       var hasForm = (Form != null);
       var hasRecord = (Record != null);
       var hasRecords = (Records != null);
 
       var allRecords = Enumerable.Empty<PropertyMap>();
 
-      if (hasForm)
+      if (hasError)
       {
-        entity.AddClass(ClassNames.Form);
-        CopyMapToEntity(Form, entity);
-
-        if (hasRecord)
-        {
-          allRecords = allRecords.Append(Record);
-        }
+        entity.AddClass(ClassNames.Status, ClassNames.Error);
+        CopyMapToEntity(Error, entity);
       }
-      else if (hasRecord)
+      else
       {
-        entity.AddClass(ClassNames.Record);
-        CopyMapToEntity(Record, entity);
-      }
-      
-      if (hasRecords)
-      {
-        allRecords = allRecords.Concat(Records);
-      }
-
-      foreach (var record in allRecords)
-      {
-        var child = new Entity();
-        child.AddClass(ClassNames.Record);
         if (hasForm)
         {
-          child.AddRel(ClassNames.Form);
+          entity.AddClass(ClassNames.Form);
+          CopyMapToEntity(Form, entity);
+
+          if (hasRecord)
+          {
+            allRecords = allRecords.Append(Record);
+          }
         }
-        CopyMapToEntity(record, child);
-        entity.AddEntity(child);
+        else if (hasRecord)
+        {
+          entity.AddClass(ClassNames.Record);
+          CopyMapToEntity(Record, entity);
+        }
+
+        if (hasRecords)
+        {
+          allRecords = allRecords.Concat(Records);
+        }
+
+        foreach (var record in allRecords)
+        {
+          var child = new Entity();
+          child.AddClass(ClassNames.Record);
+          if (hasForm)
+          {
+            child.AddRel(ClassNames.Form);
+          }
+          CopyMapToEntity(record, child);
+          entity.AddEntity(child);
+        }
       }
 
       return entity;
@@ -73,36 +85,44 @@ namespace Paper.Media
       var payload = new Payload();
       var children = entity.Children().Where(e => e.Class.Has(ClassNames.Record));
 
+      var hasError = entity.Class.Has(ClassNames.Error);
       var hasForm = entity.Class.Has(ClassNames.Form);
       var hasRecord = entity.Class.Has(ClassNames.Record);
 
-      if (hasForm)
+      if (hasError)
       {
-        payload.Form = new PropertyMap();
-        CopyEntityToMap(entity, payload.Form);
-
-        if (hasRecord)
+        payload.Error = new PropertyMap();
+        CopyEntityToMap(entity, payload.Error);
+      }
+      else
+      {
+        if (hasForm)
         {
-          children = entity.AsSingle().Concat(children);
+          payload.Form = new PropertyMap();
+          CopyEntityToMap(entity, payload.Form);
+
+          if (hasRecord)
+          {
+            children = entity.AsSingle().Concat(children);
+          }
+        }
+        else if (hasRecord)
+        {
+          payload.Record = new PropertyMap();
+          CopyEntityToMap(entity, payload.Record);
+        }
+
+        if (children.Any())
+        {
+          payload.Records = new RecordCollection();
+          foreach (var child in children)
+          {
+            var map = new PropertyMap();
+            CopyEntityToMap(child, map);
+            payload.Records.Add(map);
+          }
         }
       }
-      else if (hasRecord)
-      {
-        payload.Record = new PropertyMap();
-        CopyEntityToMap(entity, payload.Record);
-      }
-
-      if (children.Any())
-      {
-        payload.Records = new RecordCollection();
-        foreach (var child in children)
-        {
-          var map = new PropertyMap();
-          CopyEntityToMap(child, map);
-          payload.Records.Add(map);
-        }
-      }
-
       return payload;
     }
 

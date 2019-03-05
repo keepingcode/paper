@@ -21,6 +21,11 @@ namespace Toolset
 
     public RetFault Fault { get; set; }
 
+    public override string ToString()
+    {
+      return string.Join(" - ", Status.ToString(), Fault.ToString());
+    }
+
     public static implicit operator Ret(bool value)
     {
       return new Ret
@@ -73,6 +78,11 @@ namespace Toolset
         get => _headers ?? (_headers = new HashMap<string>());
         set => _headers = value;
       }
+
+      public override string ToString()
+      {
+        return $"{(int)Code} - {Code}";
+      }
     }
 
     public struct RetFault
@@ -80,6 +90,11 @@ namespace Toolset
       public string Message { get; set; }
 
       public Exception Exception { get; set; }
+
+      public override string ToString()
+      {
+        return Message ?? Exception?.Message;
+      }
     }
 
     #endregion

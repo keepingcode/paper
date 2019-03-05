@@ -14,29 +14,29 @@ namespace Toolset
   {
     public static object To(object value, Type targetType)
     {
-      return ConvertAny(value, targetType, Default.Of(targetType));
+      return Convert(value, targetType, Default.Of(targetType));
     }
 
     public static object To(object value, Type targetType, object defaultValue)
     {
-      return ConvertAny(value, targetType, defaultValue);
+      return Convert(value, targetType, defaultValue);
     }
 
     public static T To<T>(object value)
     {
-      return (T)ConvertAny(value, typeof(T), default(T));
+      return (T)Convert(value, typeof(T), default(T));
     }
 
     public static T To<T>(object value, T defaultValue)
     {
-      return (T)ConvertAny(value, typeof(T), defaultValue);
+      return (T)Convert(value, typeof(T), defaultValue);
     }
 
     public static object Try(object value, Type targetType)
     {
       try
       {
-        return ConvertAny(value, targetType, Default.Of(targetType));
+        return Convert(value, targetType, Default.Of(targetType));
       }
       catch
       {
@@ -48,7 +48,7 @@ namespace Toolset
     {
       try
       {
-        return ConvertAny(value, targetType, defaultValue);
+        return Convert(value, targetType, defaultValue);
       }
       catch
       {
@@ -60,7 +60,7 @@ namespace Toolset
     {
       try
       {
-        return (T)ConvertAny(value, typeof(T), default(T));
+        return (T)Convert(value, typeof(T), default(T));
       }
       catch
       {
@@ -72,7 +72,7 @@ namespace Toolset
     {
       try
       {
-        return (T)ConvertAny(value, typeof(T), defaultValue);
+        return (T)Convert(value, typeof(T), defaultValue);
       }
       catch
       {
@@ -84,7 +84,7 @@ namespace Toolset
     {
       try
       {
-        result = ConvertAny(value, targetType, Default.Of(targetType));
+        result = Convert(value, targetType, Default.Of(targetType));
         return true;
       }
       catch
@@ -98,7 +98,7 @@ namespace Toolset
     {
       try
       {
-        result = (T)ConvertAny(value, typeof(T), default(T));
+        result = (T)Convert(value, typeof(T), default(T));
         return true;
       }
       catch
@@ -108,7 +108,7 @@ namespace Toolset
       }
     }
 
-    private static object ConvertAny(object value, Type targetType, object defaultValue)
+    private static object Convert(object value, Type targetType, object defaultValue)
     {
       if (defaultValue == null)
       {
@@ -129,7 +129,7 @@ namespace Toolset
           var targetList = (IList)Activator.CreateInstance(targetType, sourceList.Count);
           for (int i = 0; i < sourceList.Count; i++)
           {
-            targetList[i] = ConvertSingleValue(sourceList[i], elementType);
+            targetList[i] = ConvertItem(sourceList[i], elementType);
           }
           return targetList;
         }
@@ -139,7 +139,7 @@ namespace Toolset
           var targetList = (IList)Activator.CreateInstance(targetType);
           foreach (var sourceElement in sourceList)
           {
-            var targetElement = ConvertSingleValue(sourceElement, elementType);
+            var targetElement = ConvertItem(sourceElement, elementType);
             targetList.Add(targetElement);
           }
           return targetList;
@@ -147,11 +147,11 @@ namespace Toolset
       }
       else
       {
-        return ConvertSingleValue(value, targetType) ?? defaultValue;
+        return ConvertItem(value, targetType) ?? defaultValue;
       }
     }
 
-    private static object ConvertSingleValue(object value, Type targetType)
+    private static object ConvertItem(object value, Type targetType)
     {
       Type sourceType = value?.GetType();
       try
@@ -166,129 +166,14 @@ namespace Toolset
           return value;
         }
 
-        if (targetType == typeof(bool))
+        if (Is.Var(targetType))
         {
-          if (value is string text)
-          {
-            return text == "1"
-                || text.Equals("true", StringComparison.InvariantCultureIgnoreCase)
-                || text.Equals("y", StringComparison.InvariantCultureIgnoreCase)
-                || text.Equals("yes", StringComparison.InvariantCultureIgnoreCase)
-                || text.Equals("on", StringComparison.InvariantCultureIgnoreCase)
-                || text.Equals("ok", StringComparison.InvariantCultureIgnoreCase)
-                || text.Equals("sim", StringComparison.InvariantCultureIgnoreCase);
-          }
-          else if (sourceType.IsValueType)
-          {
-            return !value.Equals(Default.Of(sourceType));
-          }
-          else
-          {
-            return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
-          }
-        }
-
-        if (targetType == typeof(string))
-        {
-          if (value is DateTime dateAndTime)
-          {
-            if (dateAndTime.Hour == 0
-             && dateAndTime.Minute == 0
-             && dateAndTime.Second == 0
-             && dateAndTime.Millisecond == 0)
-            {
-              return dateAndTime.ToString("yyyy-MM-dd");
-            }
-            else
-            {
-              return dateAndTime.ToString("yyyy-MM-ddTHH:mm:ss");
-            }
-          }
-          else
-          {
-            if (value._HasMethod("ToString", typeof(IFormatProvider)))
-            {
-              return value._Call("ToString", CultureInfo.InvariantCulture);
-            }
-            else
-            {
-              return value.ToString();
-            }
-          }
-        }
-
-        if (targetType == typeof(Guid))
-        {
-          return Guid.Parse(value.ToString());
-        }
-
-        if (targetType == typeof(Version))
-        {
-          return Version.Parse(value.ToString());
-        }
-
-        if (targetType == typeof(DateTime) && value is string dateTime)
-        {
-          if (Regex.IsMatch(dateTime, @"\d{4}-\d{2}-\d{2}.*"))
-          {
-            return DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
-          }
-        }
-
-        if (targetType == typeof(TimeSpan))
-        {
-          if (value is string timeSpan && Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
-          {
-            return DateTime.Parse(timeSpan);
-          }
-          if (value is long ticks)
-          {
-            return TimeSpan.FromTicks(ticks);
-          }
-        }
-
-        var flags = BindingFlags.Static | BindingFlags.Public;
-
-        var methods = sourceType.GetMethods(flags).Concat(targetType.GetMethods(flags));
-        var casting = (
-          from method in methods
-          where method.Name == "op_Implicit"
-             || method.Name == "op_Explicit"
-          where method.GetParameters().Length == 1
-             && sourceType.IsAssignableFrom(method.GetParameters().Single().ParameterType)
-             && targetType.IsAssignableFrom(method.ReturnType)
-          select method
-        ).FirstOrDefault();
-
-        if (casting != null)
-        {
-          var castValue = casting.Invoke(null, new[] { value });
-          return castValue;
-        }
-
-        targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-        object convertedValue;
-
-        if (targetType.IsEnum)
-        {
-          var text = value.ToString();
-          if (Regex.IsMatch(text, "[0-9]+"))
-          {
-            int number = int.Parse(text);
-            convertedValue = Enum.ToObject(targetType, number);
-          }
-          else
-          {
-            convertedValue = Enum.Parse(targetType, text);
-          }
+          return ConvertToVar(value, targetType);
         }
         else
         {
-          convertedValue = Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+          return ConvertValue(value, targetType);
         }
-
-        return convertedValue;
       }
       catch (InvalidCastException ex)
       {
@@ -297,6 +182,182 @@ namespace Toolset
           ex
         );
       }
+    }
+
+    private static object ConvertToVar(object value, Type targetType)
+    {
+      Type sourceType = value?.GetType();
+      if (value is Var var)
+      {
+        value = var.RawValue;
+        sourceType = value?.GetType();
+      }
+
+      object convertedValue = null;
+
+      if (Is.Collection(value))
+      {
+        var elementType = TypeOf.Var(targetType);
+        var arrayType = elementType.MakeArrayType();
+        convertedValue = ConvertValue(value, arrayType);
+      }
+      else if (value is Range range)
+      {
+        convertedValue = range;
+      }
+      else
+      {
+        var elementType = TypeOf.Var(targetType);
+        convertedValue = ConvertValue(value, elementType);
+      }
+
+      var varInstance = (Var)Activator.CreateInstance(targetType);
+      varInstance.RawValue = convertedValue;
+      return varInstance;
+    }
+
+    private static object ConvertValue(object value, Type targetType)
+    {
+      Type sourceType = value?.GetType();
+
+      if (value is Var var)
+      {
+        value = var.RawValue;
+        sourceType = value?.GetType();
+      }
+
+      if (value == null || value == DBNull.Value)
+      {
+        return null;
+      }
+      if (targetType.IsAssignableFrom(sourceType))
+      {
+        return value;
+      }
+
+      if (targetType == typeof(bool))
+      {
+        if (value is string text)
+        {
+          return text == "1"
+              || text.Equals("true", StringComparison.InvariantCultureIgnoreCase)
+              || text.Equals("y", StringComparison.InvariantCultureIgnoreCase)
+              || text.Equals("yes", StringComparison.InvariantCultureIgnoreCase)
+              || text.Equals("on", StringComparison.InvariantCultureIgnoreCase)
+              || text.Equals("ok", StringComparison.InvariantCultureIgnoreCase)
+              || text.Equals("sim", StringComparison.InvariantCultureIgnoreCase);
+        }
+        else if (sourceType.IsValueType)
+        {
+          return !value.Equals(Default.Of(sourceType));
+        }
+        else
+        {
+          return System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+        }
+      }
+
+      if (targetType == typeof(string))
+      {
+        if (value is DateTime dateAndTime)
+        {
+          if (dateAndTime.Hour == 0
+           && dateAndTime.Minute == 0
+           && dateAndTime.Second == 0
+           && dateAndTime.Millisecond == 0)
+          {
+            return dateAndTime.ToString("yyyy-MM-dd");
+          }
+          else
+          {
+            return dateAndTime.ToString("yyyy-MM-ddTHH:mm:ss");
+          }
+        }
+        else
+        {
+          if (value._HasMethod("ToString", typeof(IFormatProvider)))
+          {
+            return value._Call("ToString", CultureInfo.InvariantCulture);
+          }
+          else
+          {
+            return value.ToString();
+          }
+        }
+      }
+
+      if (targetType == typeof(Guid))
+      {
+        return Guid.Parse(value.ToString());
+      }
+
+      if (targetType == typeof(Version))
+      {
+        return Version.Parse(value.ToString());
+      }
+
+      if (targetType == typeof(DateTime) && value is string dateTime)
+      {
+        if (Regex.IsMatch(dateTime, @"\d{4}-\d{2}-\d{2}.*"))
+        {
+          return DateTime.Parse(dateTime, CultureInfo.InvariantCulture);
+        }
+      }
+
+      if (targetType == typeof(TimeSpan))
+      {
+        if (value is string timeSpan && Regex.IsMatch(timeSpan, @"(\d\.)?\d{2}:\d{2}.*"))
+        {
+          return DateTime.Parse(timeSpan);
+        }
+        if (value is long ticks)
+        {
+          return TimeSpan.FromTicks(ticks);
+        }
+      }
+
+      var flags = BindingFlags.Static | BindingFlags.Public;
+
+      var methods = sourceType.GetMethods(flags).Concat(targetType.GetMethods(flags));
+      var casting = (
+        from method in methods
+        where method.Name == "op_Implicit"
+           || method.Name == "op_Explicit"
+        where method.GetParameters().Length == 1
+           && sourceType.IsAssignableFrom(method.GetParameters().Single().ParameterType)
+           && targetType.IsAssignableFrom(method.ReturnType)
+        select method
+      ).FirstOrDefault();
+
+      if (casting != null)
+      {
+        var castValue = casting.Invoke(null, new[] { value });
+        return castValue;
+      }
+
+      targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+      object convertedValue;
+
+      if (targetType.IsEnum)
+      {
+        var text = value.ToString();
+        if (Regex.IsMatch(text, "[0-9]+"))
+        {
+          int number = int.Parse(text);
+          convertedValue = Enum.ToObject(targetType, number);
+        }
+        else
+        {
+          convertedValue = Enum.Parse(targetType, text);
+        }
+      }
+      else
+      {
+        convertedValue = System.Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+      }
+
+      return convertedValue;
     }
   }
 }

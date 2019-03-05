@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Paper.Api.Rendering;
+using Paper.Media.Data;
+using Toolset;
 using Toolset.Collections;
 
 namespace Paper.Api.Extensions.Papers
@@ -12,10 +14,12 @@ namespace Paper.Api.Extensions.Papers
 
     string Path { get; }
 
-    HashMap Args { get; }
+    Args Args { get; }
 
     Request Request { get; }
 
     Response Response { get; }
+
+    RenderContext RenderContext { get; }
   }
 }

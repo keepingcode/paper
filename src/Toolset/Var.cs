@@ -135,17 +135,6 @@ namespace Toolset
         : Change.To<string>(RawValue);
     }
 
-    public static Type GetUnderlyingType(Type type)
-    {
-      if (!typeof(Var).IsAssignableFrom(type))
-        return null;
-
-      if (!type.IsGenericType)
-        return typeof(object);
-
-      return type.GetGenericArguments().FirstOrDefault();
-    }
-
     public static implicit operator Var(object[] value)
     {
       return new Var(value);

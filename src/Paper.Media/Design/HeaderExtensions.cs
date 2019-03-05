@@ -23,19 +23,41 @@ namespace Paper.Media.Design
       if (headerNames == null)
         yield break;
 
-      foreach (string headerName in headerNames)
+      foreach (CaseVariantString headerName in headerNames)
       {
         var header = (
           from child in entity.Children()
           where child.Class.Has(ClassNames.Header)
              && child.Rel.Has(@class)
-             && headerName.EqualsIgnoreCase(child.Properties?["name"]?.ToString())
+             && headerName.Value.EqualsIgnoreCase(child.Properties?["name"]?.ToString())
           select child
         ).FirstOrDefault();
 
         yield return (header != null)
           ? (IHeaderInfo)new HeaderDesign(header)
           : (IHeaderInfo)new HeaderInfo(headerName);
+      }
+    }
+
+    public static IEnumerable<IHeaderInfo> Headers(this Entity entity)
+    {
+      var bag = entity?.Properties?[HeaderDesign.BagName] as PropertyMap;
+      foreach (var bagName in bag.Keys)
+      {
+        var headerNames = bag[bagName] as PropertyValueCollection;
+        foreach (CaseVariantString headerName in headerNames)
+        {
+          var header = (
+            from child in entity.Children()
+            where child.Class.Has(ClassNames.Header)
+               && headerName.Value.EqualsIgnoreCase(child.Properties?["name"]?.ToString())
+            select child
+          ).FirstOrDefault();
+
+          yield return (header != null)
+            ? (IHeaderInfo)new HeaderDesign(header)
+            : (IHeaderInfo)new HeaderInfo(headerName);
+        }
       }
     }
 

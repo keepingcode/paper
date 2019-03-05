@@ -24,6 +24,7 @@ namespace Paper.Api.Extensions.Papers
       this.PathTemplate = MakePath();
       this.Formatters = MakeFormatters().ToArray();
       this.Actions = MakeActions().ToArray();
+      this.Factories = MakeFactories().ToArray();
     }
 
     public IPaper Paper { get; }
@@ -41,6 +42,8 @@ namespace Paper.Api.Extensions.Papers
     public ICollection<MethodInfo> Formatters { get; }
 
     public ICollection<MethodInfo> Actions { get; }
+
+    public MethodInfo[] Factories { get; }
 
     private ParameterInfo[] MakePaperParameters()
     {
@@ -106,6 +109,24 @@ namespace Paper.Api.Extensions.Papers
          || typeof(Ret<UriString>).IsAssignableFrom(method.ReturnType))
         {
           yield return method;
+        }
+      }
+    }
+
+    private IEnumerable<MethodInfo> MakeFactories()
+    {
+      var knownMethods = IndexMethod.AsSingle().Concat(Formatters).Concat(Actions);
+      var methods = PaperType.GetMethods(BindingFlags.Public | BindingFlags.Instance).Except(knownMethods);
+      foreach (var method in methods)
+      {
+        if (typeof(Sort).IsAssignableFrom(method.ReturnType)
+         || typeof(Page).IsAssignableFrom(method.ReturnType)
+         || typeof(IFilter).IsAssignableFrom(method.ReturnType))
+        {
+          if (!method.GetParameters().Any())
+          {
+            yield return method;
+          }
         }
       }
     }

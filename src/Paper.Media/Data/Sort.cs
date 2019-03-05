@@ -31,7 +31,7 @@ namespace Paper.Media.Data
 
     #region Operacoes com Fields
 
-    public IEnumerable<string> Names => _fields;
+    public IEnumerable<string> FieldNames => _fields;
 
     public bool Contains(string fieldName)
     {
@@ -80,6 +80,12 @@ namespace Paper.Media.Data
       return field;
     }
 
+    public SortOrder GetSortOrder(string fieldName)
+    {
+      var field = GetSortedField(fieldName);
+      return (field != null) ? field.Value.Order : SortOrder.Unordered;
+    }
+
     public bool ContainsSortedField(string fieldName)
     {
       return _sortedFields.Any(x => x.Name.EqualsIgnoreCase(fieldName));
@@ -92,7 +98,7 @@ namespace Paper.Media.Data
 
     public void AddSortedField(SortedField field)
     {
-      var isValid = field.Name.EqualsAnyIgnoreCase(_fields);
+      var isValid = !_fields.Any() || field.Name.EqualsAnyIgnoreCase(_fields);
       if (isValid)
       {
         _sortedFields.Add(field);
@@ -122,7 +128,7 @@ namespace Paper.Media.Data
       CopyFromArgValue(uri.GetArg("sort"));
     }
 
-    public void CopyFrom(HashMap args)
+    public void CopyFrom(IDictionary args)
     {
       CopyFromArgValue(args["sort"]);
     }

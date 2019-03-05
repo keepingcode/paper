@@ -98,13 +98,46 @@ namespace Toolset
       return typeof(object);
     }
 
-    public static Type RetValue(object graph)
+    public static Type Ret(object graph)
     {
       var type = graph is Type t ? t : graph?.GetType();
       if (type == null)
         return null;
 
+      if (!Is.Ret(type))
+        return null;
+
       if (type == typeof(Ret))
+        return graph?.GetType() ?? typeof(object);
+
+      return type.GetGenericArguments().First();
+    }
+
+    public static Type Var(object graph)
+    {
+      var type = graph is Type t ? t : graph?.GetType();
+      if (type == null)
+        return null;
+
+      if (!Is.Var(type))
+        return null;
+
+      if (type == typeof(Var))
+        return graph?.GetType() ?? typeof(object);
+
+      return type.GetGenericArguments().First();
+    }
+
+    public static Type Range(object graph)
+    {
+      var type = graph is Type t ? t : graph?.GetType();
+      if (type == null)
+        return null;
+
+      if (!Is.Var(type))
+        return null;
+
+      if (type == typeof(Range))
         return graph?.GetType() ?? typeof(object);
 
       return type.GetGenericArguments().First();

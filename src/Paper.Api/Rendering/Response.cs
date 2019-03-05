@@ -67,8 +67,6 @@ namespace Paper.Api.Rendering
         serializer.Serialize(entity, memory, encoding);
         memory.Position = 0;
 
-        Status = HttpStatusCode.OK;
-
         Headers[HeaderNames.ContentType] = $"{contentType}; charset={encoding.WebName}";
         SetContentDisposition(mimeType, entity);
 

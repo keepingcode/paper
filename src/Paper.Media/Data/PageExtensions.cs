@@ -17,7 +17,7 @@ namespace Paper.Media.Data
       if (page == null)
         return items;
 
-      return items.Skip(page.Offset).Take(page.Size);
+      return items.Skip(page.Offset).Take(page.Limit);
     }
 
     public static IEnumerable<T> PaginateBy<T>(this IEnumerable<T> items, Page page)
@@ -25,7 +25,7 @@ namespace Paper.Media.Data
       if (page == null)
         return items;
 
-      return items.Skip(page.Offset).Take(page.Size);
+      return items.Skip(page.Offset).Take(page.Limit);
     }
   }
 }

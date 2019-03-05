@@ -92,23 +92,23 @@ namespace Paper.Media.Data
 
     #region IQueryable com seletor de propriedade
 
-    public static IQueryable<T> FilterBy<T, TKey>(
-        this IQueryable<T> items
-      , Filter filter
-      , Expression<Func<T, TKey>> keySelector)
-    {
-      var fields = new FieldMap(filter);
-      return DoFilterBy(items, fields, keySelector);
-    }
+    //public static IQueryable<T> FilterBy<T, TKey>(
+    //    this IQueryable<T> items
+    //  , Filter filter
+    //  , Expression<Func<T, TKey>> keySelector)
+    //{
+    //  var fields = new FieldMap(filter);
+    //  return DoFilterBy(items, fields, keySelector);
+    //}
 
-    public static IQueryable<T> ThenBy<T, TKey>(
-        this IQueryable<T> items
-      , Filter filter
-      , Expression<Func<T, TKey>> keySelector)
-    {
-      var fields = new FieldMap(filter);
-      return DoFilterBy(items, fields, keySelector);
-    }
+    //public static IQueryable<T> ThenBy<T, TKey>(
+    //    this IQueryable<T> items
+    //  , Filter filter
+    //  , Expression<Func<T, TKey>> keySelector)
+    //{
+    //  var fields = new FieldMap(filter);
+    //  return DoFilterBy(items, fields, keySelector);
+    //}
 
     private static IQueryable<T> DoFilterBy<T, TKey>(
         this IQueryable<T> items
@@ -137,23 +137,23 @@ namespace Paper.Media.Data
 
     #region IEnumerable com seletor de propriedade
 
-    public static IEnumerable<T> FilterBy<T, TKey>(
-        this IEnumerable<T> items
-      , Filter filter
-      , Expression<Func<T, TKey>> keySelector)
-    {
-      var fields = new FieldMap(filter);
-      return DoFilterBy(items, fields, keySelector);
-    }
+    //public static IEnumerable<T> FilterBy<T, TKey>(
+    //    this IEnumerable<T> items
+    //  , Filter filter
+    //  , Expression<Func<T, TKey>> keySelector)
+    //{
+    //  var fields = new FieldMap(filter);
+    //  return DoFilterBy(items, fields, keySelector);
+    //}
 
-    public static IEnumerable<T> ThenBy<T, TKey>(
-        this IEnumerable<T> items
-      , Filter filter
-      , Expression<Func<T, TKey>> keySelector)
-    {
-      var fields = new FieldMap(filter);
-      return DoFilterBy(items, fields, keySelector);
-    }
+    //public static IEnumerable<T> ThenBy<T, TKey>(
+    //    this IEnumerable<T> items
+    //  , Filter filter
+    //  , Expression<Func<T, TKey>> keySelector)
+    //{
+    //  var fields = new FieldMap(filter);
+    //  return DoFilterBy(items, fields, keySelector);
+    //}
 
     private static IEnumerable<T> DoFilterBy<T, TKey>(
         this IEnumerable<T> items

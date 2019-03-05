@@ -15,7 +15,7 @@ namespace Paper.Api.Rendering
     public Request(IHttpRequest request)
     {
       this.request = request;
-      this.QueryArgs = new QueryArgs(request.RequestUri);
+      this.QueryArgs = Args.ParseQueryArgs(request.RequestUri);
     }
 
     public string RequestUri => request.RequestUri;
@@ -30,7 +30,7 @@ namespace Paper.Api.Rendering
 
     public Stream Body => request.Body;
 
-    public QueryArgs QueryArgs { get; }
+    public Args QueryArgs { get; }
 
     public async Task<Entity> ReadEntityAsync()
     {

@@ -49,7 +49,7 @@ namespace Paper.Media.Data
     {
       while (value is Var var)
       {
-        value = var.Value;
+        value = var.RawValue;
       }
       return value;
     }

@@ -10,145 +10,75 @@ namespace Paper.Media.Data
 {
   public class Page
   {
-    private int count;
-    private int index;
-
-    private bool _isOffsetSet;
-    private bool _isLimitSet;
+    private int _offset;
+    private int _limit;
 
     public Page()
     {
-      this.Size = 50;
-      this.Number = 1;
+      this.Offset = 0;
+      this.Limit = 50;
     }
 
-    public int Limit
+    public Page(int offset, int limit)
     {
-      get => count;
-      set
-      {
-        SetLimitOrSize(value);
-        IsLimitSet = true;
-      }
-    }
-
-    public int Size
-    {
-      get => count;
-      set
-      {
-        SetLimitOrSize(value);
-        IsSizeSet = true;
-      }
+      this.Offset = offset;
+      this.Limit = limit;
     }
 
     public int Offset
     {
-      get => IsOffsetSet ? index : (index - 1) * count;
-      set
-      {
-        index = (value > 0) ? value : 0;
-        IsOffsetSet = true;
-      }
+      get => _offset;
+      set => _offset = (value > 0) ? value : 0;
     }
 
-    public int Number
+    public int Limit
     {
-      get => IsNumberSet ? index : (index / count) + 1;
-      set
-      {
-        index = (value > 1) ? value : 1;
-        IsNumberSet = true;
-      }
+      get => _limit;
+      set => _limit = (value > 0) ? value : 50;
     }
 
-    public bool IsLimitSet
+    public void IncreaseLimit(int amount = 1)
     {
-      get => _isLimitSet;
-      set => _isLimitSet = value;
+      Limit += amount;
     }
 
-    public bool IsSizeSet
+    public void DecreaseLimit(int amount = 1)
     {
-      get => !_isLimitSet;
-      set => _isLimitSet = !value;
-    }
-
-    public bool IsOffsetSet
-    {
-      get => _isOffsetSet;
-      set => _isOffsetSet = value;
-    }
-
-    public bool IsNumberSet
-    {
-      get => !_isOffsetSet;
-      set => _isOffsetSet = !value;
-    }
-
-    public void SetLimitOrSize(int value)
-    {
-      count = (value > 0) ? value : 50;
+      var newLimit= Limit -= amount;
+      Limit = newLimit > 0 ? newLimit : 1;
     }
 
     public Page Clone()
     {
-      return new Page
-      {
-        count = this.count,
-        index = this.index,
-        _isOffsetSet = this._isOffsetSet,
-        _isLimitSet = this._isLimitSet
-      };
+      return new Page { Offset = this.Offset, Limit = this.Limit };
     }
 
-    public Page FirstPage()
+    public Page GetFirstPage()
     {
       var clone = this.Clone();
-      if (clone.IsNumberSet)
-      {
-        clone.Number = 1;
-      }
-      else
-      {
-        clone.Offset = 0;
-      }
+      clone.Offset = 0;
       return clone;
     }
 
-    public Page NextPage()
+    public Page GetNextPage()
     {
+      var newOffset = this.Offset + this.Limit;
+
       var clone = this.Clone();
-      if (clone.IsNumberSet)
-      {
-        clone.Number++;
-      }
-      else
-      {
-        clone.Offset += clone.Size;
-      }
+      clone.Offset = newOffset;
       return clone;
     }
 
-    public Page PreviousPage()
+    public Page GetPreviousPage()
     {
+      var newOffset = this.Offset - this.Limit;
+      if (newOffset < 0)
+      {
+        newOffset = 0;
+      }
+
       var clone = this.Clone();
-      if (clone.IsNumberSet)
-      {
-        if (clone.Number <= 1)
-          return null;
-
-        clone.Number--;
-      }
-      else
-      {
-        if (clone.Offset <= 0)
-          return null;
-
-        clone.Offset -= clone.Size;
-        if (clone.Offset < 0)
-          clone.Offset = 0;
-      }
+      clone.Offset = newOffset;
       return clone;
     }
 
@@ -157,22 +87,10 @@ namespace Paper.Media.Data
       if (uri == null)
         return;
 
-      var page = Change.To<int?>(uri.GetArg("page"));
-      if (page != null)
-      {
-        Number = page.Value;
-      }
-
       var offset = Change.To<int?>(uri.GetArg("offset"));
       if (offset != null)
       {
         Offset = offset.Value;
-      }
-
-      var pageSize = Change.To<int?>(uri.GetArg("pageSize"));
-      if (pageSize != null)
-      {
-        Size = pageSize.Value;
       }
 
       var limit = Change.To<int?>(uri.GetArg("limit"));
@@ -182,27 +100,15 @@ namespace Paper.Media.Data
       }
     }
 
-    public void CopyFrom(HashMap args)
+    public void CopyFrom(IDictionary args)
     {
       if (args == null)
         return;
-
-      var page = Change.To<int?>(args["page"]);
-      if (page != null)
-      {
-        Number = page.Value;
-      }
 
       var offset = Change.To<int?>(args["offset"]);
       if (offset != null)
       {
         Offset = offset.Value;
-      }
-
-      var pageSize = Change.To<int?>(args["pageSize"]);
-      if (pageSize != null)
-      {
-        Size = pageSize.Value;
       }
 
       var limit = Change.To<int?>(args["limit"]);
@@ -214,76 +120,18 @@ namespace Paper.Media.Data
 
     public UriString CreateUri(UriString baseUri)
     {
-      if (IsNumberSet)
-      {
-        baseUri = baseUri.SetArg("page", Number);
-      }
-      else
-      {
-        baseUri = baseUri.SetArg("offset", Offset);
-      }
-      if (IsSizeSet)
-      {
-        baseUri = baseUri.SetArg("pageSize", Size);
-      }
-      else
-      {
-        baseUri = baseUri.SetArg("limit", Limit);
-      }
-      return baseUri;
+      return baseUri.SetArg("offset", Offset).SetArg("limit", Limit);
     }
 
     public void CopyTo(HashMap args)
     {
-      if (IsNumberSet)
-      {
-        args["page"] = Number;
-      }
-      else
-      {
-        args["offset"] = Offset;
-      }
-
-      if (IsSizeSet)
-      {
-        args["pageSize"] = Size;
-      }
-      else
-      {
-        args["limit"] = Limit;
-      }
+      args["offset"] = Offset;
+      args["limit"] = Limit;
     }
 
     public override string ToString()
     {
-      var builder = new StringBuilder();
-      if (IsNumberSet)
-      {
-        builder.Append("page=").Append(Number);
-      }
-      else
-      {
-        builder.Append("offset=").Append(Offset);
-      }
-      if (IsSizeSet)
-      {
-        builder.Append("&pageSize=").Append(Size);
-      }
-      else
-      {
-        builder.Append("&limit=").Append(Limit);
-      }
-      return builder.ToString();
-    }
-
-    public static Page CreateOffset(int? limit = 50, int? offset = 0)
-    {
-      return new Page { Limit = limit.Value, Offset = offset.Value };
-    }
-
-    public static Page CreatePage(int? pageSize = 50, int? page = 1)
-    {
-      return new Page { Size = pageSize.Value, Number = page.Value };
+      return $"offset={Offset}&limit={Limit}";
     }
   }
 }

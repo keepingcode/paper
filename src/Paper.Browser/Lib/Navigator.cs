@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Browser.Gui;
 using Paper.Media;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Net;
 
@@ -74,6 +76,11 @@ namespace Paper.Browser.Lib
       Ret<Content> ret;
       try
       {
+        Debug.WriteLine("--- REQUEST ---");
+        Debug.WriteLine(uri);
+        Debug.WriteLine(data.ToJson());
+        Debug.WriteLine("---------------");
+
         var http = new HttpClient();
         ret = await http.RequestAsync(uri, method, data);
       }
@@ -81,6 +88,16 @@ namespace Paper.Browser.Lib
       {
         ret = Ret.Fail(uri, ex);
       }
+
+      Debug.WriteLine("--- RESPONSE ---");
+      Debug.WriteLine(ret.Value?.Href);
+      Debug.WriteLine(ret);
+      if (ret.Value?.Data is Entity entity)
+      {
+        Debug.WriteLine(entity.ToJson());
+      }
+      Debug.WriteLine("---------------");
+
       return ret;
     }
 

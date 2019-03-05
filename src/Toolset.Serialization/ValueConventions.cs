@@ -55,8 +55,8 @@ namespace Toolset.Serialization
       //
       // Mar/2017
       // Guga Coder
-      if (text.Length <= 15) {
-        isNumeric = Regex.IsMatch(text, @"^\d+([.]\d+)?$", RegexOptions.CultureInvariant);
+      if (text.Length <= 16) {
+        isNumeric = Regex.IsMatch(text, @"^-?\d{1,15}([.]\d{1,15})?$", RegexOptions.CultureInvariant);
       }
       if (!isNumeric)
       {

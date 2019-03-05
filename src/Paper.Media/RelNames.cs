@@ -120,6 +120,11 @@ namespace Paper.Media
     /// </summary>
     public const string Selection = "selection";
 
+    /// <summary>
+    /// Relaciona um elemento à uma ordenação.
+    /// </summary>
+    public const string Sort = "sort";
+
     #endregion
   }
 }

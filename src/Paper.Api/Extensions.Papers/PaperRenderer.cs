@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Paper.Api.Rendering;
 using Paper.Media;
+using Paper.Media.Data;
 using Paper.Media.Design;
 using Paper.Media.Serialization;
 using Toolset;
@@ -51,7 +52,18 @@ namespace Paper.Api.Extensions.Papers
       var isList = typeof(IEnumerable).IsAssignableFrom(valueType);
       if (isList)
       {
-        var list = (IEnumerable)value;
+        var list = ((IEnumerable)value).Cast<object>();
+
+        if (context.RenderContext.Page is Page page)
+        {
+          context.RenderContext.HasMorePages = (list.Count() >= page.Limit);
+          page.DecreaseLimit();
+
+          if (context.RenderContext.HasMorePages)
+          {
+            list = list.SkipLast(1);
+          }
+        }
 
         entity.SetTitle(Conventions.MakeTitle(context.Paper.PaperType));
         entity.AddEntities(list, (item, e) =>
@@ -69,6 +81,7 @@ namespace Paper.Api.Extensions.Papers
       }
 
       FormatEntity(context, entity, args);
+      LinkEntity(context, entity);
 
       return await Task.FromResult(entity);
     }
@@ -91,6 +104,60 @@ namespace Paper.Api.Extensions.Papers
         RunFormatters(context, entity, new object[0], graph);
         RunActionBuilders(context, entity, new object[0], graph);
       }
+    }
+
+    private void LinkEntity(PaperContext context, Entity entity)
+    {
+      var uri = new UriString(context.Request.RequestUri);
+
+      if (context.RenderContext.Filter is IFilter filter)
+      {
+        uri = filter.CreateUri(uri);
+      }
+
+      if (context.RenderContext.Sort is Sort sort)
+      {
+        uri = sort.CreateUri(uri);
+
+        var headers = entity.Headers().OfType<HeaderDesign>();
+        foreach (var fieldName in sort.FieldNames)
+        {
+          var matches = headers.Where(x => x.Name.EqualsIgnoreCase(fieldName));
+          foreach (var header in matches)
+          {
+            header.Order = sort.GetSortOrder(fieldName);
+
+            var order = header.Order == SortOrder.Ascending ? ":desc" : "";
+            var href = uri.SetArg("sort", $"{header.Name}{order}");
+            header.HeaderEntity.AddLink(href, opt => opt.AddRel(RelNames.Sort));
+          }
+        }
+      }
+
+      if (context.RenderContext.Page is Page page)
+      {
+        uri = page.CreateUri(uri);
+
+        if (page.Offset > 0)
+        {
+          var href = page.GetFirstPage().CreateUri(uri);
+          entity.AddLink(href, opt => opt.AddRel(RelNames.First));
+        }
+
+        if (page.Offset > page.Limit)
+        {
+          var href = page.GetPreviousPage().CreateUri(uri);
+          entity.AddLink(href, opt => opt.AddRel(RelNames.Prev));
+        }
+
+        if (context.RenderContext.HasMorePages)
+        {
+          var href = page.GetNextPage().CreateUri(uri);
+          entity.AddLink(href, opt => opt.AddRel(RelNames.Next));
+        }
+      }
+
+      entity.SetSelfLink(uri);
     }
 
     private void RunFormatters(PaperContext context, Entity entity, object[] args, object graph = null)

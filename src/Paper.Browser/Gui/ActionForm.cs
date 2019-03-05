@@ -53,7 +53,13 @@ namespace Paper.Browser.Gui
 
         int colExtent;
 
-        if (field.Type == FieldTypeNames.Hidden)
+        if (field.Rel.Has(RelNames.Self) && Action.Selection != null)
+        {
+          colExtent = 0;
+          widget = new HiddenWidget();
+          widget.Content = Action.Selection;
+        }
+        else if(field.Type == FieldTypeNames.Hidden)
         {
           colExtent = 0;
           widget = new HiddenWidget();

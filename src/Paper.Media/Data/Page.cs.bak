@@ -1,0 +1,304 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Toolset;
+using Toolset.Collections;
+
+namespace Paper.Media.Data
+{
+  public class Page
+  {
+    private int count;
+    private int index;
+
+    private bool _isOffsetSet;
+    private bool _isLimitSet;
+
+    public Page()
+    {
+      this.Size = 50;
+      this.Number = 1;
+    }
+
+    public int Limit
+    {
+      get => count;
+      set
+      {
+        ItemsPerPage = value;
+        IsLimitSet = true;
+      }
+    }
+
+    public int Size
+    {
+      get => count;
+      set
+      {
+        ItemsPerPage = value;
+        IsSizeSet = true;
+      }
+    }
+
+    public int Offset
+    {
+      get => IsOffsetSet ? index : (index - 1) * count;
+      set
+      {
+        index = (value > 0) ? value : 0;
+        IsOffsetSet = true;
+      }
+    }
+
+    public int Number
+    {
+      get => IsNumberSet ? index : (index / count) + 1;
+      set
+      {
+        index = (value > 1) ? value : 1;
+        IsNumberSet = true;
+      }
+    }
+
+    public int ItemsPerPage
+    {
+      get => count;
+      set => count = (value > 0) ? value : 50;
+    }
+
+    public bool IsLimitSet
+    {
+      get => _isLimitSet;
+      set => _isLimitSet = value;
+    }
+
+    public bool IsSizeSet
+    {
+      get => !_isLimitSet;
+      set => _isLimitSet = !value;
+    }
+
+    public bool IsOffsetSet
+    {
+      get => _isOffsetSet;
+      set => _isOffsetSet = value;
+    }
+
+    public bool IsNumberSet
+    {
+      get => !_isOffsetSet;
+      set => _isOffsetSet = !value;
+    }
+
+    public void IncreaseItemsPerPage(int amount = 1)
+    {
+      count += amount;
+    }
+
+    public void DecreaseItemsPerPage(int amount = 1)
+    {
+      count -= amount;
+      if (count < 1)
+      {
+        count = 1;
+      }
+    }
+
+    public Page Clone()
+    {
+      return new Page
+      {
+        count = this.count,
+        index = this.index,
+        _isOffsetSet = this._isOffsetSet,
+        _isLimitSet = this._isLimitSet
+      };
+    }
+
+    public Page FirstPage()
+    {
+      var clone = this.Clone();
+      if (clone.IsNumberSet)
+      {
+        clone.Number = 1;
+      }
+      else
+      {
+        clone.Offset = 0;
+      }
+      return clone;
+    }
+
+    public Page NextPage()
+    {
+      var clone = this.Clone();
+      if (clone.IsNumberSet)
+      {
+        clone.Number++;
+      }
+      else
+      {
+        clone.Offset += clone.Size;
+      }
+      return clone;
+    }
+
+    public Page PreviousPage()
+    {
+      var clone = this.Clone();
+      if (clone.IsNumberSet)
+      {
+        if (clone.Number <= 1)
+          return null;
+
+        clone.Number--;
+      }
+      else
+      {
+        if (clone.Offset <= 0)
+          return null;
+
+        clone.Offset -= clone.Size;
+        if (clone.Offset < 0)
+          clone.Offset = 0;
+      }
+      return clone;
+    }
+
+    public void CopyFrom(UriString uri)
+    {
+      if (uri == null)
+        return;
+
+      var page = Change.To<int?>(uri.GetArg("page"));
+      if (page != null)
+      {
+        Number = page.Value;
+      }
+
+      var offset = Change.To<int?>(uri.GetArg("offset"));
+      if (offset != null)
+      {
+        Offset = offset.Value;
+      }
+
+      var pageSize = Change.To<int?>(uri.GetArg("pageSize"));
+      if (pageSize != null)
+      {
+        Size = pageSize.Value;
+      }
+
+      var limit = Change.To<int?>(uri.GetArg("limit"));
+      if (limit != null)
+      {
+        Limit = limit.Value;
+      }
+    }
+
+    public void CopyFrom(IDictionary args)
+    {
+      if (args == null)
+        return;
+
+      var page = Change.To<int?>(args["page"]);
+      if (page != null)
+      {
+        Number = page.Value;
+      }
+
+      var offset = Change.To<int?>(args["offset"]);
+      if (offset != null)
+      {
+        Offset = offset.Value;
+      }
+
+      var pageSize = Change.To<int?>(args["pageSize"]);
+      if (pageSize != null)
+      {
+        Size = pageSize.Value;
+      }
+
+      var limit = Change.To<int?>(args["limit"]);
+      if (limit != null)
+      {
+        Limit = limit.Value;
+      }
+    }
+
+    public UriString CreateUri(UriString baseUri)
+    {
+      if (IsNumberSet)
+      {
+        baseUri = baseUri.SetArg("page", Number);
+      }
+      else
+      {
+        baseUri = baseUri.SetArg("offset", Offset);
+      }
+      if (IsSizeSet)
+      {
+        baseUri = baseUri.SetArg("pageSize", Size);
+      }
+      else
+      {
+        baseUri = baseUri.SetArg("limit", Limit);
+      }
+      return baseUri;
+    }
+
+    public void CopyTo(HashMap args)
+    {
+      if (IsNumberSet)
+      {
+        args["page"] = Number;
+      }
+      else
+      {
+        args["offset"] = Offset;
+      }
+
+      if (IsSizeSet)
+      {
+        args["pageSize"] = Size;
+      }
+      else
+      {
+        args["limit"] = Limit;
+      }
+    }
+
+    public override string ToString()
+    {
+      var builder = new StringBuilder();
+      if (IsNumberSet)
+      {
+        builder.Append("page=").Append(Number);
+      }
+      else
+      {
+        builder.Append("offset=").Append(Offset);
+      }
+      if (IsSizeSet)
+      {
+        builder.Append("&pageSize=").Append(Size);
+      }
+      else
+      {
+        builder.Append("&limit=").Append(Limit);
+      }
+      return builder.ToString();
+    }
+
+    public static Page CreateOffset(int? limit = 50, int? offset = 0)
+    {
+      return new Page { Limit = limit.Value, Offset = offset.Value };
+    }
+
+    public static Page CreatePage(int? pageSize = 50, int? page = 1)
+    {
+      return new Page { Size = pageSize.Value, Number = page.Value };
+    }
+  }
+}

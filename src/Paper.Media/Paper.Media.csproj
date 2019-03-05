@@ -44,6 +44,8 @@
 
   <ItemGroup>
     <Compile Remove="CaseVariantStringExtensions.cs" />
+    <Compile Remove="Data\Filter.cs" />
+    <Compile Remove="Data\Filter`1.cs" />
     <Compile Remove="Design\DataExtensions.cs" />
     <Compile Remove="Design\EntityDesign.cs" />
     <Compile Remove="Design\ExposePaperAttribute.cs" />
@@ -60,6 +62,10 @@
     <Compile Remove="Design\RowsExtensions.cs" />
     <Compile Remove="Design\SortOrder.cs" />
     <Compile Remove="Property.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Page.cs.bak" />
   </ItemGroup>
 
   <ItemGroup>

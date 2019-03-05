@@ -58,11 +58,15 @@ namespace Paper.Api.Extensions.Papers
         return;
       }
 
+      var args = new Args();
+      args.AddMany(req.QueryArgs);
+      args.AddMany(Args.ParsePathArgs(path, paper.PathTemplate));
+
       var context = new PaperContext();
       context.Paper = paper;
       context.Path = paperPath;
       context.Action = paperAction;
-      context.Args = CreateArgs(path, paper, req, res);
+      context.Args = args;
       context.Request = req;
       context.Response = res;
 
@@ -96,44 +100,6 @@ namespace Paper.Api.Extensions.Papers
         res.Headers[entry.Key] = entry.Value;
       }
       await res.WriteEntityAsync(entity);
-    }
-
-    private HashMap CreateArgs(string path, PaperDescriptor paper, Request req, Response res)
-    {
-      var map = new HashMap();
-
-      var pathArgs = new PathArgs(path, paper.PathTemplate);
-      foreach (var parameter in paper.PaperParameters)
-      {
-        object value;
-        var type = parameter.ParameterType;
-        if (typeof(Sort).IsAssignableFrom(type))
-        {
-          value = null;
-        }
-        else if (typeof(Page).IsAssignableFrom(type))
-        {
-          var page = new Page();
-          page.CopyFrom(req.RequestUri);
-          value = page;
-        }
-        else if (typeof(IFilter).IsAssignableFrom(type))
-        {
-          value = null;
-        }
-        else
-        {
-          object rawValue = pathArgs[parameter.Name];
-          if (rawValue is Var var)
-          {
-            rawValue = var.RawValue;
-          }
-          value = Change.To(rawValue, type);
-        }
-        map[parameter.Name] = value;
-      }
-
-      return map;
     }
   }
 }

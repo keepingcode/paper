@@ -33,9 +33,9 @@ namespace Paper.Api.Extensions.Papers
       //public string Field10 { get; set; }
     }
 
-    public class TaskFilter
+    public class TaskFilter : IFilter
     {
-      public Var<int> Id { get; set; }
+      public Var<int?> Id { get; set; }
       public Var<string> Name { get; set; }
       public Var<int?> Age { get; set; }
       public Var<DateTime?> Date { get; set; }
@@ -105,7 +105,7 @@ namespace Paper.Api.Extensions.Papers
     [Expose]
     public class TasksPaper : IPaper
     {
-      public Ret<Task[]> Index(Sort sort, Page page, Filter filter)
+      public Ret<Task[]> Index(Sort sort, Page page, TaskFilter filter)
       {
         return DB.Tasks.FilterBy(filter).SortBy(sort).PaginateBy(page).ToArray();
       }
@@ -137,6 +137,18 @@ namespace Paper.Api.Extensions.Papers
       {
         DB.Tasks.RemoveAll(task => tasks.Any(x => x.Id == task.Id));
         return true;
+      }
+
+      public Sort CreateSort()
+      {
+        return new Sort()
+          .AddField<Task>(x => x.Id)
+          .AddField<Task>(x => x.Name)
+          .AddField<Task>(x => x.Age)
+          .AddField<Task>(x => x.Date)
+          .AddField<Task>(x => x.Price)
+          .AddField<Task>(x => x.Active)
+          .AddField<Task>(x => x.Description);
       }
     }
 

@@ -90,7 +90,7 @@ namespace Paper.Media
 
       var type = (typeOrInstance is Type) ? (Type)typeOrInstance : typeOrInstance.GetType();
 
-      type = Var.GetUnderlyingType(type) ?? type;
+      type = TypeOf.Var(type) ?? type;
       type = Nullable.GetUnderlyingType(type) ?? type;
 
       var isList = false;

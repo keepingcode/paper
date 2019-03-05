@@ -152,6 +152,18 @@ Por exemplo:
     record.name=foo
 
 
+Em caso de falha o payload carregará os detalhes na forma:
+
+    {
+      "error": {
+        "code": 500,
+        "status": "InternalServerError",
+        "description": "..."
+        "stackTrace": "..."
+      }
+    }
+
+
 Mimetypes
 ---------
 

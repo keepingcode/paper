@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Paper.Api.Rendering;
 using Paper.Media;
+using Paper.Media.Data;
 using Toolset;
 using Toolset.Collections;
 using Toolset.Net;
@@ -46,7 +47,7 @@ namespace Paper.Api.Extensions.Papers
       }
 
       MethodInfo method = descriptor.GetMethod(context.Action);
-      Ret<Result> ret = CallPaperMethod(descriptor.Paper, method, context.Args, form);
+      Ret<Result> ret = CallPaperMethod(context, descriptor.Paper, method, context.Args, form);
 
       var isFailure = (ret.Status.CodeClass != HttpStatusClass.Success);
       if (isFailure)
@@ -71,12 +72,19 @@ namespace Paper.Api.Extensions.Papers
       return await Task.FromResult(ret);
     }
 
-    private Ret<Result> CallPaperMethod(IPaper paper, MethodInfo method, HashMap args, Entity form)
+    private Ret<Result> CallPaperMethod(PaperContext context, IPaper paper, MethodInfo method, Args args, Entity form)
     {
       object result = null;
       try
       {
-        var methodArgs = CreateParameters(paper, method, args, form);
+        var methodArgs = CreateParameters(context, paper, method, args, form);
+
+        context.RenderContext.Sort = methodArgs.OfType<Sort>().FirstOrDefault();
+        context.RenderContext.Page = methodArgs.OfType<Page>().FirstOrDefault();
+        context.RenderContext.Filter = methodArgs.OfType<IFilter>().FirstOrDefault();
+
+        context.RenderContext.Page?.IncreaseLimit();
+
         result = objectFactory.Invoke(paper, method, methodArgs);
       }
       catch (Exception ex)
@@ -87,7 +95,7 @@ namespace Paper.Api.Extensions.Papers
       var resultType = method.ReturnType;
       if (Is.Ret(resultType))
       {
-        resultType = TypeOf.RetValue(resultType);
+        resultType = TypeOf.Ret(resultType);
       }
 
       Ret<Result> ret;
@@ -136,7 +144,7 @@ namespace Paper.Api.Extensions.Papers
       return ret;
     }
 
-    private object[] CreateParameters(IPaper paper, MethodInfo method, HashMap args, Entity form)
+    private object[] CreateParameters(PaperContext context, IPaper paper, MethodInfo method, Args args, Entity form)
     {
       var methodArgs = new List<object>();
 
@@ -146,13 +154,36 @@ namespace Paper.Api.Extensions.Papers
       {
         var name = parameter.Name;
 
+        if (typeof(Sort).IsAssignableFrom(parameter.ParameterType))
+        {
+          var sort = (Sort)context.Paper.Create(objectFactory, parameter.ParameterType);
+          sort.CopyFrom(args);
+          methodArgs.Add(sort);
+          continue;
+        }
+
+        if (typeof(Page).IsAssignableFrom(parameter.ParameterType))
+        {
+          var page = (Page)context.Paper.Create(objectFactory, parameter.ParameterType);
+          page.CopyFrom(args);
+          methodArgs.Add(page);
+          continue;
+        }
+
+        if (typeof(IFilter).IsAssignableFrom(parameter.ParameterType))
+        {
+          var filter = CreateCompatibleFilter(context, args, parameter.ParameterType);
+          methodArgs.Add(filter);
+          continue;
+        }
+
         string key = null;
 
         key = argKeys.FirstOrDefault(x => x.EqualsIgnoreCase(name));
         if (key != null)
         {
           var value = args[key];
-          var compatibleValue = CreateCompatibleValue(value, parameter.ParameterType);
+          var compatibleValue = CreateCompatibleValue(context, value, parameter.ParameterType);
           methodArgs.Add(compatibleValue);
           argKeys.Remove(key);
           continue;
@@ -162,7 +193,7 @@ namespace Paper.Api.Extensions.Papers
         if (key != null)
         {
           var value = form.Properties[key];
-          var compatibleValue = CreateCompatibleValue(value, parameter.ParameterType);
+          var compatibleValue = CreateCompatibleValue(context, value, parameter.ParameterType);
           methodArgs.Add(compatibleValue);
           formKeys.Remove(key);
           continue;
@@ -172,14 +203,14 @@ namespace Paper.Api.Extensions.Papers
         {
           var records = form.Children();
           var itemType = TypeOf.CollectionElement(parameter.ParameterType);
-          var items = records.Select(record => CreateCompatibleValue(record.Properties, itemType));
-          var compatibleValue = CreateCompatibleValue(items, parameter.ParameterType);
+          var items = records.Select(record => CreateCompatibleValue(context, record.Properties, itemType));
+          var compatibleValue = CreateCompatibleValue(context, items, parameter.ParameterType);
           methodArgs.Add(compatibleValue);
         }
         else
         {
-          var record = form.Children().FirstOrDefault();
-          var compatibleValue = CreateCompatibleValue(record.Properties, parameter.ParameterType);
+          var record = form?.Children().FirstOrDefault();
+          var compatibleValue = CreateCompatibleValue(context, record.Properties, parameter.ParameterType);
           methodArgs.Add(compatibleValue);
         }
       }
@@ -187,7 +218,7 @@ namespace Paper.Api.Extensions.Papers
       return methodArgs.ToArray();
     }
 
-    private object CreateCompatibleValue(object sourceValue, Type targetType)
+    private object CreateCompatibleValue(PaperContext context, object sourceValue, Type targetType)
     {
       if (sourceValue is PropertyMap map)
       {
@@ -200,7 +231,7 @@ namespace Paper.Api.Extensions.Papers
             continue;
 
           var value = map[key];
-          var compatibleValue = CreateCompatibleValue(value, property.PropertyType);
+          var compatibleValue = CreateCompatibleValue(context, value, property.PropertyType);
           property.SetValue(instance, compatibleValue);
         }
 
@@ -210,6 +241,20 @@ namespace Paper.Api.Extensions.Papers
       {
         return Change.To(sourceValue, targetType);
       }
+    }
+
+    private IFilter CreateCompatibleFilter(PaperContext context, HashMap<Var> args, Type filterType)
+    {
+      var filter = (IFilter)context.Paper.Create(objectFactory, filterType);
+      foreach (var property in filter._GetPropertyNames())
+      {
+        var value = args[property];
+        if (value != null)
+        {
+          filter._Set(property, value);
+        }
+      }
+      return filter;
     }
   }
 }

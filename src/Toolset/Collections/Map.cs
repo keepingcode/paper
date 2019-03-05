@@ -10,9 +10,6 @@ namespace Toolset.Collections
   {
     private readonly Dictionary<TKey, TValue> map;
 
-
-
-
     public Map()
     {
       map = new Dictionary<TKey, TValue>();

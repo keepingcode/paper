@@ -12,7 +12,7 @@ namespace Paper.Api.Rendering
 {
   public class AcceptHeader
   {
-    public AcceptHeader(Headers headers, QueryArgs args)
+    public AcceptHeader(Headers headers, HashMap<Var> args)
     {
       ParseAccept(headers, args);
     }
@@ -185,7 +185,7 @@ namespace Paper.Api.Rendering
       return terms.FirstOrDefault(term => searchTerms.Contains(term));
     }
 
-    private void ParseAccept(Headers headers, QueryArgs args)
+    private void ParseAccept(Headers headers, HashMap<Var> args)
     {
       var accept = headers[HeaderNames.Accept] ?? "";
       var acceptCharset = headers[HeaderNames.AcceptCharset] ?? "";

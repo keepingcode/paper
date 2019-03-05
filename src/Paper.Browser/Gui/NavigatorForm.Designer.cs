@@ -143,13 +143,13 @@
       // txLocation
       // 
       this.txLocation.AutoCompleteCustomSource.AddRange(new string[] {
-            "/Index"});
+            "Paper/Api/Extensions/Papers/SamplePaper/TasksPaper",
+            "Paper/Api/Extensions/Papers/SamplePaper/TaskPaper/1"});
       this.txLocation.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
       this.txLocation.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
       this.txLocation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
       this.txLocation.Name = "txLocation";
       this.txLocation.Size = new System.Drawing.Size(200, 25);
-      this.txLocation.Text = "Paper/Api/Extensions/Papers/SamplePaper/TaskPaper/1";
       this.txLocation.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txLocation_KeyUp);
       // 
       // NavigatorForm
