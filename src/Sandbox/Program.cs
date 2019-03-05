@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
@@ -39,51 +40,82 @@ using Toolset.Xml;
 
 namespace Sandbox
 {
+  public interface IWidget
+  {
+    Size Extent { get; }
+  }
+
+  public class Widget : IWidget
+  {
+    public Size Extent { get; set; }
+  }
+
   public static class Program
   {
+    public static Size Measure(IEnumerable<IWidget> widgets)
+    {
+      int cols = 0;
+      int rows = 0;
+
+      int maxCols = 0;
+      int maxRows = 12;
+      do
+      {
+        maxCols += 6;
+
+        var size = widgets.Select(x => x.Extent).Aggregate(new Size(0, 1), (prev, curr) =>
+        {
+          var calc = (prev.Width + curr.Width) <= maxCols
+            ? new Size(prev.Width + curr.Width, Math.Max(prev.Height, curr.Height))
+            : new Size(curr.Width, prev.Height + curr.Height);
+          cols = Math.Max(cols, calc.Width);
+          return calc;
+        });
+
+        rows = size.Height;
+      } while (rows > maxRows);
+
+      int unit = 37;
+      int margin = 6;
+
+      var extent = new Size(
+        width: (cols * unit) + ((cols - 1) * margin),
+        height: (rows * unit) + ((rows - 1) * margin)
+      );
+      return extent;
+    }
+
     [STAThread]
     public static void Main(string[] args)
     {
       try
       {
-        var payload = new Payload();
-        payload.SetProperty("form.edit.field1", "one");
-        payload.SetProperty("form.edit.field2", "two");
-        payload.SetProperty("record.@class", "MyClass");
-        payload.SetProperty("record.id", "1");
-        payload.SetProperty("record.name", "one");
-        payload.SetProperty("records[0].@class", "MyClass");
-        payload.SetProperty("records[0].id", "1");
-        payload.SetProperty("records[0].name", "one");
-        payload.SetProperty("records[2].@class", "MyClass");
-        payload.SetProperty("records[2].id", "2");
-        payload.SetProperty("records[2].name", "two");
+        var widgets = new Widget[]
+        {
+          //new Widget{ Extent = new Size(1,1) },
+          new Widget{ Extent = new Size(5,6) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          new Widget{ Extent = new Size(3,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(3,1) },
+          //new Widget{ Extent = new Size(1,1) },
 
-        Debug.WriteLine("---");
-        Debug.WriteLine(payload.GetProperty("form.edit.field1"));
-        Debug.WriteLine(payload.GetProperty("form.edit.field2"));
-        Debug.WriteLine(payload.GetProperty("record.@class"));
-        Debug.WriteLine(payload.GetProperty("record.id"));
-        Debug.WriteLine(payload.GetProperty("record.name"));
-        Debug.WriteLine(payload.GetProperty("records[0].@class"));
-        Debug.WriteLine(payload.GetProperty("records[0].id"));
-        Debug.WriteLine(payload.GetProperty("records[0].name"));
-        Debug.WriteLine(payload.GetProperty("records[2].@class"));
-        Debug.WriteLine(payload.GetProperty("records[2].id"));
-        Debug.WriteLine(payload.GetProperty("records[2].name"));
-        Debug.WriteLine("---");
+          //new Widget{ Extent = new Size(3,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(3,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(1,1) },
+          //new Widget{ Extent = new Size(3,1) },
+          //new Widget{ Extent = new Size(1,1) },
 
-        //Debug.WriteLine(payload.ToEntity().ToJson());
+          //new Widget{ Extent = new Size(2,1) },
+          //new Widget{ Extent = new Size(3,1) },
+        };
 
-
-        // var entity = new Entity();
-        // entity.AddHeader("id", Class.Record);
-        // entity.AddHeader("name", Class.Record);
-        // entity.AddHeader("date", Class.Record);
-        // 
-        // var json = entity.ToJson();
-        // var result = new MediaSerializer(MimeType.Siren).Deserialize(json);
-        // Debug.WriteLine(result.ToJson());
+        Debug.WriteLine(Measure(widgets));
       }
       catch (Exception ex)
       {

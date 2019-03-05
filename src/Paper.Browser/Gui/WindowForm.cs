@@ -52,27 +52,27 @@ namespace Paper.Browser.Gui
 
     public void Pack()
     {
-      var control = PageContainer.Controls.Cast<Control>().FirstOrDefault();
-      if (control == null)
+      var pag = PageContainer.Controls.Cast<Control>().FirstOrDefault();
+      if (pag == null)
         return;
       
-      if (control.AutoSize)
+      if (pag.AutoSize)
       {
-        control.Dock = DockStyle.Fill;
+        pag.Dock = DockStyle.Fill;
         this.AutoSize = false;
-        this.PageContainer.Controls.Add(control);
+        this.PageContainer.Controls.Add(pag);
         this.Expand();
       }
       else
       {
         this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         this.AutoSize = true;
-        this.PageContainer.Controls.Add(control);
+        this.PageContainer.Controls.Add(pag);
 
         var size = this.Size;
 
         this.SuspendLayout();
-        control.Dock = DockStyle.Fill;
+        pag.Dock = DockStyle.Fill;
         this.AutoSizeMode = AutoSizeMode.GrowOnly;
         this.AutoSize = false;
         this.MinimumSize = size;

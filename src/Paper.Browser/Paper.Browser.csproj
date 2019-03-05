@@ -53,6 +53,14 @@
     <Compile Include="Gui\ActionForm.Designer.cs">
       <DependentUpon>ActionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Extent.cs" />
+    <Compile Include="Gui\Papers\GridLayout.cs" />
+    <Compile Include="Gui\Sandbox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Sandbox.Designer.cs">
+      <DependentUpon>Sandbox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\Widgets\FieldWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -144,6 +152,9 @@
     <Compile Include="Settings.cs" />
     <EmbeddedResource Include="Gui\ActionForm.resx">
       <DependentUpon>ActionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Sandbox.resx">
+      <DependentUpon>Sandbox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\Widgets\FieldWidget.resx">
       <DependentUpon>FieldWidget.cs</DependentUpon>

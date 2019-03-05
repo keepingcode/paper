@@ -61,7 +61,6 @@
       this.Controls.Add(this.lbCaption);
       this.Name = "Field";
       this.Size = new System.Drawing.Size(252, 36);
-      this.Resize += new System.EventHandler(this.Field_Resize);
       this.ResumeLayout(false);
       this.PerformLayout();
 

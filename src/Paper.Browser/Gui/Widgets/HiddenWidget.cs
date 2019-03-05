@@ -24,6 +24,12 @@ namespace Paper.Browser.Gui.Widgets
 
     public object Content { get; set; }
 
+    public Size GridExtent
+    {
+      get => Size.Empty;
+      set { /* não pode ser modificado. */}
+    }
+
     public Field Field { get; set; }
 
     public bool Required { get; set; }

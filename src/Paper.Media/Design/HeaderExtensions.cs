@@ -23,13 +23,15 @@ namespace Paper.Media.Design
       if (headerNames == null)
         yield break;
 
-      foreach (CaseVariantString headerName in headerNames)
+      foreach (object item in headerNames)
       {
+        var headerName = (item as CaseVariantString)?.Value ?? (string)item;
+
         var header = (
           from child in entity.Children()
           where child.Class.Has(ClassNames.Header)
              && child.Rel.Has(@class)
-             && headerName.Value.EqualsIgnoreCase(child.Properties?["name"]?.ToString())
+             && headerName.EqualsIgnoreCase(child.Properties?["name"]?.ToString())
           select child
         ).FirstOrDefault();
 

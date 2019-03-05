@@ -76,27 +76,19 @@ namespace Paper.Browser.Lib
       Ret<Content> ret;
       try
       {
-        Debug.WriteLine("--- REQUEST ---");
-        Debug.WriteLine(uri);
-        Debug.WriteLine(data.ToJson());
-        Debug.WriteLine("---------------");
-
         var http = new HttpClient();
         ret = await http.RequestAsync(uri, method, data);
       }
       catch (Exception ex)
       {
+        var fault = HttpEntity.Create(uri, ex);
         ret = Ret.Fail(uri, ex);
+        ret.Value = new Content
+        {
+          Href = uri,
+          Data = fault.Value
+        };
       }
-
-      Debug.WriteLine("--- RESPONSE ---");
-      Debug.WriteLine(ret.Value?.Href);
-      Debug.WriteLine(ret);
-      if (ret.Value?.Data is Entity entity)
-      {
-        Debug.WriteLine(entity.ToJson());
-      }
-      Debug.WriteLine("---------------");
 
       return ret;
     }

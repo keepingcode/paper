@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Paper.Browser.Gui.Papers;
 using Paper.Media;
 using Toolset;
 using Toolset.Reflection;
@@ -28,11 +29,13 @@ namespace Paper.Browser.Gui.Widgets
 
     private string _text;
     private bool _isRequired;
+    private Size _gridExtent;
 
-    public WidgetBasics(IInputWidget widget)
+    public WidgetBasics(IInputWidget widget, Size gridExtent)
     {
       this.widget = widget;
       InitializeComponent();
+      this.GridExtent = gridExtent;
     }
 
     private void InitializeComponent()
@@ -67,7 +70,7 @@ namespace Paper.Browser.Gui.Widgets
       host.Controls.Add(lbCaption);
       host.Controls.Add(lbFaultCaption);
       host.Disposed += (o, e) => components.Dispose();
-      host.Resize += (o, e) => { if (host.Height != 36) { host.Height = 36; } };
+      //host.Resize += (o, e) => { if (host.Height != 36) { host.Height = 36; } };
 
       host.ResumeLayout();
     }
@@ -126,6 +129,16 @@ namespace Paper.Browser.Gui.Widgets
         var isFaulty = (value != null);
         lbCaption.Visible = !isFaulty;
         lbFaultCaption.Visible = isFaulty;
+      }
+    }
+
+    public Size GridExtent
+    {
+      get => _gridExtent;
+      set
+      {
+        _gridExtent = value;
+        Host.Size = GridLayout.Measure(_gridExtent);
       }
     }
 

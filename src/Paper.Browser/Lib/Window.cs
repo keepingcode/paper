@@ -58,7 +58,7 @@ namespace Paper.Browser.Lib
       IPaper paper;
       try
       {
-        var entity = content.Data as Entity;
+        var entity = content?.Data as Entity;
         if (entity != null)
         {
           this.Form.Text = entity.Title;

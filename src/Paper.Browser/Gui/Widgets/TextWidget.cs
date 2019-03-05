@@ -18,7 +18,8 @@ namespace Paper.Browser.Gui.Widgets
     public TextWidget()
     {
       InitializeComponent();
-      this.basics = new WidgetBasics<string>(this);
+
+      this.basics = new WidgetBasics<string>(this, new Size(6, 1));
 
       txContent.TextChanged += (o, e) => basics.Content = txContent.Text;
     }
@@ -43,6 +44,12 @@ namespace Paper.Browser.Gui.Widgets
         basics.CommitChanges();
         txContent.Text = basics.Content?.ToString();
       }
+    }
+
+    public Size GridExtent
+    {
+      get => basics.GridExtent;
+      set => basics.GridExtent = value;
     }
 
     [Bindable(true)]

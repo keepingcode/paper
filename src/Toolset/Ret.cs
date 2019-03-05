@@ -23,7 +23,8 @@ namespace Toolset
 
     public override string ToString()
     {
-      return string.Join(" - ", Status.ToString(), Fault.ToString());
+      var fault = Fault.ToString();
+      return (fault.Length > 0) ? $"{Status} - {fault}" : Status.ToString();
     }
 
     public static implicit operator Ret(bool value)

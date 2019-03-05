@@ -62,7 +62,7 @@
       this.PageContainer.Dock = System.Windows.Forms.DockStyle.Fill;
       this.PageContainer.Location = new System.Drawing.Point(0, 25);
       this.PageContainer.Name = "PageContainer";
-      this.PageContainer.Size = new System.Drawing.Size(470, 238);
+      this.PageContainer.Size = new System.Drawing.Size(576, 345);
       this.PageContainer.TabIndex = 1;
       // 
       // pnOverlay
@@ -74,14 +74,14 @@
       this.pnOverlay.Controls.Add(this.lbStatus);
       this.pnOverlay.Location = new System.Drawing.Point(23, 176);
       this.pnOverlay.Name = "pnOverlay";
-      this.pnOverlay.Size = new System.Drawing.Size(291, 62);
+      this.pnOverlay.Size = new System.Drawing.Size(397, 169);
       this.pnOverlay.TabIndex = 3;
       this.pnOverlay.Visible = false;
       // 
       // pgProgress
       // 
       this.pgProgress.Anchor = System.Windows.Forms.AnchorStyles.Top;
-      this.pgProgress.Location = new System.Drawing.Point(32, 29);
+      this.pgProgress.Location = new System.Drawing.Point(85, 29);
       this.pgProgress.Name = "pgProgress";
       this.pgProgress.Size = new System.Drawing.Size(227, 10);
       this.pgProgress.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
@@ -90,7 +90,7 @@
       // lbStatus
       // 
       this.lbStatus.Anchor = System.Windows.Forms.AnchorStyles.Top;
-      this.lbStatus.Location = new System.Drawing.Point(29, 13);
+      this.lbStatus.Location = new System.Drawing.Point(82, 13);
       this.lbStatus.Name = "lbStatus";
       this.lbStatus.Size = new System.Drawing.Size(230, 13);
       this.lbStatus.TabIndex = 1;
@@ -100,9 +100,9 @@
       // 
       this.ActionBar.Dock = System.Windows.Forms.DockStyle.Right;
       this.ActionBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-      this.ActionBar.Location = new System.Drawing.Point(470, 25);
+      this.ActionBar.Location = new System.Drawing.Point(576, 25);
       this.ActionBar.Name = "ActionBar";
-      this.ActionBar.Size = new System.Drawing.Size(26, 238);
+      this.ActionBar.Size = new System.Drawing.Size(26, 345);
       this.ActionBar.TabIndex = 5;
       this.ActionBar.Text = "toolStrip1";
       // 
@@ -173,7 +173,7 @@
             this.toolStripSeparator8});
       this.ToolBar.Location = new System.Drawing.Point(0, 0);
       this.ToolBar.Name = "ToolBar";
-      this.ToolBar.Size = new System.Drawing.Size(496, 25);
+      this.ToolBar.Size = new System.Drawing.Size(602, 25);
       this.ToolBar.Stretch = true;
       this.ToolBar.TabIndex = 2;
       this.ToolBar.Text = "toolStrip1";
@@ -212,7 +212,7 @@
       // StatusLabel
       // 
       this.StatusLabel.Name = "StatusLabel";
-      this.StatusLabel.Size = new System.Drawing.Size(379, 17);
+      this.StatusLabel.Size = new System.Drawing.Size(485, 17);
       this.StatusLabel.Spring = true;
       this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
@@ -226,9 +226,9 @@
       this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel,
             this.ProgressBar});
-      this.StatusBar.Location = new System.Drawing.Point(0, 263);
+      this.StatusBar.Location = new System.Drawing.Point(0, 370);
       this.StatusBar.Name = "StatusBar";
-      this.StatusBar.Size = new System.Drawing.Size(496, 22);
+      this.StatusBar.Size = new System.Drawing.Size(602, 22);
       this.StatusBar.TabIndex = 1;
       this.StatusBar.Text = "statusStrip1";
       // 
@@ -236,7 +236,7 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(496, 285);
+      this.ClientSize = new System.Drawing.Size(602, 392);
       this.ControlBox = false;
       this.Controls.Add(this.pnOverlay);
       this.Controls.Add(this.PageContainer);

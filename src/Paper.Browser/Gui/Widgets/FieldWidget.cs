@@ -7,16 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Paper.Browser.Gui.Papers;
 
 namespace Paper.Browser.Gui.Widgets
 {
   public partial class FieldWidget : UserControl, IWidget
   {
     private object _value;
+    private Size _gridExtent;
 
     public FieldWidget()
     {
       InitializeComponent();
+      this.GridExtent = new Size(6, 1);
     }
 
     public Control Host => this;
@@ -41,11 +44,13 @@ namespace Paper.Browser.Gui.Widgets
       }
     }
 
-    private void Field_Resize(object sender, EventArgs e)
+    public Size GridExtent
     {
-      if (this.Height != 36)
+      get => _gridExtent;
+      set
       {
-        this.Height = 36;
+        _gridExtent = value;
+        this.Size = GridLayout.Measure(_gridExtent);
       }
     }
   }
