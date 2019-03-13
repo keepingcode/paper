@@ -11,45 +11,11 @@ using Paper.Media;
 
 namespace Paper.Browser.Gui.Widgets
 {
-  public partial class TextWidget : UserControl, IInputWidget
+  public partial class TextWidget : UserControl, IWidget
   {
-    private readonly WidgetBasics<string> basics;
-
-    public TextWidget()
+    public TextWidget(Field field)
     {
       InitializeComponent();
-
-      this.basics = new WidgetBasics<string>(this, new Size(6, 1));
-
-      txContent.TextChanged += (o, e) => basics.Content = txContent.Text;
-    }
-
-    public Control Host
-    {
-      get => basics.Host;
-    }
-
-    public Field Field
-    {
-      get => basics.Field;
-      set => basics.Field = value;
-    }
-
-    public object Content
-    {
-      get => basics.Content;
-      set
-      {
-        basics.Content = value?.ToString().Trim() ?? "";
-        basics.CommitChanges();
-        txContent.Text = basics.Content?.ToString();
-      }
-    }
-
-    public Size GridExtent
-    {
-      get => basics.GridExtent;
-      set => basics.GridExtent = value;
     }
 
     [Bindable(true)]
@@ -58,25 +24,12 @@ namespace Paper.Browser.Gui.Widgets
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override string Text
     {
-      get => basics.Text;
-      set => basics.Text = value;
+      get => lbText.Text;
+      set => lbText.Text = value;
     }
 
-    public bool Required
-    {
-      get => basics.Required;
-      set => basics.Required = value;
-    }
+    public object Value { get; set; }
 
-    public bool Changed
-    {
-      get => basics.Changed;
-    }
-
-    public void CommitChanges() => basics.CommitChanges();
-
-    public void RevertChanges() => basics.RevertChanges();
-
-    public bool ValidateContent() => basics.ValidateContent();
+    public Size GridExtent { get; set; }
   }
 }

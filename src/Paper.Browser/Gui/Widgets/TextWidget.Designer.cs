@@ -28,28 +28,36 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.components = new System.ComponentModel.Container();
-      this.txContent = new System.Windows.Forms.TextBox();
-      this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+      this.lbText = new System.Windows.Forms.Label();
+      this.txValue = new System.Windows.Forms.TextBox();
       this.SuspendLayout();
       // 
-      // txContent
+      // lbText
       // 
-      this.txContent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.lbText.AutoSize = true;
+      this.lbText.Location = new System.Drawing.Point(-3, 0);
+      this.lbText.Name = "lbText";
+      this.lbText.Size = new System.Drawing.Size(28, 13);
+      this.lbText.TabIndex = 0;
+      this.lbText.Text = "Text";
+      // 
+      // txValue
+      // 
+      this.txValue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.txContent.BackColor = System.Drawing.SystemColors.Control;
-      this.txContent.Location = new System.Drawing.Point(0, 16);
-      this.txContent.Name = "txContent";
-      this.txContent.Size = new System.Drawing.Size(252, 20);
-      this.txContent.TabIndex = 3;
+      this.txValue.Location = new System.Drawing.Point(0, 25);
+      this.txValue.Name = "txValue";
+      this.txValue.Size = new System.Drawing.Size(161, 20);
+      this.txValue.TabIndex = 1;
       // 
       // TextWidget
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Controls.Add(this.txContent);
+      this.Controls.Add(this.txValue);
+      this.Controls.Add(this.lbText);
       this.Name = "TextWidget";
-      this.Size = new System.Drawing.Size(252, 36);
+      this.Size = new System.Drawing.Size(161, 45);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -57,7 +65,7 @@
 
     #endregion
 
-    private System.Windows.Forms.TextBox txContent;
-    private System.Windows.Forms.ToolTip toolTip;
+    private System.Windows.Forms.Label lbText;
+    private System.Windows.Forms.TextBox txValue;
   }
 }

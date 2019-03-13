@@ -53,11 +53,23 @@ namespace Toolset
     {
       return
         from assembly in Assemblies
-        from type in assembly.GetTypes()
+        from type in GetTypes(assembly)
         from attribute in type.GetCustomAttributes().OfType<ExposeAttribute>()
         where (contractName == null) || attribute.ContractName == contractName
         where (contractType == null) || contractType.IsAssignableFrom(type)
         select type;
+    }
+
+    private static IEnumerable<Type> GetTypes(Assembly assembly)
+    {
+      try
+      {
+        return assembly.GetTypes();
+      }
+      catch
+      {
+        return Enumerable.Empty<Type>();
+      }
     }
 
     /// <summary>

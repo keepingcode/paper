@@ -10,12 +10,6 @@ namespace Paper.Browser.Gui
 {
   public interface IWidget
   {
-    string Text { get; set; }
-
-    object Tag { get; set; }
-
-    object Value { get; set; }
-
-    Size GridExtent { get; set; }
+    Extent GridExtent { get; }
   }
 }

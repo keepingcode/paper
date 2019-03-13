@@ -15,6 +15,13 @@ namespace Paper.Browser.Gui
     public WidgetGrid()
     {
       InitializeComponent();
+      this.ControlAdded += (o, e) => Pack();
+      this.ControlRemoved += (o, e) => Pack();
+    }
+
+    public void Pack()
+    {
+      this.Size = WidgetGridLayout.Measure(Controls.Cast<IWidget>());
     }
   }
 }

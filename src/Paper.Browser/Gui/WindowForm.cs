@@ -7,109 +7,143 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Paper.Browser.Lib;
-using Toolset;
+using Paper.Browser.Gui.Layouts;
+using Paper.Browser.Gui.Widgets;
+using Toolset.Reflection;
 
 namespace Paper.Browser.Gui
 {
-  public partial class WindowForm : Form
+  public partial class WindowForm : Form, IWindowLayout
   {
-    public WindowForm(Window window)
+    private IWindowLayout _layout;
+
+    public WindowForm()
     {
-      this.Window = window;
-
       InitializeComponent();
-      this.Size = new Size(270, 150);
 
-      StatusLabel.TextChanged += (o, e) => lbStatus.Text = StatusLabel.Text;
+      this.Layout = new StartWindowLayout();
 
-      Overlay = true;
+      // this.ActionBar.ItemAdded += (o, e) => ToolBarChanged(this.ActionBar);
+      // this.ActionBar.ItemRemoved += (o, e) => ToolBarChanged(this.ActionBar);
+      // this.ToolBar.ItemAdded += (o, e) => ToolBarChanged(this.ToolBar);
+      // this.ToolBar.ItemRemoved += (o, e) => ToolBarChanged(this.ToolBar);
+      // 
+      // ToolBarChanged(this.ActionBar);
+      // ToolBarChanged(this.ToolBar);
+      // 
+      // this.StatusBar.Visible = false;
     }
 
-    public Window Window { get; }
+    public Control Host => this;
 
-    public bool Overlay
+    public Panel ContentPane => Layout.ContentPane;
+    public ToolStrip ToolBar => Layout.ToolBar;
+    public ToolStrip ActionBar => Layout.ActionBar;
+    public StatusStrip StatusBar => Layout.StatusBar;
+
+    public IWindowLayout Layout
     {
-      get => pnOverlay.Visible;
+      get => _layout;
       set
       {
-        pnOverlay.Visible = value;
+        _layout = value ?? new FlexWindowLayout();
 
-        foreach (Control control in this.Controls)
+        this.Controls.Clear();
+        this.Controls.Add(_layout.Host);
+
+        if (_layout is FlexWindowLayout)
         {
-          control.Enabled = !pnOverlay.Visible;
+          _layout.Host.Dock = DockStyle.Fill;
+          this.AutoSize = false;
+          this.FormBorderStyle = FormBorderStyle.Sizable;
+          this.Expand();
         }
-        ControlBox = !pnOverlay.Visible;
-
-        pnOverlay.Left = 0;
-        pnOverlay.Top = 0;
-        pnOverlay.Width = this.ClientSize.Width;
-        pnOverlay.Height = this.ClientSize.Height;
-        pnOverlay.Enabled = pnOverlay.Visible;
-        pnOverlay.BringToFront();
+        else
+        {
+          this.AutoSize = true;
+          this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+          this.FormBorderStyle = FormBorderStyle.FixedSingle;
+        }
       }
     }
 
-    public void Pack()
+    public IMessageSupport Messager => Layout as IMessageSupport;
+
+    public string StatusMessage
     {
-      var pag = PageContainer.Controls.Cast<Control>().FirstOrDefault();
-      if (pag == null)
-        return;
-      
-      if (pag.AutoSize)
+      get => Messager?.StatusText?._Get<string>("Text");
+      set => Messager?.StatusText?._Set("Text", value);
+    }
+
+    public int? ProgressPercent
+    {
+      get => Messager?.ProgressBar?._Get<int>("Value");
+      set
       {
-        pag.Dock = DockStyle.Fill;
-        this.AutoSize = false;
-        this.PageContainer.Controls.Add(pag);
-        this.Expand();
+        int percent;
+        ProgressBarStyle style;
+
+        if (value == null)
+        {
+          percent = 0;
+          style = ProgressBarStyle.Continuous;
+        }
+        else if (value >= 0)
+        {
+          percent = value.Value;
+          style = ProgressBarStyle.Continuous;
+        }
+        else
+        {
+          percent = 0;
+          style = ProgressBarStyle.Marquee;
+        }
+
+        Messager?.ProgressBar?._Set("Value", percent);
+        Messager?.ProgressBar?._Set("Style", style);
       }
-      else
+    }
+
+    public WindowForm DisplayStatus(string message, TimeSpan? duration = null)
+    {
+      this.Call(() =>
       {
-        this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        this.AutoSize = true;
-        this.PageContainer.Controls.Add(pag);
-
-        var size = this.Size;
-
-        this.SuspendLayout();
-        pag.Dock = DockStyle.Fill;
-        this.AutoSizeMode = AutoSizeMode.GrowOnly;
-        this.AutoSize = false;
-        this.MinimumSize = size;
-        this.Size = size;
-        this.FormBorderStyle = FormBorderStyle.Sizable;
-        this.ResumeLayout();
-      }
+        timer.Enabled = false;
+        StatusMessage = message;
+        if (duration != null)
+        {
+          timer.Enabled = true;
+          timer.Interval = (int)duration.Value.TotalMilliseconds;
+        }
+      });
+      return this;
     }
 
-    private void FeedbackMinimumSize()
+    public WindowForm ClearStatus()
     {
-      btReduce.Enabled = (this.MinimumSize != Size.Empty);
+      this.Call(() =>
+      {
+        timer.Enabled = false;
+        StatusMessage = "";
+      });
+      return this;
     }
 
-    private void btExpand_Click(object sender, EventArgs e)
+    public WindowForm DisplayProgress(int percent = -1)
     {
-      this.Expand();
+      this.Call(() => ProgressPercent = percent);
+      return this;
     }
 
-    private void btReduce_Click(object sender, EventArgs e)
+    public WindowForm ClearProgress()
     {
-      this.Reduce();
+      this.Call(() => ProgressPercent = null);
+      return this;
     }
 
-    private void WindowForm_MinimumSizeChanged(object sender, EventArgs e)
+    private void mnClose_Click(object sender, EventArgs e)
     {
-      FeedbackMinimumSize();
-    }
-
-    private void btViewSource_Click(object sender, EventArgs e)
-    {
-      Window.ViewSource();
-    }
-
-    private void mnRefresh_Click(object sender, EventArgs e)
-    {
-      Window.NavigateAsync(Window.Content.Href).NoAwait();
+      Close();
     }
   }
 }

@@ -38,6 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="PaperSettings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Paper.Api\Paper.Api.csproj" />
     <ProjectReference Include="..\Paper.Media\Paper.Media.csproj" />
     <ProjectReference Include="..\Toolset\Toolset.csproj" />

@@ -151,7 +151,7 @@ namespace Paper.Api.Extensions.Papers
           .AddField<Task>(x => x.Description);
       }
     }
-
+    
     [Expose]
     public class TaskPaper : IPaper
     {

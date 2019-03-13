@@ -922,6 +922,11 @@ namespace Paper.Media.Design
       return entity;
     }
 
+    public static Link GetSelfLink(this Entity entity)
+    {
+      return entity?.Links?.FirstOrDefault(x => x.Rel.Has(RelNames.Self));
+    }
+
     #endregion
   }
 }

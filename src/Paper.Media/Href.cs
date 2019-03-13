@@ -19,7 +19,7 @@ namespace Paper.Media
 
     public static implicit operator string(Href href)
     {
-      return href.Value;
+      return href?.Value;
     }
 
     public static implicit operator UriString(Href href)

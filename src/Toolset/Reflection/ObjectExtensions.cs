@@ -218,6 +218,11 @@ namespace Toolset.Reflection
       return map;
     }
 
+    public static void _Set<T>(this object target, string propertyName, T value)
+    {
+      _Set(target, propertyName, (object)value);
+    }
+
     public static void _Set(this object target, string propertyName, object value)
     {
       var property = _GetPropertyInfo(target, propertyName);

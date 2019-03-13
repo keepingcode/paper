@@ -1,215 +1,152 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Browser.Gui;
-using Paper.Browser.Gui.Papers;
+using Paper.Browser.Gui.Layouts;
+using Paper.Browser.Gui.Widgets;
+using Paper.Browser.Lib.Pages;
 using Paper.Media;
+using Paper.Media.Design;
 using Toolset;
-using Toolset.Collections;
-using static Toolset.Ret;
+using Toolset.Net;
 
 namespace Paper.Browser.Lib
 {
   public class Window
   {
-    private readonly object synclock = new object();
-
-    private Ret<Content> contentRet;
-    private IPaper paper;
-
-    public Window(string name)
+    public Window(string name, Desktop desktop)
     {
       this.Name = name;
-      this.Form = new WindowForm(this) { Name = name };
-    }
+      this.Desktop = desktop;
 
-    public WindowForm Form { get; }
+      this.Host = new WindowForm();
+      this.Host.Show(desktop.Host);
+
+      this.Host.FormClosing += (o, e) => e.Cancel = !Close();
+      this.Host.KeyUp += Host_KeyUp;
+
+      desktop.Windows.Add(this);
+    }
 
     public string Name { get; }
 
-    public Content Content => contentRet.Value;
+    public string Href { get; set; }
 
-    public void SetContent(Ret<Content> contentRet, Func<Window, Content, IPaper> paperFactory = null)
+    public Desktop Desktop { get; }
+
+    public WindowForm Host { get; }
+
+    public void SetContent(Entity entity)
     {
-      if (this.paper != null)
-      {
-        DisconnectEvents(paper);
-      }
-
-      this.contentRet = contentRet;
-      Form.Call(() =>
-      {
-        this.paper = CreatePaper(contentRet.Value, paperFactory);
-        CreateActions(this.paper, contentRet.Value);
-        FeedbackSelection();
-      });
-
-      if (this.paper != null)
-      {
-        ConnectEvents(paper);
-      }
-    }
-
-    private IPaper CreatePaper(Content content, Func<Window, Content, IPaper> paperFactory = null)
-    {
-      IPaper paper;
       try
       {
-        var entity = content?.Data as Entity;
-        if (entity != null)
+        this.Host.SuspendLayout();
+
+        this.Href = entity.GetSelfLink()?.Href;
+        this.Host.Text = entity.Title ?? this.Href ?? "Janela";
+
+        IPage page;
+        if (entity.Class.Has(ClassNames.Record))
         {
-          this.Form.Text = entity.Title;
+          page = new RecordPage();
         }
-        paper = paperFactory?.Invoke(this, content) ?? PaperFactory.CreatePaper(this, content);
+        else if (entity.Class.Has(ClassNames.Table))
+        {
+          page = new TablePage();
+        }
+        else
+        {
+          return;
+        }
+
+        page.Window = this;
+        page.Entity = entity;
+
+        var isFlexLayout = page.Host.AutoSize;
+        if (isFlexLayout)
+        {
+          page.Host.Dock = DockStyle.Fill;
+          Host.Layout = new FlexWindowLayout();
+        }
+        else
+        {
+          Host.Layout = new FixedWindowLayout();
+        }
+        Host.ContentPane.Controls.Add(page.Host);
       }
       catch (Exception ex)
       {
-        var href = contentRet.Value?.Href;
-        content = new Content
+        ex.Trace();
+      }
+      finally
+      {
+        this.Host.ResumeLayout();
+      }
+    }
+
+    public async Task RequestAsync(string uri, string method, string target, Entity data)
+    {
+      try
+      {
+        Host.DisplayStatus("Carregando...");
+        Host.DisplayProgress();
+        Application.DoEvents();
+
+        var client = new HttpClient();
+
+        var ret = await client.RequestAsync(uri, method, data);
+        if (!ret.Ok)
         {
-          Href = href,
-          Data = HttpEntity.Create(href, ex).Value
-        };
-        paper = new StatusPaper(this, content);
-      }
-
-      Form.PageContainer.Controls.Clear();
-      Form.PageContainer.Controls.Add(paper.Control);
-
-      return paper;
-    }
-
-    private void CreateActions(IPaper paper, Content content)
-    {
-      var entity = content.Data as Entity;
-      if (entity == null)
-        return;
-
-      var actions = entity.Actions;
-      if (actions == null)
-        return;
-
-      var actionButtons = (
-        from item in Form.ToolBar.Items.OfType<ToolStripButton>()
-        where item.Alignment == ToolStripItemAlignment.Left
-        select item
-      ).ToArray();
-
-      actionButtons.ForEach(x => Form.ToolBar.Items.Remove(x));
-      Form.ActionBar.Items.Clear();
-
-      var selectionBound = false;
-
-      foreach (var action in actions)
-      {
-        var fields = action.Fields ?? Enumerable.Empty<Field>();
-
-        var selectionField = fields.FirstOrDefault(x => x.Provider?.Rel.Has(RelNames.Self) == true);
-        var bindToSelection = (selectionField != null);
-        if (bindToSelection)
-        {
-          selectionBound = true;
-
-          var selectionButton = new ToolStripButton();
-          selectionButton.Tag = action;
-          selectionButton.Text = action.Title;
-          selectionButton.Click += (o, e) => PerformAction(action);
-          selectionButton.Visible = false;
-          Form.ToolBar.Items.Add(selectionButton);
-        }
-
-        var button = new ToolStripButton();
-        button.Tag = action;
-        button.Text = action.Title;
-        button.Click += (o, e) => PerformAction(action);
-        button.Padding = new Padding(10, button.Padding.Top, 10, button.Padding.Bottom);
-        Form.ActionBar.Items.Add(button);
-      }
-
-      if (paper is ISelectable selectable)
-      {
-        selectable.SelectionEnabled = selectionBound;
-      }
-    }
-
-    private void ConnectEvents(IPaper paper)
-    {
-      if (paper is ISelectable selelectable)
-      {
-        selelectable.SelectionChanged += Paper_SelectionChanged;
-      }
-    }
-
-    private void DisconnectEvents(IPaper paper)
-    {
-      if (paper is ISelectable selelectable)
-      {
-        selelectable.SelectionChanged -= Paper_SelectionChanged;
-      }
-    }
-
-    private void Paper_SelectionChanged(object sender, EventArgs e)
-    {
-      FeedbackSelection();
-    }
-
-    private void FeedbackSelection()
-    {
-      Form.Call(() =>
-      {
-        var selectable = paper as ISelectable;
-        if (selectable == null)
+          // TODO: Emitir uma mensagem de falha
           return;
-
-        var count = selectable.GetSelection().Count();
-
-        Form.SelectionLabel.Text =
-          (count == 0) ? "" : (count == 1) ? "1 selecionado" : $"{count} selecionados";
-
-        var actionButtons =
-          from item in Form.ToolBar.Items.Cast<ToolStripItem>()
-          where item.Alignment == ToolStripItemAlignment.Left
-          select item;
-
-        actionButtons.ForEach(x => x.Visible = count > 0);
-      });
-    }
-
-    public void PerformAction(EntityAction entityAction)
-    {
-      var entity = (Entity)Content.Data;
-      var selection = (paper as ISelectable)?.GetSelection().OfType<Entity>().ToArray();
-      var action = new Action(this, entity, entityAction, selection);
-      action.Form.Show(this.Form);
-    }
-
-    public void SetBusy(bool busy)
-    {
-      Form.Call(() =>
-      {
-        Form.Overlay = busy;
-        if (!busy)
-        {
-          Form.Pack();
         }
-      });
+
+        if (ret.Value?.Data is Entity entity)
+        {
+          var window = Desktop.CreateWindow(this, target);
+          window.SetContent(entity);
+        }
+      }
+      catch (Exception ex)
+      {
+        // TODO: O que fazer com essa exceção
+        ex.Trace();
+      }
+      finally
+      {
+        Host.ClearStatus();
+        Host.ClearProgress();
+      }
     }
 
-    public void ViewSource()
+    public void Reload()
     {
-      var target = $"{Name}_source";
-      var window = Navigator.Current.CreateWindow(target, parent: this.Form);
-      window.SetContent(contentRet, (w, content) => new TextPlainPaper(w, contentRet.Value));
-      window.SetBusy(false);
+      if (string.IsNullOrEmpty(this.Href))
+        return;
+
+      this.RequestAsync(this.Href).NoAwait();
     }
 
-    public async Task NavigateAsync(string uri, string target = TargetNames.Self)
+    public bool Close()
     {
-      var window = Navigator.Current.CreateWindow(target, this);
-      await Navigator.Current.NavigateAsync(uri, window);
+      Desktop.Windows.Remove(this);
+      if (Desktop.Windows.Count == 0)
+      {
+        Desktop.CreateWindow();
+      }
+      return true;
+    }
+
+    private void Host_KeyUp(object sender, KeyEventArgs e)
+    {
+      if (e.Modifiers == Keys.None && e.KeyCode == Keys.F5)
+      {
+        Reload();
+      }
     }
   }
 }

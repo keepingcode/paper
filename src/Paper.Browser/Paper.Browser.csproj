@@ -47,13 +47,51 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\Widgets\BasicWidget.cs">
+    <Compile Include="Gui\Extent.cs" />
+    <Compile Include="Gui\FormsExtensions.cs" />
+    <Compile Include="Gui\Layouts\FixedWindowLayout.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Gui\Widgets\BasicWidget.Designer.cs">
-      <DependentUpon>BasicWidget.cs</DependentUpon>
+    <Compile Include="Gui\Layouts\FixedWindowLayout.Designer.cs">
+      <DependentUpon>FixedWindowLayout.cs</DependentUpon>
     </Compile>
-    <Compile Include="Gui\IInputWidget.cs" />
+    <Compile Include="Gui\Layouts\FlexWindowLayout.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Layouts\FlexWindowLayout.Designer.cs">
+      <DependentUpon>FlexWindowLayout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\IFieldWidget.cs" />
+    <Compile Include="Gui\IPropertyWidget.cs" />
+    <Compile Include="Gui\Layouts\IMessageSupport.cs" />
+    <Compile Include="Gui\Layouts\IWindowLayout.cs" />
+    <Compile Include="Gui\Layouts\StartWindowLayout.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Layouts\StartWindowLayout.Designer.cs">
+      <DependentUpon>StartWindowLayout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Panels\TablePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Panels\TablePanel.Designer.cs">
+      <DependentUpon>TablePanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Pages\IPage.cs" />
+    <Compile Include="Lib\Pages\ISelectablePage.cs" />
+    <Compile Include="Gui\Metrics.cs" />
+    <Compile Include="Gui\DesktopForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\DesktopForm.Designer.cs">
+      <DependentUpon>DesktopForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\WindowForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\WindowForm.Designer.cs">
+      <DependentUpon>WindowForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\WidgetGrid.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -62,13 +100,61 @@
     </Compile>
     <Compile Include="Gui\WidgetGridLayout.cs" />
     <Compile Include="Gui\IWidget.cs" />
+    <Compile Include="Helpers\Formatter.cs" />
+    <Compile Include="Gui\Widgets\InfoWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\InfoWidget.Designer.cs">
+      <DependentUpon>InfoWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\PropertyWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\PropertyWidget.Designer.cs">
+      <DependentUpon>PropertyWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Lib\Content.cs" />
+    <Compile Include="Lib\Desktop.cs" />
+    <Compile Include="Lib\DesktopExtensions.cs" />
+    <Compile Include="Lib\Http.cs" />
+    <Compile Include="Lib\HttpClient.cs" />
+    <Compile Include="Lib\HttpClientExtensions.cs" />
+    <Compile Include="Lib\Pages\RecordPage.cs" />
+    <Compile Include="Lib\Pages\TablePage.cs" />
+    <Compile Include="Lib\Target.cs" />
+    <Compile Include="Lib\TargetExtensions.cs" />
+    <Compile Include="Lib\TargetNames.cs" />
+    <Compile Include="Lib\Window.cs" />
+    <Compile Include="Lib\WindowExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
+    <EmbeddedResource Include="Gui\DesktopForm.resx">
+      <DependentUpon>DesktopForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Layouts\FixedWindowLayout.resx">
+      <DependentUpon>FixedWindowLayout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Layouts\FlexWindowLayout.resx">
+      <DependentUpon>FlexWindowLayout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Layouts\StartWindowLayout.resx">
+      <DependentUpon>StartWindowLayout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Panels\TablePanel.resx">
+      <DependentUpon>TablePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\WindowForm.resx">
+      <DependentUpon>WindowForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Gui\WidgetGrid.resx">
       <DependentUpon>WidgetGrid.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\Widgets\BasicWidget.resx">
-      <DependentUpon>BasicWidget.cs</DependentUpon>
+    <EmbeddedResource Include="Gui\Widgets\InfoWidget.resx">
+      <DependentUpon>InfoWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\PropertyWidget.resx">
+      <DependentUpon>PropertyWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

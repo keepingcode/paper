@@ -30,8 +30,9 @@
     {
       this.SuspendLayout();
       // 
-      // Frame
+      // WidgetGrid
       // 
+      this.AllowDrop = true;
       this.Name = "Frame";
       this.ResumeLayout(false);
 
