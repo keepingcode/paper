@@ -13,7 +13,7 @@ using Toolset.Reflection;
 
 namespace Paper.Browser.Gui
 {
-  public partial class WindowForm : Form, IWindowLayout
+  public partial class WindowForm : Form
   {
     private IWindowLayout _layout;
 
@@ -21,7 +21,7 @@ namespace Paper.Browser.Gui
     {
       InitializeComponent();
 
-      this.Layout = new StartWindowLayout();
+      this.WindowLayout = new FixedWindowLayout();
 
       // this.ActionBar.ItemAdded += (o, e) => ToolBarChanged(this.ActionBar);
       // this.ActionBar.ItemRemoved += (o, e) => ToolBarChanged(this.ActionBar);
@@ -34,50 +34,28 @@ namespace Paper.Browser.Gui
       // this.StatusBar.Visible = false;
     }
 
-    public Control Host => this;
-
-    public Panel ContentPane => Layout.ContentPane;
-    public ToolStrip ToolBar => Layout.ToolBar;
-    public ToolStrip ActionBar => Layout.ActionBar;
-    public StatusStrip StatusBar => Layout.StatusBar;
-
-    public IWindowLayout Layout
+    public IWindowLayout WindowLayout
     {
       get => _layout;
       set
       {
-        _layout = value ?? new FlexWindowLayout();
-
-        this.Controls.Clear();
-        this.Controls.Add(_layout.Host);
-
-        if (_layout is FlexWindowLayout)
+        if (value != _layout)
         {
-          _layout.Host.Dock = DockStyle.Fill;
-          this.AutoSize = false;
-          this.FormBorderStyle = FormBorderStyle.Sizable;
-          this.Expand();
-        }
-        else
-        {
-          this.AutoSize = true;
-          this.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-          this.FormBorderStyle = FormBorderStyle.FixedSingle;
+          _layout = value ?? new FixedWindowLayout();
+          _layout.Format(this);
         }
       }
     }
 
-    public IMessageSupport Messager => Layout as IMessageSupport;
-
     public string StatusMessage
     {
-      get => Messager?.StatusText?._Get<string>("Text");
-      set => Messager?.StatusText?._Set("Text", value);
+      get => StatusLabel.Text;
+      set => StatusLabel.Text = value;
     }
 
     public int? ProgressPercent
     {
-      get => Messager?.ProgressBar?._Get<int>("Value");
+      get => ProgressBar.Value;
       set
       {
         int percent;
@@ -90,7 +68,7 @@ namespace Paper.Browser.Gui
         }
         else if (value >= 0)
         {
-          percent = value.Value;
+          percent = (value > 100) ? 100 : value.Value;
           style = ProgressBarStyle.Continuous;
         }
         else
@@ -99,8 +77,8 @@ namespace Paper.Browser.Gui
           style = ProgressBarStyle.Marquee;
         }
 
-        Messager?.ProgressBar?._Set("Value", percent);
-        Messager?.ProgressBar?._Set("Style", style);
+        ProgressBar.Value = percent;
+        ProgressBar.Style = style;
       }
     }
 

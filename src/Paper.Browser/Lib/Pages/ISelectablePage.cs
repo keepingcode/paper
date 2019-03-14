@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Paper.Media;
 
-namespace Paper.Browser.Gui.Papers
+namespace Paper.Browser.Lib.Pages
 {
-  public interface ISelectable
+  public interface ISelectablePage : IPage
   {
     event EventHandler SelectionChanged;
 
     bool SelectionEnabled { get; set; }
 
-    IEnumerable<object> GetSelection();
+    ICollection<Entity> GetSelection();
   }
 }

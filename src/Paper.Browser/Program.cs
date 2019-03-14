@@ -33,7 +33,13 @@ namespace Paper.Browser
           {
             Id = 1,
             Name = "The First",
-            Date = DateTime.Now
+            Date = DateTime.Now,
+            Id2 = 1,
+            Name2 = "The First",
+            Date2 = DateTime.Now,
+            Id3 = 1,
+            Name3 = "The First",
+            Date3 = DateTime.Now
           };
 
           var entity = new Entity();
@@ -42,18 +48,18 @@ namespace Paper.Browser
           entity.AddProperties(data);
           entity.AddHeaders(data, ClassNames.Record);
 
-          desktop.CreateWindow().SetContent(entity);
+          //desktop.CreateWindow().SetContent(entity);
 
           var task1 = desktop.CreateWindow().RequestAsync(
             "http://localhost:8080/Api/1/Paper/Api/Extensions/Papers/SamplePaper/TaskPaper/1?f=json+siren"
           );
 
-          var task2 = desktop.CreateWindow().RequestAsync(
-            "http://localhost:8080/Api/1/Paper/Api/Extensions/Papers/SamplePaper/TasksPaper?f=json+siren"
-          );
+          //var task2 = desktop.CreateWindow().RequestAsync(
+          //  "http://localhost:8080/Api/1/Paper/Api/Extensions/Papers/SamplePaper/TasksPaper?f=json+siren"
+          //);
 
           await task1;
-          await task2;
+          //await task2;
         };
 
       Application.Run(desktop.Host);

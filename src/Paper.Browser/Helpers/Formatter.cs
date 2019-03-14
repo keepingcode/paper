@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Toolset;
 
-namespace Paper.Browser.Gui
+namespace Paper.Browser.Helpers
 {
   public static class Formatter
   {

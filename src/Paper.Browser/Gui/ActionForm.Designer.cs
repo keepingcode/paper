@@ -28,81 +28,102 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.ContentPanel = new System.Windows.Forms.FlowLayoutPanel();
-      this.pnActions = new System.Windows.Forms.FlowLayoutPanel();
-      this.CancelButton = new System.Windows.Forms.Button();
+      this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+      this.WidgetGrid = new Paper.Browser.Gui.WidgetGrid();
+      this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+      this.ExitButton = new System.Windows.Forms.Button();
       this.SubmitButton = new System.Windows.Forms.Button();
-      this.pnActions.SuspendLayout();
+      this.tableLayoutPanel1.SuspendLayout();
+      this.flowLayoutPanel1.SuspendLayout();
       this.SuspendLayout();
       // 
-      // ContentPanel
+      // tableLayoutPanel1
       // 
-      this.ContentPanel.BackColor = System.Drawing.SystemColors.Control;
-      this.ContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.ContentPanel.Location = new System.Drawing.Point(10, 10);
-      this.ContentPanel.Name = "ContentPanel";
-      this.ContentPanel.Size = new System.Drawing.Size(264, 65);
-      this.ContentPanel.TabIndex = 1;
+      this.tableLayoutPanel1.AutoSize = true;
+      this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.tableLayoutPanel1.ColumnCount = 1;
+      this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tableLayoutPanel1.Controls.Add(this.WidgetGrid, 0, 0);
+      this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+      this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 3, 3, 43);
+      this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+      this.tableLayoutPanel1.RowCount = 2;
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+      this.tableLayoutPanel1.Size = new System.Drawing.Size(220, 120);
+      this.tableLayoutPanel1.TabIndex = 1;
       // 
-      // pnActions
+      // WidgetGrid
       // 
-      this.pnActions.AutoSize = true;
-      this.pnActions.Controls.Add(this.CancelButton);
-      this.pnActions.Controls.Add(this.SubmitButton);
-      this.pnActions.Dock = System.Windows.Forms.DockStyle.Bottom;
-      this.pnActions.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-      this.pnActions.Location = new System.Drawing.Point(10, 75);
-      this.pnActions.Name = "pnActions";
-      this.pnActions.Padding = new System.Windows.Forms.Padding(0, 6, 0, 0);
-      this.pnActions.Size = new System.Drawing.Size(264, 35);
-      this.pnActions.TabIndex = 3;
+      this.WidgetGrid.AllowDrop = true;
+      this.WidgetGrid.Location = new System.Drawing.Point(10, 10);
+      this.WidgetGrid.Margin = new System.Windows.Forms.Padding(10);
+      this.WidgetGrid.Name = "WidgetGrid";
+      this.WidgetGrid.Size = new System.Drawing.Size(200, 100);
+      this.WidgetGrid.TabIndex = 0;
       // 
-      // CancelButton
+      // flowLayoutPanel1
       // 
-      this.CancelButton.Location = new System.Drawing.Point(186, 9);
-      this.CancelButton.Name = "CancelButton";
-      this.CancelButton.Size = new System.Drawing.Size(75, 23);
-      this.CancelButton.TabIndex = 1;
-      this.CancelButton.Text = "&Cancelar";
-      this.CancelButton.UseVisualStyleBackColor = true;
-      this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+      this.flowLayoutPanel1.AutoSize = true;
+      this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.flowLayoutPanel1.Controls.Add(this.ExitButton);
+      this.flowLayoutPanel1.Controls.Add(this.SubmitButton);
+      this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+      this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 288);
+      this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+      this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(4, 7, 4, 7);
+      this.flowLayoutPanel1.Size = new System.Drawing.Size(409, 43);
+      this.flowLayoutPanel1.TabIndex = 3;
+      // 
+      // ExitButton
+      // 
+      this.ExitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+      this.ExitButton.Location = new System.Drawing.Point(323, 10);
+      this.ExitButton.Name = "ExitButton";
+      this.ExitButton.Size = new System.Drawing.Size(75, 23);
+      this.ExitButton.TabIndex = 3;
+      this.ExitButton.Text = "Cancelar";
+      this.ExitButton.UseVisualStyleBackColor = true;
       // 
       // SubmitButton
       // 
-      this.SubmitButton.Location = new System.Drawing.Point(105, 9);
+      this.SubmitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+      this.SubmitButton.Location = new System.Drawing.Point(242, 10);
       this.SubmitButton.Name = "SubmitButton";
       this.SubmitButton.Size = new System.Drawing.Size(75, 23);
       this.SubmitButton.TabIndex = 2;
-      this.SubmitButton.Text = "Executar";
+      this.SubmitButton.Text = "Ok";
       this.SubmitButton.UseVisualStyleBackColor = true;
-      this.SubmitButton.Click += new System.EventHandler(this.btSubmit_Click);
       // 
       // ActionForm
       // 
+      this.AcceptButton = this.SubmitButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(284, 120);
-      this.ControlBox = false;
-      this.Controls.Add(this.ContentPanel);
-      this.Controls.Add(this.pnActions);
-      this.MinimumSize = new System.Drawing.Size(300, 136);
+      this.AutoSize = true;
+      this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+      this.CancelButton = this.ExitButton;
+      this.ClientSize = new System.Drawing.Size(409, 331);
+      this.Controls.Add(this.flowLayoutPanel1);
+      this.Controls.Add(this.tableLayoutPanel1);
       this.Name = "ActionForm";
-      this.Padding = new System.Windows.Forms.Padding(10);
+      this.ShowIcon = false;
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-      this.Text = "Ação";
-      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ActionForm_FormClosing);
-      this.Click += new System.EventHandler(this.ActionForm_Click);
-      this.pnActions.ResumeLayout(false);
+      this.Text = "Edição";
+      this.tableLayoutPanel1.ResumeLayout(false);
+      this.flowLayoutPanel1.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
     }
 
     #endregion
-    private System.Windows.Forms.FlowLayoutPanel pnActions;
-    public System.Windows.Forms.Button CancelButton;
+    private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+    public WidgetGrid WidgetGrid;
+    private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
     public System.Windows.Forms.Button SubmitButton;
-    public System.Windows.Forms.FlowLayoutPanel ContentPanel;
+    public System.Windows.Forms.Button ExitButton;
   }
 }

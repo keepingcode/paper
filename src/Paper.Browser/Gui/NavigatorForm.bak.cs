@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Paper.Browser.Lib;
 using Toolset;
 
 namespace Paper.Browser.Gui

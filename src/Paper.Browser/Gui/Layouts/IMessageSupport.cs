@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Paper.Browser.Gui
+namespace Paper.Browser.Gui.Layouts
 {
-  public partial class ActionForm : Form
+  public interface IMessageSupport
   {
-    public ActionForm()
-    {
-      InitializeComponent();
-    }
+    Component StatusText { get; }
+
+    Component ProgressBar { get; }
   }
 }

@@ -5,16 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Paper.Browser.Gui.Layouts;
 using Paper.Browser.Lib;
+using Paper.Media;
 
-namespace Paper.Browser.Gui.Papers
+namespace Paper.Browser.Lib.Pages
 {
-  public interface IPaper
+  public interface IPage
   {
-    Control Control { get; }
+    Control Host { get; }
 
-    Window Window { get; }
+    Window Window { get; set; }
 
-    Content Content { get; }
+    Entity Entity { get; set; }
   }
 }
