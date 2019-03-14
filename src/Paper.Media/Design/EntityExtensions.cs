@@ -927,6 +927,12 @@ namespace Paper.Media.Design
       return entity?.Links?.FirstOrDefault(x => x.Rel.Has(RelNames.Self));
     }
 
+    public static Href GetSelfHref(this Entity entity)
+    {
+      var link = entity?.Links?.FirstOrDefault(x => x.Rel.Has(RelNames.Self));
+      return link?.Href;
+    }
+
     #endregion
   }
 }

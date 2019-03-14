@@ -9,12 +9,13 @@ namespace Paper.Browser.Gui
 {
   public interface IFieldWidget : IWidget
   {
-    Field Field { get; set; }
+    event EventHandler FieldChanged;
+    event EventHandler ValueChanged;
 
-    object Value { get; set; }
+    Field Field { get; set; }
 
     bool HasChanges { get; }
 
-    bool Validate();
+    IEnumerable<string> GetErrors();
   }
 }

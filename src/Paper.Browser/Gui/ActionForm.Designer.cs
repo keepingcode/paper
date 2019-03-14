@@ -70,16 +70,16 @@
       this.flowLayoutPanel1.Controls.Add(this.SubmitButton);
       this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
       this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-      this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 288);
+      this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 306);
       this.flowLayoutPanel1.Name = "flowLayoutPanel1";
       this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(4, 7, 4, 7);
-      this.flowLayoutPanel1.Size = new System.Drawing.Size(409, 43);
+      this.flowLayoutPanel1.Size = new System.Drawing.Size(428, 43);
       this.flowLayoutPanel1.TabIndex = 3;
       // 
       // ExitButton
       // 
       this.ExitButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.ExitButton.Location = new System.Drawing.Point(323, 10);
+      this.ExitButton.Location = new System.Drawing.Point(342, 10);
       this.ExitButton.Name = "ExitButton";
       this.ExitButton.Size = new System.Drawing.Size(75, 23);
       this.ExitButton.TabIndex = 3;
@@ -89,7 +89,7 @@
       // SubmitButton
       // 
       this.SubmitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.SubmitButton.Location = new System.Drawing.Point(242, 10);
+      this.SubmitButton.Location = new System.Drawing.Point(261, 10);
       this.SubmitButton.Name = "SubmitButton";
       this.SubmitButton.Size = new System.Drawing.Size(75, 23);
       this.SubmitButton.TabIndex = 2;
@@ -104,9 +104,10 @@
       this.AutoSize = true;
       this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
       this.CancelButton = this.ExitButton;
-      this.ClientSize = new System.Drawing.Size(409, 331);
+      this.ClientSize = new System.Drawing.Size(428, 349);
       this.Controls.Add(this.flowLayoutPanel1);
       this.Controls.Add(this.tableLayoutPanel1);
+      this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
       this.Name = "ActionForm";
       this.ShowIcon = false;
       this.ShowInTaskbar = false;

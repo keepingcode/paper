@@ -19,7 +19,7 @@ namespace Paper.Browser.Lib
 {
   public class Window
   {
-    private readonly HashMap<Action> actions = new HashMap<Action>();
+    private readonly HashMap<WindowAction> actions = new HashMap<WindowAction>();
 
     public Window(string name, Desktop desktop)
     {
@@ -156,14 +156,14 @@ namespace Paper.Browser.Lib
     public void PerformAction(Entity entity, IPage page, EntityAction entityAction)
     {
       var selection = (page as ISelectablePage)?.GetSelection().OfType<Entity>().ToArray();
-      var action = new Action(this, entity, entityAction, selection);
+      var action = new WindowAction(this, entity, entityAction, selection);
 
       this.Host.ToolBar.Enabled = this.Host.ActionBar.Enabled = false;
       action.Host.FormClosed += (o, e) => this.Host.ToolBar.Enabled = this.Host.ActionBar.Enabled = true;
       action.Host.Show(this.Host);
     }
 
-    public async Task RequestAsync(string uri, string method, string target, Entity data)
+    public async Task<Ret> RequestAsync(string uri, string method, Func<Entity, string> target, Entity data)
     {
       try
       {
@@ -177,19 +177,23 @@ namespace Paper.Browser.Lib
         if (!ret.Ok)
         {
           // TODO: Emitir uma mensagem de falha
-          return;
+          return ret;
         }
 
         if (ret.Value?.Data is Entity entity)
         {
-          var window = Desktop.CreateWindow(this, target);
+          var targetName = target.Invoke(entity);
+          var window = Desktop.CreateWindow(this, targetName);
           window.SetContent(entity);
         }
+
+        return ret;
       }
       catch (Exception ex)
       {
         // TODO: O que fazer com essa exceção
         ex.Trace();
+        return ex;
       }
       finally
       {

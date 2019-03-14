@@ -76,5 +76,32 @@ namespace Paper.Browser.Gui
         ex.Trace();
       }
     }
+
+    public static void Enhance(this Control control)
+    {
+      foreach (var textBox in control.Controls.OfType<TextBox>())
+      {
+        EnhanceTextBox(textBox);
+      }
+      foreach (var child in control.Controls.Cast<Control>())
+      {
+        Enhance(child);
+      }
+    }
+
+    public static void EnhanceTextBox(this TextBox textBox)
+    {
+      textBox.Enter += (o, e) =>
+      {
+        textBox.SelectAll();
+      };
+      textBox.KeyUp += (o, e) =>
+      {
+        if (e.Modifiers == Keys.Control && e.KeyCode == Keys.A)
+        {
+          textBox.SelectAll();
+        }
+      };
+    }
   }
 }

@@ -35,7 +35,7 @@ namespace Paper.Browser.Lib.Pages
       Host.Controls.Clear();
       foreach (var header in entity.Headers(ClassNames.Record))
       {
-        var widget = new PropertyWidget();
+        var widget = new TextWidget();
         widget.Header = header;
         widget.Value = entity.Properties?[header.Name];
         Host.Controls.Add(widget);

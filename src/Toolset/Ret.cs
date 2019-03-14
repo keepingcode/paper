@@ -38,6 +38,11 @@ namespace Toolset
       };
     }
 
+    public static implicit operator bool(Ret ret)
+    {
+      return ret.Ok;
+    }
+
     public static implicit operator Ret(Exception exception)
     {
       return new Ret

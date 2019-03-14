@@ -28,18 +28,9 @@
     /// </summary>
     private void InitializeComponent()
     {
-      this.lbText = new System.Windows.Forms.Label();
       this.txValue = new System.Windows.Forms.TextBox();
+      this.lbText = new System.Windows.Forms.Label();
       this.SuspendLayout();
-      // 
-      // lbText
-      // 
-      this.lbText.AutoSize = true;
-      this.lbText.Location = new System.Drawing.Point(-3, 0);
-      this.lbText.Name = "lbText";
-      this.lbText.Size = new System.Drawing.Size(28, 13);
-      this.lbText.TabIndex = 0;
-      this.lbText.Text = "Text";
       // 
       // txValue
       // 
@@ -47,16 +38,26 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.txValue.Location = new System.Drawing.Point(0, 25);
       this.txValue.Name = "txValue";
+      this.txValue.ReadOnly = true;
       this.txValue.Size = new System.Drawing.Size(161, 20);
-      this.txValue.TabIndex = 1;
+      this.txValue.TabIndex = 3;
       // 
-      // TextWidget
+      // lbText
+      // 
+      this.lbText.AutoSize = true;
+      this.lbText.Location = new System.Drawing.Point(-3, 0);
+      this.lbText.Name = "lbText";
+      this.lbText.Size = new System.Drawing.Size(28, 13);
+      this.lbText.TabIndex = 2;
+      this.lbText.Text = "Text";
+      // 
+      // PropertyWidget
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.Controls.Add(this.txValue);
       this.Controls.Add(this.lbText);
-      this.Name = "TextWidget";
+      this.Name = "PropertyWidget";
       this.Size = new System.Drawing.Size(161, 45);
       this.ResumeLayout(false);
       this.PerformLayout();
@@ -65,7 +66,7 @@
 
     #endregion
 
-    private System.Windows.Forms.Label lbText;
     private System.Windows.Forms.TextBox txValue;
+    private System.Windows.Forms.Label lbText;
   }
 }
