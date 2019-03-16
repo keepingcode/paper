@@ -109,7 +109,7 @@ namespace Paper.Media
     public static string GetClassName(object typeOrInstance)
     {
       // O algoritmo é o mesmo aplicado ao tipo de dados.
-      return DataTypeNames.GetDataTypeName(typeOrInstance);
+      return DataTypeNames.FromType(typeOrInstance);
     }
 
     /// <summary>

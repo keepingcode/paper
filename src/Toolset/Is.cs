@@ -76,5 +76,14 @@ namespace Toolset
 
       return type.GetGenericTypeDefinition() == typeof(Range<>);
     }
+
+    public static bool Nullable(object graph)
+    {
+      var type = graph is Type t ? t : graph?.GetType();
+      if (type == null)
+        return false;
+
+      return System.Nullable.GetUnderlyingType(type) != null;
+    }
   }
 }

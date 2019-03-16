@@ -126,12 +126,12 @@ namespace Paper.Browser.Lib.Pages
 
         switch (header.DataType)
         {
-          case DataTypeNames.Bit:
+          case DataTypeNames.Boolean:
             {
               col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
               break;
             }
-          case DataTypeNames.Number:
+          case DataTypeNames.Integer:
           case DataTypeNames.Decimal:
             {
               col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
@@ -172,13 +172,13 @@ namespace Paper.Browser.Lib.Pages
           var cellValue = value;
           switch (header.DataType)
           {
-            case DataTypeNames.Bit:
+            case DataTypeNames.Boolean:
               {
                 var bit = Change.To<bool>(value);
                 cellValue = bit ? "x" : "-";
                 break;
               }
-            case DataTypeNames.Number:
+            case DataTypeNames.Integer:
               {
                 var number = Change.To<int>(value);
                 cellValue = number;
@@ -204,10 +204,10 @@ namespace Paper.Browser.Lib.Pages
     {
       switch (dataType)
       {
-        case DataTypeNames.Bit:
+        case DataTypeNames.Boolean:
           return Change.To<bool>(value);
 
-        case DataTypeNames.Number:
+        case DataTypeNames.Integer:
           return Change.To<int>(value);
 
         case DataTypeNames.Decimal:
@@ -218,11 +218,10 @@ namespace Paper.Browser.Lib.Pages
         case DataTypeNames.Datetime:
           return Change.To<DateTime>(value);
 
-        case DataTypeNames.ArrayOfRecords:
-          throw new MediaException("Tipo não suportado: " + DataTypeNames.ArrayOfRecords);
+        case DataTypeNames.Record:
+          throw new MediaException("Tipo não suportado: " + DataTypeNames.Record);
 
-        case DataTypeNames.Label:
-        case DataTypeNames.Text:
+        case DataTypeNames.String:
         default:
           return Change.To<string>(value);
       }

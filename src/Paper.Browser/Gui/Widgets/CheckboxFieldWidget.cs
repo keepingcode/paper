@@ -9,26 +9,28 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
 using System.Text.RegularExpressions;
+using Toolset;
 
 namespace Paper.Browser.Gui.Widgets
 {
-  public partial class TextFieldWidget : UserControl, IFieldWidget
+  public partial class CheckboxFieldWidget : UserControl, IFieldWidget
   {
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
 
-    private string sourceValue;
+    private bool? sourceValue;
 
     private Field _field;
     private Extent _gridExtent;
 
-    public TextFieldWidget()
+    public CheckboxFieldWidget()
     {
       InitializeComponent();
-      UpdateLayout();
       this.Enhance();
       this.EnhanceFieldWidget();
-      txValue.TextChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
+      GridExtent = new Extent(2, 1);
+      ckValue.CheckedChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
+      ckValue.CheckedChanged += (o, e) => ckValue.Text = ckValue.Checked ? "Ativado" : "Desativado";
     }
 
     public UserControl Host => this;
@@ -37,7 +39,7 @@ namespace Paper.Browser.Gui.Widgets
 
     public IContainer Components => components ?? (components = new Container());
 
-    public bool HasChanges => txValue.Text != sourceValue;
+    public bool HasChanges => ckValue.Checked != sourceValue;
 
     public Field Field
     {
@@ -46,18 +48,30 @@ namespace Paper.Browser.Gui.Widgets
       {
         _field = value;
         Value = value?.Value;
-        UpdateLayout();
         FieldChanged?.Invoke(this, EventArgs.Empty);
       }
     }
 
+    private bool Required => Field?.Required == true;
+
     public object Value
     {
-      get => txValue.Text;
+      get => Required ? ckValue.Checked : (ckValue.Checked ? true : (object)null);
       set
       {
-        txValue.Text = value?.ToString();
-        sourceValue = txValue.Text;
+        if (Field == null)
+          throw new InvalidOperationException("O campo \"Field\" deve ser indicado antes da indicação do valor do campo.");
+
+        if (Required)
+        {
+          sourceValue = Change.Try<bool>(value, defaultValue: false);
+        }
+        else
+        {
+          sourceValue = Change.Try<bool?>(value);
+        }
+
+        ckValue.Checked = (sourceValue == true);
       }
     }
 
@@ -76,22 +90,8 @@ namespace Paper.Browser.Gui.Widgets
       if (Field == null)
         yield break;
 
-      if (Field.Required == true && string.IsNullOrEmpty(txValue.Text))
+      if (Field.Required == true && Value == null)
         yield return "Campo requerido";
-
-      if (Field.MinLength != null && txValue.Text.Length < Field.MinLength)
-        yield return $"Deve ter no mínimo {Field.MinLength} caracteres";
-
-      if (Field.MaxLength != null && txValue.Text.Length > Field.MaxLength)
-        yield return $"Deve ter no máximo {Field.MaxLength} caracteres";
-
-      if (Field.Pattern != null && Regex.IsMatch(txValue.Text, Field.Pattern))
-        yield return $"Não corresponde ao padrão de preenchimento: {Field.Pattern}";
-    }
-
-    private void UpdateLayout()
-    {
-      GridExtent = (Field?.Multiline == true) ? new Extent(6, 5) : new Extent(6, 1);
     }
   }
 }

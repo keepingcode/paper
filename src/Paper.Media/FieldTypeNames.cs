@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Toolset;
 
 namespace Paper.Media
 {
@@ -21,12 +22,21 @@ namespace Paper.Media
     public const string Url = "url";
     public const string Email = "email";
     public const string Password = "password";
-    public const string Datetime = "datetime";
+
+    // "Datetime" suporta "timezone" mas o Paper ainda não suporta.
+    // Use "DatetimeLocal".
+    //public const string Datetime = "datetime";
+
     public const string Date = "date";
     public const string Month = "month";
     public const string Week = "week";
     public const string Time = "time";
-    public const string DatetimeLocal = "datetimeLocal";
+
+    /// <summary>
+    /// Data e hora local sem informação de timezone.
+    /// </summary>
+    public const string DatetimeLocal = "datetime-local";
+
     public const string Number = "number";
     public const string Range = "range";
     public const string Color = "color";
@@ -39,7 +49,21 @@ namespace Paper.Media
 
     #region Tipos especiais do Paper
 
-    public const string Binding = "binding";
+    /// <summary>
+    /// Caixa de mensagem.
+    /// </summary>
+    public const string Label = "__label";
+
+    /// <summary>
+    /// Caixa de seleção.
+    /// 
+    /// A caixa pode ser comportar de duas formas:
+    /// -   Como uma caixa simples de lista.
+    ///     Neste caso a propriedade Value contém as opções da caixa do tipo FieldValueCollection.
+    /// -   Como uma caixa de seleção de itens em uma subconsulta.
+    ///     Neste caso a propriedade Provider contém as regras de consulta dos itens selecionáveis.
+    /// </summary>
+    public const string Select = "__select";
 
     #endregion
 
@@ -50,30 +74,45 @@ namespace Paper.Media
     /// </summary>
     /// <param name="dataTypeName">Nome do tipo do dado.</param>
     /// <returns>Nome do tipo do componente de edição relacionado.</returns>
-    public static string GetFieldTypeFromDataType(string dataTypeName)
+    public static string FromDataType(DataType dataType)
     {
-      switch (dataTypeName)
+      return FromDataType(dataType.GetName());
+    }
+
+    /// <summary>
+    /// Obtém um tipo apropriado para o componente de edição do campo, conforme
+    /// definido pela classe FieldTypeNames.
+    /// O tipo obtido é um daqueles convencionados para o HTML5.
+    /// </summary>
+    /// <param name="dataType">Nome do tipo do dado.</param>
+    /// <returns>Nome do tipo do componente de edição relacionado.</returns>
+    public static string FromDataType(string dataType)
+    {
+      switch (dataType)
       {
-        case "boolean":
-        case "bit":
-        case "integer":
-        case "int":
-        case "long":
-        case "number":
-        case "double":
-        case "float":
-        case "decimal":
+        case DataTypeNames.Boolean:
+          return Checkbox;
+
+        case DataTypeNames.Integer:
+        case DataTypeNames.Decimal:
           return Number;
 
-        case "date":
+        case DataTypeNames.Date:
           return Date;
 
-        case "time":
+        case DataTypeNames.Time:
           return Time;
 
-        case "datetime":
-          return Datetime;
+        case DataTypeNames.Datetime:
+          return DatetimeLocal;
 
+        case DataTypeNames.Binary:
+          return File;
+
+        case DataTypeNames.Record:
+          return Select;
+
+        case DataTypeNames.String:
         default:
           return Text;
       }

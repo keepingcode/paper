@@ -68,8 +68,8 @@ namespace Paper.Browser.Gui.Widgets
 
       switch (Header?.DataType)
       {
-        case DataTypeNames.Bit:
-        case DataTypeNames.Number:
+        case DataTypeNames.Boolean:
+        case DataTypeNames.Integer:
         case DataTypeNames.Decimal:
         case DataTypeNames.Date:
         case DataTypeNames.Time:
@@ -84,9 +84,8 @@ namespace Paper.Browser.Gui.Widgets
             break;
           }
 
-        case DataTypeNames.Text:
-        case DataTypeNames.Label:
-        case DataTypeNames.ArrayOfRecords:
+        case DataTypeNames.String:
+        case DataTypeNames.Record:
         default:
           {
             GridExtent = new Extent(6, 1);

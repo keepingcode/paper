@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using Paper.Media.Attributes;
 using Toolset;
 using Toolset.Collections;
+using Toolset.Reflection;
 
 namespace Paper.Media.Design
 {
@@ -13,6 +15,8 @@ namespace Paper.Media.Design
   /// </summary>
   public static class FieldExtensions
   {
+    #region Set properties
+
     /// <summary>
     /// Adiciona um texto substitudo para o campo.
     /// Categorias são usadas como agrupadores de campos.
@@ -36,6 +40,43 @@ namespace Paper.Media.Design
     public static Field SetCategory(this Field field, string category)
     {
       field.Category = category;
+      return field;
+    }
+
+    /// <summary>
+    /// Define o tipo de dado do campo.
+    /// </summary>
+    /// <param name="field">O campo a ser modificado.</param>
+    /// <param name="dataType">A categoria do campo.</param>
+    /// <returns>A própria instância do campo modificado.</returns>
+    public static Field SetType(this Field field, string fieldType)
+    {
+      field.Type = fieldType;
+      return field;
+    }
+
+    /// <summary>
+    /// Define o tipo de dado do campo.
+    /// </summary>
+    /// <param name="field">O campo a ser modificado.</param>
+    /// <param name="dataType">A categoria do campo.</param>
+    /// <returns>A própria instância do campo modificado.</returns>
+    public static Field SetType(this Field field, FieldType fieldType)
+    {
+      field.Type = fieldType.GetName();
+      return field;
+    }
+
+    /// <summary>
+    /// Define o tipo de dado do campo.
+    /// </summary>
+    /// <param name="field">O campo a ser modificado.</param>
+    /// <param name="dataType">A categoria do campo.</param>
+    /// <returns>A própria instância do campo modificado.</returns>
+    public static Field SetType(this Field field, Type fieldType)
+    {
+      var dataType = DataTypeNames.FromType(fieldType);
+      field.Type = FieldTypeNames.FromDataType(dataType);
       return field;
     }
 
@@ -155,7 +196,7 @@ namespace Paper.Media.Design
     /// <returns>A própria instância do campo modificado.</returns>
     public static Field SetAllowWildcards(this Field field, bool allowWildcards = true)
     {
-      field.AllowWildcards = allowWildcards;
+      field.AllowWildcard = allowWildcards;
       return field;
     }
 
@@ -266,5 +307,169 @@ namespace Paper.Media.Design
       options?.Invoke(field.Provider);
       return field;
     }
+
+    #endregion
+
+    #region Set defaults via reflection
+
+    /// <summary>
+    /// Infere valores padrão para as propriedades a partir de um campo ou propriedade
+    /// de objeto.
+    /// </summary>
+    /// <param name="field">O campo de uma ação modificado.</param>
+    /// <param name="member">O campo ou propriedade de um objeto.</param>
+    /// <returns>O próprio campo da ação modificado.</returns>
+    public static Field SetDefaults(this Field field, MemberInfo member)
+    {
+      return ExtractDefaults(field, member);
+    }
+
+    /// <summary>
+    /// Infere valores padrão para as propriedades a partir de um campo ou propriedade
+    /// de objeto.
+    /// </summary>
+    /// <param name="field">O campo de uma ação modificado.</param>
+    /// <param name="member">O campo ou propriedade de um objeto.</param>
+    /// <returns>O próprio campo da ação modificado.</returns>
+    public static Field SetDefaults(this Field field, ParameterInfo member)
+    {
+      return ExtractDefaults(field, member);
+    }
+
+    private static Field ExtractDefaults(this Field field, object member)
+    {
+      Type type;
+
+      if (member is ParameterInfo)
+      {
+        type = ((ParameterInfo)member).ParameterType;
+      }
+      else if (member is FieldInfo)
+      {
+        type = ((FieldInfo)member).FieldType;
+      }
+      else
+      {
+        type = ((PropertyInfo)member).PropertyType;
+      }
+
+      SetDefaultFor<CategoryAttribute>(field, member, type);
+      SetDefaultFor<PlaceholderAttribute>(field, member, type);
+      SetDefaultFor<ReadOnlyAttribute>(field, member, type);
+      SetDefaultFor<PatternAttribute>(field, member, type);
+      SetDefaultFor<MultilineAttribute>(field, member, type);
+      SetDefaultFor<AllowManyAttribute>(field, member, type);
+      SetDefaultFor<AllowRangeAttribute>(field, member, type);
+      SetDefaultFor<AllowWildcardAttribute>(field, member, type);
+
+      SetDefaultTitle(field, member, type);
+      SetDefaultType(field, member, type);
+      SetDefaultDataType(field, member, type);
+      SetDefaultRequired(field, member, type);
+      SetDefaultProvider(field, member, type);
+      SetDefaultRange(field, member, type);
+      SetDefaultValue(field, member, type);
+
+      return field;
+    }
+
+    private static void SetDefaultTitle(Field field, object member, Type type)
+    {
+      var attr = member._GetAttribute<TitleAttribute>();
+      if (attr != null)
+      {
+        field.Title = attr.Title;
+      }
+      else
+      {
+        field.Title = Conventions.MakeName(member);
+      }
+    }
+
+    private static void SetDefaultType(Field field, object member, Type type)
+    {
+      var hiddenAttr = member._GetAttribute<HiddenAttribute>();
+      var typeAttr = member._GetAttribute<FieldTypeAttribute>();
+      if (hiddenAttr?.Hidden == true)
+      {
+        field.Type = FieldTypeNames.Hidden;
+      }
+      else if (typeAttr != null)
+      {
+        field.Type = typeAttr.FieldType;
+      }
+      else
+      {
+        field.SetType(type);
+      }
+    }
+
+    private static void SetDefaultDataType(Field field, object member, Type type)
+    {
+      var attr = member._GetAttribute<DataTypeAttribute>();
+      if (attr != null)
+      {
+        field.DataType = attr.DataType;
+      }
+      else
+      {
+        field.SetDataType(type);
+      }
+    }
+
+    private static void SetDefaultRequired(Field field, object member, Type type)
+    {
+      var attr = member._GetAttribute<RequiredAttribute>();
+      if (attr != null)
+      {
+        field.Required = attr.Required;
+      }
+      else
+      {
+        field.Required = type.IsValueType && !Is.Nullable(type);
+      }
+    }
+
+    private static void SetDefaultValue(Field field, object member, Type type)
+    {
+      var attr1 = member._GetAttribute<DefaultValueAttribute>();
+      var attr2 = member._GetAttribute<System.ComponentModel.DefaultValueAttribute>();
+      var value = attr1?.DefaultValue ?? attr2?.Value;
+      if (value != null)
+      {
+        field.Value = Change.To(value, type);
+      }
+    }
+
+    private static void SetDefaultProvider(Field field, object member, Type type)
+    {
+      var attr = member._GetAttribute<ProviderAttribute>();
+      if (attr != null)
+      {
+        field.Provider = new FieldProvider()._CopyFrom(attr);
+      }
+    }
+
+    private static void SetDefaultRange(Field field, object member, Type type)
+    {
+      var attr = member._GetAttribute<RangeAttribute>();
+      if (attr != null)
+      {
+        field.MinLength = attr.Min;
+        field.MaxLength = attr.Max;
+      }
+    }
+
+    private static void SetDefaultFor<TAttribute>(Field field, object member, Type type)
+      where TAttribute : Attribute
+    {
+      var attr = member._GetAttribute<TAttribute>();
+      if (attr != null)
+      {
+        field._CopyFrom(attr);
+      }
+    }
+
+    #endregion
   }
 }

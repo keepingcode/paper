@@ -9,26 +9,28 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
 using System.Text.RegularExpressions;
+using Toolset;
 
 namespace Paper.Browser.Gui.Widgets
 {
-  public partial class TextFieldWidget : UserControl, IFieldWidget
+  public partial class DatetimeLocalFieldWidget : UserControl, IFieldWidget
   {
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
 
-    private string sourceValue;
+    private DateTime? sourceValue;
 
     private Field _field;
     private Extent _gridExtent;
 
-    public TextFieldWidget()
+    public DatetimeLocalFieldWidget()
     {
       InitializeComponent();
       UpdateLayout();
       this.Enhance();
       this.EnhanceFieldWidget();
-      txValue.TextChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
+      GridExtent = new Extent(4, 1);
+      dpValue.TextChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public UserControl Host => this;
@@ -37,7 +39,7 @@ namespace Paper.Browser.Gui.Widgets
 
     public IContainer Components => components ?? (components = new Container());
 
-    public bool HasChanges => txValue.Text != sourceValue;
+    public bool HasChanges => dpValue.Value != sourceValue;
 
     public Field Field
     {
@@ -51,14 +53,37 @@ namespace Paper.Browser.Gui.Widgets
       }
     }
 
+    private bool Required => Field?.Required == true;
+
     public object Value
     {
-      get => txValue.Text;
+      get => dpValue.Checked ? (object)dpValue.Value : null;
       set
       {
-        txValue.Text = value?.ToString();
-        sourceValue = txValue.Text;
+        if (Field == null)
+          throw new InvalidOperationException("O campo \"Field\" deve ser indicado antes da indicação do valor do campo.");
+
+        var defaultDate = MakeDefaultDate();
+
+        if (Required)
+        {
+          sourceValue = Change.Try<DateTime>(value, defaultDate);
+        }
+        else
+        {
+          sourceValue = Change.Try<DateTime?>(value);
+        }
+
+        dpValue.Checked = Required || value != null;
+        dpValue.Value = sourceValue ?? defaultDate;
       }
+    }
+
+    private DateTime MakeDefaultDate()
+    {
+      var now = DateTime.Now;
+      var date = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
+      return date;
     }
 
     public Extent GridExtent
@@ -76,22 +101,13 @@ namespace Paper.Browser.Gui.Widgets
       if (Field == null)
         yield break;
 
-      if (Field.Required == true && string.IsNullOrEmpty(txValue.Text))
+      if (Field.Required == true && Value == null)
         yield return "Campo requerido";
-
-      if (Field.MinLength != null && txValue.Text.Length < Field.MinLength)
-        yield return $"Deve ter no mínimo {Field.MinLength} caracteres";
-
-      if (Field.MaxLength != null && txValue.Text.Length > Field.MaxLength)
-        yield return $"Deve ter no máximo {Field.MaxLength} caracteres";
-
-      if (Field.Pattern != null && Regex.IsMatch(txValue.Text, Field.Pattern))
-        yield return $"Não corresponde ao padrão de preenchimento: {Field.Pattern}";
     }
 
     private void UpdateLayout()
     {
-      GridExtent = (Field?.Multiline == true) ? new Extent(6, 5) : new Extent(6, 1);
+      dpValue.ShowCheckBox = Field?.Required != true;
     }
   }
 }

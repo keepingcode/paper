@@ -15,13 +15,6 @@ namespace Paper.Media
   public enum DataType
   {
     /// <summary>
-    /// Tipo para campo informativo.
-    /// Nomes alternativos:
-    /// - info
-    /// </summary>
-    Label,
-
-    /// <summary>
     /// Tipo para campo texto.
     /// Nomes alternativos:
     /// - string

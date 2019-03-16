@@ -171,9 +171,16 @@ namespace Paper.Browser.Lib
 
       foreach (var field in action.Fields)
       {
-        var widget = new TextFieldWidget();
+        IFieldWidget widget;
+
+        var prefix = (field.Type ?? FieldTypeNames.Text).ChangeCase(TextCase.PascalCase);
+        var typeName = $"Paper.Browser.Gui.Widgets.{prefix}FieldWidget";
+        var type = Type.GetType(typeName) ?? typeof(TextFieldWidget);
+
+        widget = (IFieldWidget)Activator.CreateInstance(type);
         widget.Field = field;
-        form.WidgetGrid.Controls.Add(widget);
+
+        form.WidgetGrid.Controls.Add(widget.Host);
       }
 
       return form;

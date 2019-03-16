@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Paper.Media;
+using Paper.Media.Attributes;
 using Paper.Media.Data;
 using Paper.Media.Design;
 using Toolset;
@@ -56,22 +57,25 @@ namespace Paper.Api.Extensions.Papers
 
     public class TaskForm : IForm
     {
+      [Required]
+      [DefaultValue("Exemplo")]
       public string Name { get; set; }
+
+      [Required]
+      [DefaultValue("Exemplo de formulário")]
       public string Description { get; set; }
+
+      [DefaultValue(30)]
       public int Age { get; set; }
+
+      [DefaultValue("2018-12-31T23:59:59")]
       public DateTime Date { get; set; }
+
+      [DefaultValue(50.05)]
       public decimal Price { get; set; }
+
+      [DefaultValue(true)]
       public bool Active { get; set; }
-      //public string Field1 { get; set; }
-      //public string Field2 { get; set; }
-      //public string Field3 { get; set; }
-      //public string Field4 { get; set; }
-      //public string Field5 { get; set; }
-      //public string Field6 { get; set; }
-      //public string Field7 { get; set; }
-      //public string Field8 { get; set; }
-      //public string Field9 { get; set; }
-      //public string Field10 { get; set; }
     }
 
     public static class DB

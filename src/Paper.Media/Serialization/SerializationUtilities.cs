@@ -50,17 +50,19 @@ namespace Paper.Media.Serialization
     /// <returns>Verdadeiro se o tipo pode ser considerado string; Falso caso contrário.</returns>
     public static bool IsStringCompatible(object value)
     {
-      if (value == null)
+      var type = (value is Type) ? (Type)value : value?.GetType();
+      if (type == null)
         return false;
 
-      return value is string
-          || value is Href
-          || value is Uri
-          || value is CaseVariantString
-          || value is Guid
-          || value is Version
-          || value.GetType().IsEnum
-          || value.GetType().FullName == "Microsoft.AspNetCore.Http.PathString";
+      return type == typeof(string)
+          || type == typeof(CaseVariantString)
+          || type == typeof(Href)
+          || type == typeof(Uri)
+          || type == typeof(UriString)
+          || type == typeof(Guid)
+          || type == typeof(Version)
+          || type.IsEnum
+          || type.FullName == "Microsoft.AspNetCore.Http.PathString";
     }
   }
 }

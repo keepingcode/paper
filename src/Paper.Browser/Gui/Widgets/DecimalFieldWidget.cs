@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
 using System.Text.RegularExpressions;
+using Toolset;
 
 namespace Paper.Browser.Gui.Widgets
 {
-  public partial class TextFieldWidget : UserControl, IFieldWidget
+  public partial class DecimalFieldWidget : UserControl, IFieldWidget
   {
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
@@ -22,7 +23,7 @@ namespace Paper.Browser.Gui.Widgets
     private Field _field;
     private Extent _gridExtent;
 
-    public TextFieldWidget()
+    public DecimalFieldWidget()
     {
       InitializeComponent();
       UpdateLayout();
@@ -53,10 +54,38 @@ namespace Paper.Browser.Gui.Widgets
 
     public object Value
     {
-      get => txValue.Text;
+      get
+      {
+        if (txValue.Text == "")
+        {
+          return null;
+        }
+        else if (Change.Try(FormatFromPtToEn(txValue.Text), out decimal number))
+        {
+          return number;
+        }
+        else
+        {
+          return null;
+        }
+      }
       set
       {
-        txValue.Text = value?.ToString();
+        if (Field == null)
+          throw new InvalidOperationException("O campo \"Field\" deve ser indicado antes da indicação do valor do campo.");
+
+        if (value == null)
+        {
+          txValue.Text = "";
+        }
+        else if (Change.Try(value, out decimal number))
+        {
+          txValue.Text = FormatFromEnToPt(number.ToString());
+        }
+        else
+        {
+          txValue.Text = "";
+        }
         sourceValue = txValue.Text;
       }
     }
@@ -79,19 +108,29 @@ namespace Paper.Browser.Gui.Widgets
       if (Field.Required == true && string.IsNullOrEmpty(txValue.Text))
         yield return "Campo requerido";
 
-      if (Field.MinLength != null && txValue.Text.Length < Field.MinLength)
-        yield return $"Deve ter no mínimo {Field.MinLength} caracteres";
-
-      if (Field.MaxLength != null && txValue.Text.Length > Field.MaxLength)
-        yield return $"Deve ter no máximo {Field.MaxLength} caracteres";
+      if (txValue.Text == "")
+        yield break;
 
       if (Field.Pattern != null && Regex.IsMatch(txValue.Text, Field.Pattern))
         yield return $"Não corresponde ao padrão de preenchimento: {Field.Pattern}";
+
+      if (!Regex.IsMatch(txValue.Text, @"^-?(([0-9]{1,2}\.)?([0-9]{3}\.)*[0-9]{3}|[0-9]+)(,([0-9]{3}(\.[0-9]{3})*(\.[0-9]{1,2})?|[0-9]+))?$"))
+        yield return $"O número deve ser um valor decimal válido, com casas decimais separadas por vírgula e, opcionalmente, ponto como separador de milhar";
+    }
+
+    private string FormatFromPtToEn(string ptText)
+    {
+      return ptText.Replace(".", ",").Replace(",", "");
+    }
+
+    private string FormatFromEnToPt(string enText)
+    {
+      return enText.Replace(",", "").Replace(".", ",");
     }
 
     private void UpdateLayout()
     {
-      GridExtent = (Field?.Multiline == true) ? new Extent(6, 5) : new Extent(6, 1);
+      GridExtent = new Extent(3, 1);
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.CSharp;
+using Paper.Media.Serialization;
 using System;
 using System.CodeDom;
 using System.Collections;
@@ -18,25 +19,18 @@ namespace Paper.Media
   public static class DataTypeNames
   {
     /// <summary>
-    /// Tipo para campo informativo.
-    /// Nomes alternativos:
-    /// - info
-    /// </summary>
-    public const string Label = "label";
-
-    /// <summary>
     /// Tipo para campo texto.
     /// Nomes alternativos:
     /// - string
     /// </summary>
-    public const string Text = "text";
+    public const string String = "string";
 
     /// <summary>
     /// Tipo para campo booliano.
     /// Nomes alternativos:
     /// - boolean
     /// </summary>
-    public const string Bit = "bit";
+    public const string Boolean = "boolean";
 
     /// <summary>
     /// Tipo para campo númerico inteiro, sem dígito.
@@ -45,7 +39,7 @@ namespace Paper.Media
     /// - int
     /// - long
     /// </summary>
-    public const string Number = "number";
+    public const string Integer = "integer";
 
     /// <summary>
     /// Tipo para campo numérico fracionário, com dígito.
@@ -71,22 +65,24 @@ namespace Paper.Media
     public const string Datetime = "datetime";
 
     /// <summary>
-    /// Tipo especial para a coleção de registros selecionados.
-    /// Este tipo tem efeito apenas para ações do Paper e não possui correspondência no HTML.
+    /// Tipo para um vetor de bytes.
     /// </summary>
-    public const string ArrayOfRecords = "arrayOfRecords";
+    public const string Binary = "binary";
+
+    /// <summary>
+    /// Tipo especial para seleção de registro ou coleção de registros.
+    /// </summary>
+    public const string Record = "record";
 
     /// <summary>
     /// Determina o DataType apropriado para representar o tipo ou instância indicado.
     /// </summary>
     /// <param name="typeOrInstance">O tipo ou a instância testada.</param>
     /// <returns>O DataType mais apropriado.</returns>
-    public static string GetDataTypeName(object typeOrInstance)
+    public static string FromType(object typeOrInstance)
     {
       if (typeOrInstance == null)
         return null;
-
-      string typeName = null;
 
       var type = (typeOrInstance is Type) ? (Type)typeOrInstance : typeOrInstance.GetType();
 
@@ -106,16 +102,7 @@ namespace Paper.Media
         type = type.GetGenericArguments().Single();
       }
 
-      if (type == typeof(DateTime) || type == typeof(TimeSpan))
-      {
-        typeName = type.Name.ToLower();
-      }
-      else
-      {
-        var compiler = new CSharpCodeProvider();
-        var codeType = new CodeTypeReference(type);
-        typeName = compiler.GetTypeOutput(codeType);
-      }
+      var typeName = Canonicalize(type);
 
       if (isList)
         typeName += "[]";
@@ -123,53 +110,27 @@ namespace Paper.Media
       if (typeName.Contains("AnonymousType"))
         typeName = "AnonymousType";
 
-      typeName = Canonicalize(typeName);
-
       return typeName;
     }
 
-    /// <summary>
-    /// Um mesmo tipo de dado pode ser mapeado com diferentes nomes.
-    /// Por exemplo, o tipo texto pode ser mapeado como "text" ou "string".
-    /// Este método avalia o nome do tipo e escolhe uma
-    /// representação recomendada para padronização dos nomes.
-    /// </summary>
-    /// <param name="dataTypeName">O nome do tipo de dado.</param>
-    /// <returns>O nome do tipo de dado padronizado.</returns>
-    public static string Canonicalize(string dataTypeName)
+    private static string Canonicalize(Type type)
     {
-      switch (dataTypeName)
-      {
-        case "boolean":
-        case "bit":
-        case "integer":
-        case "int":
-        case "long":
-        case "number":
-        case "double":
-        case "float":
-        case "decimal":
-          return Number;
+      if (type == typeof(bool))
+        return Boolean;
 
-        case "date":
-          return Date;
+      if (type == typeof(int))
+        return Integer;
 
-        case "time":
-          return Time;
+      if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
+        return Decimal;
 
-        case "datetime":
-          return Datetime;
+      if (type == typeof(DateTime))
+        return Datetime;
 
-        case "string":
-        case "text":
-          return Text;
+      if (SerializationUtilities.IsStringCompatible(type))
+        return String;
 
-        case "info":
-          return Label;
-
-        default:
-          return dataTypeName;
-      }
+      return type.FullName.Split(',').First();
     }
 
     public static bool IsList(object typeOrInstance)
@@ -180,5 +141,5 @@ namespace Paper.Media
       var type = (typeOrInstance is Type) ? (Type)typeOrInstance : typeOrInstance.GetType();
       return type.IsArray || typeof(IList<>).IsAssignableFrom(type);
     }
-  } 
+  }
 }

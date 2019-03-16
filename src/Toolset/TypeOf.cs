@@ -142,5 +142,14 @@ namespace Toolset
 
       return type.GetGenericArguments().First();
     }
+
+    public static Type Nullable(object graph)
+    {
+      var type = graph is Type t ? t : graph?.GetType();
+      if (type == null)
+        return null;
+
+      return System.Nullable.GetUnderlyingType(type);
+    }
   }
 }

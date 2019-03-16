@@ -61,11 +61,15 @@
     <Compile Remove="Design\RecordExtensions.cs" />
     <Compile Remove="Design\RowsExtensions.cs" />
     <Compile Remove="Design\SortOrder.cs" />
+    <Compile Remove="FieldTypeEx.cs" />
     <Compile Remove="Property.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Data\FilterExtensions.cs.bak" />
     <None Remove="Data\Page.cs.bak" />
+    <None Remove="Design\EntityExtensions.cs.bak" />
+    <None Remove="PropertyCollection.cs.bak" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,10 +86,6 @@
     <ProjectReference Include="..\Toolset.Sequel\Toolset.Sequel.csproj" />
     <ProjectReference Include="..\Toolset.Serialization\Toolset.Serialization.csproj" />
     <ProjectReference Include="..\Toolset.Text.Template\Toolset.Text.Template.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utilities.Types\" />
   </ItemGroup>
 
 </Project>

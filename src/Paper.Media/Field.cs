@@ -52,7 +52,7 @@ namespace Paper.Media
     [DataMember(EmitDefaultValue = false, Order = 20)]
     public virtual string Type
     {
-      get { return _type ?? FieldTypeNames.GetFieldTypeFromDataType(DataType); }
+      get { return _type ?? FieldTypeNames.FromDataType(DataType); }
       set { _type = value; }
     }
 
@@ -80,7 +80,7 @@ namespace Paper.Media
     [DataMember(Name = "readonly", EmitDefaultValue = false, Order = 45)]
     public virtual bool? ReadOnly
     {
-      get => (DataType == DataTypeNames.Label) ? true : _readOnly;
+      get => (Type == FieldTypeNames.Hidden) ? true : _readOnly;
       set => _readOnly = value;
     }
 
@@ -117,7 +117,7 @@ namespace Paper.Media
     [DataMember(Name = "__DataType", EmitDefaultValue = false, Order = 60)]
     public virtual string DataType
     {
-      get { return _dataType ?? DataTypeNames.Text; }
+      get { return _dataType ?? DataTypeNames.String; }
       set { _dataType = value; }
     }
 
@@ -196,8 +196,8 @@ namespace Paper.Media
     /// Ativa ou desativa o suporte aos curingas "*", para indicar qualquer texto
     /// na posição, e "?", para indicar qualquer caracter na posição.
     /// </summary>
-    [DataMember(Name = "__AllowWildcards", EmitDefaultValue = false, Order = 180)]
-    public virtual bool? AllowWildcards { get; set; }
+    [DataMember(Name = "__AllowWildcard", EmitDefaultValue = false, Order = 180)]
+    public virtual bool? AllowWildcard { get; set; }
   }
 }
 

@@ -66,6 +66,30 @@
     <Compile Include="Gui\Panels\TablePanel.Designer.cs">
       <DependentUpon>TablePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Widgets\CheckboxFieldWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\CheckboxFieldWidget.Designer.cs">
+      <DependentUpon>CheckboxFieldWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\HiddenFieldWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\HiddenFieldWidget.Designer.cs">
+      <DependentUpon>HiddenFieldWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\DatetimeLocalFieldWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\DatetimeLocalFieldWidget.Designer.cs">
+      <DependentUpon>DatetimeLocalFieldWidget.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Widgets\NumberFieldWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\NumberFieldWidget.Designer.cs">
+      <DependentUpon>NumberFieldWidget.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\Widgets\TextFieldWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -128,6 +152,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\Panels\TablePanel.resx">
       <DependentUpon>TablePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\CheckboxFieldWidget.resx">
+      <DependentUpon>CheckboxFieldWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\DatetimeLocalFieldWidget.resx">
+      <DependentUpon>DatetimeLocalFieldWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\NumberFieldWidget.resx">
+      <DependentUpon>NumberFieldWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\Widgets\TextFieldWidget.resx">
       <DependentUpon>TextFieldWidget.cs</DependentUpon>

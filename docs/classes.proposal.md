@@ -133,31 +133,18 @@ Apresentação Tabular
 Normas
 
 -   Os registros da tabela devem ser da mesma classe.
--   Os registros devem se relacionar à tabela.
+-   Os registros devem se relacionar à tabela com o relacionamento "item".
 -   Os registros devem ser embarcados em vez de referenciados.
 -   Os campos são listados como cabeçalho da tabela.
 
     {
-      class [ "table", "record" ]
+      class [ "table" ]
       title ...
-      properties
-        campo3 ...
-        campo4 ...
-        __headers {
-          record [
-            campo3
-            campo4
-          ]
-          table [
-            campo1
-            campo2
-          ]
-        }
       entities {
         {
           class [ "record" ]
           title ...
-          rel [ "table" ]
+          rel [ "item" ]
           properties {
             campo1 ...
             campo2 ...
@@ -186,7 +173,7 @@ Normas
         {
           class [ "header" ]
           title "Campo 1"
-          rel [ "table" ]
+          rel [ "item" ]
           properties {
             name "campo1"
             ...

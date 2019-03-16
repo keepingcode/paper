@@ -13,10 +13,10 @@ namespace Paper.Media.Design
       var value = entity?.Properties[header.Name];
       switch (header.DataType)
       {
-        case DataTypeNames.Bit:
+        case DataTypeNames.Boolean:
           return Change.To<bool>(value);
 
-        case DataTypeNames.Number:
+        case DataTypeNames.Integer:
           return Change.To<int>(value);
 
         case DataTypeNames.Decimal:
@@ -27,8 +27,10 @@ namespace Paper.Media.Design
         case DataTypeNames.Datetime:
           return Change.To<DateTime>(value);
 
-        case DataTypeNames.Label:
-        case DataTypeNames.Text:
+        case DataTypeNames.Record:
+          return value as Entity;
+
+        case DataTypeNames.String:
         default:
           return Change.To<string>(value);
       }

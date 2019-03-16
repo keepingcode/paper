@@ -29,36 +29,36 @@ namespace Paper.Browser
       var desktop = new Desktop();
       desktop.Host.Load += async (o, e) =>
         {
-          var data = new
-          {
-            Id = 1,
-            Name = "The First",
-            Date = DateTime.Now,
-            Id2 = 1,
-            Name2 = "The First",
-            Date2 = DateTime.Now,
-            Id3 = 1,
-            Name3 = "The First",
-            Date3 = DateTime.Now
-          };
+          //var data = new
+          //{
+          //  Id = 1,
+          //  Name = "The First",
+          //  Date = DateTime.Now,
+          //  Id2 = 1,
+          //  Name2 = "The First",
+          //  Date2 = DateTime.Now,
+          //  Id3 = 1,
+          //  Name3 = "The First",
+          //  Date3 = DateTime.Now
+          //};
 
-          var entity = new Entity();
-          entity.AddClass(ClassNames.Record);
-          entity.SetTitle("My First Page");
-          entity.AddProperties(data);
-          entity.AddHeaders(data, ClassNames.Record);
+          //var entity = new Entity();
+          //entity.AddClass(ClassNames.Record);
+          //entity.SetTitle("My First Page");
+          //entity.AddProperties(data);
+          //entity.AddHeaders(data, ClassNames.Record);
 
           //desktop.CreateWindow().SetContent(entity);
 
-          var task1 = desktop.CreateWindow().RequestAsync(
-            "http://localhost:8080/Api/1/Paper/Api/Extensions/Papers/SamplePaper/TaskPaper/1?f=json+siren"
-          );
+          //var task1 = desktop.CreateWindow().RequestAsync(
+          //  "http://localhost:8080/Api/1/Paper/Api/Extensions/Papers/SamplePaper/TaskPaper/1?f=json+siren"
+          //);
 
           //var task2 = desktop.CreateWindow().RequestAsync(
           //  "http://localhost:8080/Api/1/Paper/Api/Extensions/Papers/SamplePaper/TasksPaper?f=json+siren"
           //);
 
-          await task1;
+          //await task1;
           //await task2;
         };
 

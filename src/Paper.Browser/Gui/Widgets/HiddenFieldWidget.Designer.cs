@@ -1,6 +1,6 @@
 ﻿namespace Paper.Browser.Gui.Widgets
 {
-  partial class HiddenWidget
+  partial class HiddenFieldWidget
   {
     /// <summary> 
     /// Required designer variable.

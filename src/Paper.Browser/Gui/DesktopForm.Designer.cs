@@ -33,6 +33,10 @@
       this.RightToolStripPanel = new System.Windows.Forms.ToolStripPanel();
       this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
       this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
+      this.ToolBar = new System.Windows.Forms.ToolStrip();
+      this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+      this.SearchBox = new System.Windows.Forms.ToolStripTextBox();
+      this.ToolBar.SuspendLayout();
       this.SuspendLayout();
       // 
       // BottomToolStripPanel
@@ -71,16 +75,48 @@
       // 
       this.ContentPanel.Size = new System.Drawing.Size(674, 349);
       // 
+      // ToolBar
+      // 
+      this.ToolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel1,
+            this.SearchBox});
+      this.ToolBar.Location = new System.Drawing.Point(0, 0);
+      this.ToolBar.Name = "ToolBar";
+      this.ToolBar.Size = new System.Drawing.Size(395, 25);
+      this.ToolBar.TabIndex = 0;
+      this.ToolBar.Text = "toolStrip1";
+      // 
+      // toolStripLabel1
+      // 
+      this.toolStripLabel1.Name = "toolStripLabel1";
+      this.toolStripLabel1.Size = new System.Drawing.Size(56, 22);
+      this.toolStripLabel1.Text = "Localizar:";
+      // 
+      // SearchBox
+      // 
+      this.SearchBox.AutoCompleteCustomSource.AddRange(new string[] {
+            "Paper/Api/Extensions/Papers/SamplePaper/TasksPaper?f=json+siren&offset=0&limit=5",
+            "Paper/Api/Extensions/Papers/SamplePaper/TaskPaper/1?f=json+siren"});
+      this.SearchBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+      this.SearchBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+      this.SearchBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.SearchBox.Name = "SearchBox";
+      this.SearchBox.Size = new System.Drawing.Size(500, 23);
+      // 
       // DesktopForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.BackColor = System.Drawing.SystemColors.AppWorkspace;
-      this.ClientSize = new System.Drawing.Size(284, 261);
+      this.ClientSize = new System.Drawing.Size(395, 261);
+      this.Controls.Add(this.ToolBar);
       this.Name = "DesktopForm";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "Paper Browser";
+      this.ToolBar.ResumeLayout(false);
+      this.ToolBar.PerformLayout();
       this.ResumeLayout(false);
+      this.PerformLayout();
 
     }
 
@@ -91,6 +127,9 @@
     private System.Windows.Forms.ToolStripPanel RightToolStripPanel;
     private System.Windows.Forms.ToolStripPanel LeftToolStripPanel;
     private System.Windows.Forms.ToolStripContentPanel ContentPanel;
+    public System.Windows.Forms.ToolStripTextBox SearchBox;
+    public System.Windows.Forms.ToolStripLabel toolStripLabel1;
+    public System.Windows.Forms.ToolStrip ToolBar;
   }
 }
 

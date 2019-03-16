@@ -31,7 +31,7 @@ namespace Paper.Media.Design
 
     public string DataType
     {
-      get => _dataType ?? DataTypeNames.Text;
+      get => _dataType ?? DataTypeNames.String;
       set => _dataType = value;
     }
 

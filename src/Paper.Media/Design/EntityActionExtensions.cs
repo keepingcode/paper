@@ -406,7 +406,7 @@ namespace Paper.Media.Design
       var field = GetOrAddField(action.WithFields(), name);
 
       field.SetTitle(title ?? name.ChangeCase(TextCase.ProperCase));
-      field.SetDataType(dataType ?? DataTypeNames.Text);
+      field.SetDataType(dataType ?? DataTypeNames.String);
 
       if (options != null)
       {
@@ -419,21 +419,25 @@ namespace Paper.Media.Design
         {
           switch (field.DataType)
           {
-            case DataTypeNames.Bit:
+            case DataTypeNames.Boolean:
               break;
 
-            case DataTypeNames.Date:
-            case DataTypeNames.Datetime:
-            case DataTypeNames.Time:
+            case DataTypeNames.Integer:
             case DataTypeNames.Decimal:
-            case DataTypeNames.Number:
+            case DataTypeNames.Datetime:
+            case DataTypeNames.Date:
+            case DataTypeNames.Time:
               field.SetAllowMany();
               field.SetAllowRange();
               break;
 
-            case DataTypeNames.Text:
+            case DataTypeNames.String:
               field.SetAllowMany();
               field.SetAllowWildcards();
+              break;
+
+            case DataTypeNames.Record:
+              field.SetAllowMany();
               break;
           }
         }

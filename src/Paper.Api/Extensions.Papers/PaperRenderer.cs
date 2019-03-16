@@ -250,23 +250,31 @@ namespace Paper.Api.Extensions.Papers
 
         if (isValue)
         {
-          action.AddField($"Form.{name}", opt => opt
-            .SetTitle(name.ChangeCase(TextCase.ProperCase))
-            .SetDataType(parameter.ParameterType)
-            .SetHidden(true)
-            .SetValue(parameterValue)
-          );
+          action.AddField($"Form.{name}", opt =>
+          {
+            opt.SetDefaults(parameter);
+            opt.SetHidden(true);
+            if (parameterValue != null)
+            {
+              opt.SetValue(parameterValue);
+            }
+          });
         }
         else if (isForm)
         {
           var properties = parameter.ParameterType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
           foreach (var property in properties)
           {
-            var subname = Conventions.MakeName(property.Name);
-            action.AddField($"Form.{name}.{subname}", opt => opt
-              .SetTitle(subname.ChangeCase(TextCase.ProperCase))
-              .SetDataType(property.PropertyType)
-            );
+            var fieldName = Conventions.MakeName(property.Name);
+            var fieldValue = (parameterValue != null) ? property.GetValue(parameterValue) : null;
+            action.AddField($"Form.{name}.{fieldName}", opt =>
+            {
+              opt.SetDefaults(property);
+              if (fieldValue != null)
+              {
+                opt.SetValue(fieldValue);
+              }
+            });
           }
         }
         else if (isArray)
@@ -281,7 +289,8 @@ namespace Paper.Api.Extensions.Papers
           action.AddField("Records", opt => opt
             .SetTitle("Registros Afetados")
             .SetPlaceholder("Selecione os registros afetados")
-            .SetDataType(DataTypeNames.ArrayOfRecords)
+            .SetType(FieldTypeNames.Select)
+            .SetDataType(DataTypeNames.Record)
             .SetProvider(provider => provider
               .AddRel(RelNames.Self)
               .SetKeys(keys)
@@ -295,15 +304,17 @@ namespace Paper.Api.Extensions.Papers
           foreach (var propertyName in parameterValue._GetPropertyNames())
           {
             var property = parameterValue._GetPropertyInfo(propertyName);
-            var propertyValue = property.GetValue(parameterValue);
-
-            var subname = Conventions.MakeName(propertyName);
-            action.AddField($"Record.{subname}", opt => opt
-              .SetTitle(subname.ChangeCase(TextCase.ProperCase))
-              .SetDataType(property.PropertyType)
-              .SetHidden(true)
-              .SetValue(propertyValue)
-            );
+            var fieldName = Conventions.MakeName(propertyName);
+            var fieldValue = parameterValue._Get(propertyName);
+            action.AddField($"Record.{fieldName}", opt =>
+            {
+              opt.SetDefaults(property);
+              opt.SetHidden(true);
+              if (fieldValue != null)
+              {
+                opt.SetValue(fieldValue);
+              }
+            });
           }
         }
       }

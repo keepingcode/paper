@@ -64,6 +64,31 @@ namespace Toolset.Reflection
       }
     }
 
+    public static bool _HasAttribute<T>(this object typeOrObject)
+      where T : Attribute
+    {
+      if (typeOrObject == null)
+        return false;
+
+      var member = typeOrObject as MemberInfo ?? typeOrObject.GetType();
+      var attr = member.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
+      return attr != null;
+    }
+
+    public static bool _HasAttribute<T>(this object typeOrObject, string propertyOrMethodName)
+      where T : Attribute
+    {
+      if (typeOrObject == null)
+        return false;
+
+      var member =
+        (MemberInfo)_GetPropertyInfo(typeOrObject, propertyOrMethodName)
+        ?? _GetMethodInfo(typeOrObject, propertyOrMethodName);
+
+      var attr = member?.GetCustomAttributes(true).OfType<T>().FirstOrDefault();
+      return attr != null;
+    }
+
     public static T _GetAttribute<T>(this object typeOrObject)
       where T : Attribute
     {

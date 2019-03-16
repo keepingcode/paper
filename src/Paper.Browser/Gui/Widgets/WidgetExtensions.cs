@@ -44,6 +44,14 @@ namespace Paper.Browser.Gui.Widgets
       if (tipBox == null)
       {
         tipBox = new ToolTip(widget.Components);
+        widget.Label.Click += (o, e) =>
+        {
+          var currentTip = tipBox.GetToolTip(widget.Label);
+          if (currentTip != null)
+          {
+            tipBox.Show(currentTip, widget.Label);
+          }
+        };
       }
 
       // checagem
@@ -70,7 +78,7 @@ namespace Paper.Browser.Gui.Widgets
       }
       else
       {
-        tip = "";
+        tip = null;
         color = FlatColor;
       }
 
@@ -80,6 +88,7 @@ namespace Paper.Browser.Gui.Widgets
       if (tipBox.GetToolTip(widget.Host) != tip)
       {
         tipBox.SetToolTip(widget.Host, tip);
+        tipBox.SetToolTip(widget.Label, tip);
       }
       if (widget.Label.Text != text)
       {
