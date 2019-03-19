@@ -90,6 +90,12 @@
     <Compile Include="Gui\Widgets\NumberFieldWidget.Designer.cs">
       <DependentUpon>NumberFieldWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Widgets\SelectFieldWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Gui\Widgets\SelectFieldWidget.Designer.cs">
+      <DependentUpon>SelectFieldWidget.cs</DependentUpon>
+    </Compile>
     <Compile Include="Gui\Widgets\TextFieldWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -161,6 +167,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\Widgets\NumberFieldWidget.resx">
       <DependentUpon>NumberFieldWidget.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Widgets\SelectFieldWidget.resx">
+      <DependentUpon>SelectFieldWidget.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\Widgets\TextFieldWidget.resx">
       <DependentUpon>TextFieldWidget.cs</DependentUpon>

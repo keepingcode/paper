@@ -188,8 +188,10 @@ namespace Toolset.Serialization.Graph
           return;
         }
 
-        if ((value is Bag bag) && (Host is IDictionary map))
+        if ((value is Bag) && (Host is IDictionary map))
         {
+          var bag = (Bag)value;
+
           var type = TypeOf.DictionaryValue(map);
           if (type == typeof(object))
           {
@@ -225,6 +227,20 @@ namespace Toolset.Serialization.Graph
         }
 
         var propName = ResolvePropertyName(Host, realName);
+
+        if (value is Bag)
+        {
+          var bag = (Bag)value;
+          if (bag.BagType != null)
+          {
+            var list = (IList)Activator.CreateInstance(bag.BagType);
+            foreach (var item in bag)
+            {
+              list.Add(item);
+            }
+            value = list;
+          }
+        }
 
         Host._Set(propName, value);
       }
@@ -268,9 +284,20 @@ namespace Toolset.Serialization.Graph
       public Bag NewBag()
       {
         var property = properties.LastOrDefault();
-        var propertyType = Host._GetPropertyType(property);
+
+        var factory = Host as IListTypeFactory;
+        var propertyType = factory?.CreateListType(property.ChangeCase(TextCase.PascalCase));
+        if (propertyType == null)
+        {
+          propertyType = Host._GetPropertyType(property);
+        }
+
         var elementType = TypeOf.CollectionElement(propertyType);
-        return new Bag { ElementType = elementType };
+        return new Bag
+        {
+          BagType = propertyType,
+          ElementType = elementType
+        };
       }
 
       private string ResolvePropertyName(object host, string propertyName)
@@ -288,6 +315,7 @@ namespace Toolset.Serialization.Graph
 
     private class Bag : ArrayList
     {
+      public Type BagType { get; set; }
       public Type ElementType { get; set; }
     }
 

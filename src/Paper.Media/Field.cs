@@ -3,13 +3,14 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Toolset;
+using Toolset.Serialization;
 
 namespace Paper.Media
 {
   [DataContract(Namespace = Namespaces.Default)]
   [KnownType(typeof(FieldValueCollection))]
   [KnownType(typeof(CaseVariantString))]
-  public class Field : IMediaObject
+  public class Field : IMediaObject, IListTypeFactory
   {
     private string _type;
     private string _dataType;
@@ -77,7 +78,7 @@ namespace Paper.Media
     /// <summary>
     /// Torna o campo editável ou somente leitura.
     /// </summary>
-    [DataMember(Name = "readonly", EmitDefaultValue = false, Order = 45)]
+    [DataMember(Name = "Readonly", EmitDefaultValue = false, Order = 45)]
     public virtual bool? ReadOnly
     {
       get => (Type == FieldTypeNames.Hidden) ? true : _readOnly;
@@ -198,6 +199,18 @@ namespace Paper.Media
     /// </summary>
     [DataMember(Name = "__AllowWildcard", EmitDefaultValue = false, Order = 180)]
     public virtual bool? AllowWildcard { get; set; }
+
+    /// <summary>
+    /// Método de fábricação da lista de opções para uso durante a deserialização
+    /// via Toolset.Serialization.
+    /// 
+    /// A propriedade é usada pela classe Toolset.Serialization.Graph.GraphWriter
+    /// durante a deserialização de opções.
+    /// </summary>
+    public virtual Type CreateListType(string property)
+    {
+      return property == nameof(Value) ? typeof(FieldValueCollection) : null;
+    }
   }
 }
 

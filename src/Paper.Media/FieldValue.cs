@@ -28,6 +28,6 @@ namespace Paper.Media
     /// Ativa ou desativa a marcação de seleção do item.
     /// </summary>
     [DataMember(EmitDefaultValue = false, Order = 30)]
-    public bool Selected { get; set; }
+    public bool? Selected { get; set; }
   }
 }

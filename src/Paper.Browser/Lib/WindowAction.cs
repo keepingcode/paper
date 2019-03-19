@@ -169,16 +169,28 @@ namespace Paper.Browser.Lib
       form.ExitButton.Click += async (o, e) => await CancelAsync();
       form.FormClosing += async (o, e) => e.Cancel = !(complete || await CancelAsync());
 
+      var hasSelection = (Selection?.Any() == true);
+
       foreach (var field in action.Fields)
       {
         IFieldWidget widget;
 
-        var prefix = (field.Type ?? FieldTypeNames.Text).ChangeCase(TextCase.PascalCase);
-        var typeName = $"Paper.Browser.Gui.Widgets.{prefix}FieldWidget";
-        var type = Type.GetType(typeName) ?? typeof(TextFieldWidget);
-
-        widget = (IFieldWidget)Activator.CreateInstance(type);
-        widget.Field = field;
+        var hasSelfProvider = (field.Provider?.Rel.Has(RelNames.Self) == true);
+        if (hasSelfProvider && hasSelection)
+        {
+          widget = new HiddenFieldWidget();
+          widget.Field = field;
+          widget.Value = Selection;
+        }
+        else
+        {
+          var fieldType = (field.Type ?? FieldTypeNames.Text).Replace("__", "");
+          var prefix = fieldType.ChangeCase(TextCase.PascalCase);
+          var typeName = $"Paper.Browser.Gui.Widgets.{prefix}FieldWidget";
+          var type = Type.GetType(typeName) ?? typeof(TextFieldWidget);
+          widget = (IFieldWidget)Activator.CreateInstance(type);
+          widget.Field = field;
+        }
 
         form.WidgetGrid.Controls.Add(widget.Host);
       }

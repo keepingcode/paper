@@ -18,7 +18,7 @@ namespace Paper.Browser.Gui.Widgets
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
 
-    private DateTime? sourceValue;
+    private object sourceValue;
 
     private Field _field;
     private Extent _gridExtent;
@@ -39,9 +39,12 @@ namespace Paper.Browser.Gui.Widgets
 
     public IContainer Components => components ?? (components = new Container());
 
-    public bool HasChanges => dpValue.Value != sourceValue;
+    public bool HasChanges
+    {
+      get => (Value == null) != (sourceValue == null) || !Value.Equals(sourceValue);
+    }
 
-    public Field Field
+  public Field Field
     {
       get => _field;
       set
@@ -64,18 +67,14 @@ namespace Paper.Browser.Gui.Widgets
           throw new InvalidOperationException("O campo \"Field\" deve ser indicado antes da indicação do valor do campo.");
 
         var defaultDate = MakeDefaultDate();
-
-        if (Required)
-        {
-          sourceValue = Change.Try<DateTime>(value, defaultDate);
-        }
-        else
-        {
-          sourceValue = Change.Try<DateTime?>(value);
-        }
+        var date = Required
+          ? Change.Try<DateTime>(value, defaultDate)
+          : Change.Try<DateTime?>(value);
 
         dpValue.Checked = Required || value != null;
-        dpValue.Value = sourceValue ?? defaultDate;
+        dpValue.Value = date ?? defaultDate;
+
+        sourceValue = date;
       }
     }
 

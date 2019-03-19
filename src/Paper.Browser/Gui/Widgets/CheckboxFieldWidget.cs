@@ -18,7 +18,7 @@ namespace Paper.Browser.Gui.Widgets
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
 
-    private bool? sourceValue;
+    private object sourceValue;
 
     private Field _field;
     private Extent _gridExtent;
@@ -39,7 +39,10 @@ namespace Paper.Browser.Gui.Widgets
 
     public IContainer Components => components ?? (components = new Container());
 
-    public bool HasChanges => ckValue.Checked != sourceValue;
+    public bool HasChanges
+    {
+      get => (Value == null) != (sourceValue == null) || !Value.Equals(sourceValue);
+    }
 
     public Field Field
     {
@@ -56,22 +59,18 @@ namespace Paper.Browser.Gui.Widgets
 
     public object Value
     {
-      get => Required ? ckValue.Checked : (ckValue.Checked ? true : (object)null);
+      get => ckValue.Checked ? true : (Required ? false : (object)null);
       set
       {
         if (Field == null)
           throw new InvalidOperationException("O campo \"Field\" deve ser indicado antes da indicação do valor do campo.");
 
-        if (Required)
-        {
-          sourceValue = Change.Try<bool>(value, defaultValue: false);
-        }
-        else
-        {
-          sourceValue = Change.Try<bool?>(value);
-        }
+        var check = Required
+          ? Change.Try<bool>(value, defaultValue: false)
+          : Change.Try<bool?>(value);
 
-        ckValue.Checked = (sourceValue == true);
+        ckValue.Checked = check == true;
+        sourceValue = check;
       }
     }
 

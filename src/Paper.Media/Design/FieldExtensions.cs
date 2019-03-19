@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -160,7 +161,22 @@ namespace Paper.Media.Design
     /// <returns>A própria instância do campo modificado.</returns>
     public static Field SetValue(this Field field, object value)
     {
-      field.Value = value;
+      if (field.Value is FieldValueCollection options)
+      {
+        var items = Is.Collection(value)
+          ? ((IEnumerable)value).Cast<object>().ToArray()
+          : new[] { value };
+
+        options.ForEach(opt =>
+        {
+          var selected = items.Contains(opt?.Value);
+          opt.Selected = selected ? true : (bool?)null;
+        });
+      }
+      else
+      {
+        field.Value = value;
+      }
       return field;
     }
 
@@ -368,6 +384,7 @@ namespace Paper.Media.Design
       SetDefaultRequired(field, member, type);
       SetDefaultProvider(field, member, type);
       SetDefaultRange(field, member, type);
+      SetDefaultOptions(field, member, type);
       SetDefaultValue(field, member, type);
 
       return field;
@@ -430,17 +447,6 @@ namespace Paper.Media.Design
       }
     }
 
-    private static void SetDefaultValue(Field field, object member, Type type)
-    {
-      var attr1 = member._GetAttribute<DefaultValueAttribute>();
-      var attr2 = member._GetAttribute<System.ComponentModel.DefaultValueAttribute>();
-      var value = attr1?.DefaultValue ?? attr2?.Value;
-      if (value != null)
-      {
-        field.Value = Change.To(value, type);
-      }
-    }
-
     private static void SetDefaultProvider(Field field, object member, Type type)
     {
       var attr = member._GetAttribute<ProviderAttribute>();
@@ -457,6 +463,37 @@ namespace Paper.Media.Design
       {
         field.MinLength = attr.Min;
         field.MaxLength = attr.Max;
+      }
+    }
+
+    private static void SetDefaultOptions(Field field, object member, Type type)
+    {
+      var attrs = member._GetAttributes<OptionAttribute>().ToArray();
+      if (attrs.Length == 0)
+        return;
+
+      var options =
+        from attr in attrs
+        select new FieldValue
+        {
+          Value = Change.Try(attr.Value, type),
+          Title = attr.Title,
+          Selected = attr.Selected
+        };
+        
+      field.Value = new FieldValueCollection(options);
+      field.Type = FieldTypeNames.Select;
+    }
+
+    private static void SetDefaultValue(Field field, object member, Type type)
+    {
+      var attr1 = member._GetAttribute<DefaultValueAttribute>();
+      var attr2 = member._GetAttribute<System.ComponentModel.DefaultValueAttribute>();
+      var value = attr1?.DefaultValue ?? attr2?.Value;
+      if (value != null)
+      {
+        var compatibleValue = Change.Try(value, type);
+        field.SetValue(value);
       }
     }
 
