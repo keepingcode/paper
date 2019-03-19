@@ -12,6 +12,8 @@ namespace Paper.Browser.Gui
     event EventHandler FieldChanged;
     event EventHandler ValueChanged;
 
+    Entity Entity { get; set; }
+
     Field Field { get; set; }
 
     bool HasChanges { get; }

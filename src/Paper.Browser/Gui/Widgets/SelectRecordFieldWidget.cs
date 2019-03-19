@@ -8,25 +8,29 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
+using Paper.Media.Design;
 
 namespace Paper.Browser.Gui.Widgets
 {
-  public partial class HiddenFieldWidget : UserControl, IFieldWidget
+  public partial class SelectRecordFieldWidget : UserControl, IFieldWidget
   {
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
 
-    private Field _field;
-    private object _value;
+    private object sourceValue;
 
-    public HiddenFieldWidget()
+    private Field _field;
+    private Extent _gridExtent;
+
+    public SelectRecordFieldWidget()
     {
       InitializeComponent();
+      GridExtent = new Extent(6, 1);
     }
 
     public UserControl Host => this;
 
-    public Label Label => null;
+    public Label Label => lbText;
 
     public IContainer Components => components ?? (components = new Container());
 
@@ -37,31 +41,42 @@ namespace Paper.Browser.Gui.Widgets
       get => _field;
       set
       {
-        if (_field != value)
+        _field = value;
+        if (_field?.Provider != null)
         {
-          _field = value;
-          _value = _field.Value;
-          FieldChanged?.Invoke(this, EventArgs.Empty);
+          var isSelfProvider = _field.Provider.Rel.Has(RelNames.Self);
+          this.Href = isSelfProvider ? Entity.GetSelfHref() : _field?.Provider.Href;
+          this.Keys = _field.Provider.Keys;
+        }
+        else
+        {
+          this.Href = null;
+          this.Keys = null;
         }
       }
     }
+
+    public Href Href { get; set; }
+
+    public NameCollection Keys { get; set; }
 
     public bool HasChanges => false;
 
     public object Value
     {
-      get => _value;
-      set
-      {
-        if (_value != value)
-        {
-          _value = value;
-          ValueChanged?.Invoke(this, EventArgs.Empty);
-        }
-      }
+      get;
+      set;
     }
 
-    public Extent GridExtent { get; }
+    public Extent GridExtent
+    {
+      get => _gridExtent;
+      set
+      {
+        _gridExtent = value;
+        this.Size = _gridExtent.ToSize(WidgetGridLayout.Metrics);
+      }
+    }
 
     public IEnumerable<string> GetErrors()
     {

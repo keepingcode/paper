@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Toolset;
 using Toolset.Serialization;
+using Toolset.Serialization.Graph;
+using System.Collections;
+using Toolset.Collections;
 
 namespace Paper.Media
 {
   [DataContract(Namespace = Namespaces.Default)]
   [KnownType(typeof(FieldValueCollection))]
   [KnownType(typeof(CaseVariantString))]
-  public class Field : IMediaObject, IListTypeFactory
+  public class Field : IMediaObject, IGraphFactory
   {
     private string _type;
     private string _dataType;
@@ -53,8 +56,8 @@ namespace Paper.Media
     [DataMember(EmitDefaultValue = false, Order = 20)]
     public virtual string Type
     {
-      get { return _type ?? FieldTypeNames.FromDataType(DataType); }
-      set { _type = value; }
+      get => _type;
+      set => _type = value;
     }
 
     /// <summary>
@@ -63,7 +66,14 @@ namespace Paper.Media
     [DataMember(EmitDefaultValue = false, Order = 30)]
     public virtual string Title
     {
-      get => _title ?? (Name ?? "").ChangeCase(TextCase.ProperCase);
+      get
+      {
+        if (_title != null)
+          return _title;
+        if (!string.IsNullOrEmpty(Name))
+          return Name.ChangeCase(TextCase.ProperCase);
+        return null;
+      }
       set => _title = value;
     }
 
@@ -118,8 +128,8 @@ namespace Paper.Media
     [DataMember(Name = "__DataType", EmitDefaultValue = false, Order = 60)]
     public virtual string DataType
     {
-      get { return _dataType ?? DataTypeNames.String; }
-      set { _dataType = value; }
+      get => _dataType;
+      set => _dataType = value;
     }
 
     /// <summary>
@@ -200,17 +210,72 @@ namespace Paper.Media
     [DataMember(Name = "__AllowWildcard", EmitDefaultValue = false, Order = 180)]
     public virtual bool? AllowWildcard { get; set; }
 
+    #region Toolset.Serialization.Graph.IGraphFactory
+
     /// <summary>
-    /// Método de fábricação da lista de opções para uso durante a deserialização
-    /// via Toolset.Serialization.
+    /// Método de instanciação de uma propriedade.
     /// 
-    /// A propriedade é usada pela classe Toolset.Serialization.Graph.GraphWriter
-    /// durante a deserialização de opções.
+    /// A classe Toolset.Serialization.Graph.GraphWriter acessa este método para construir
+    /// instâncias do tipo adequado durante a deserialização.
+    /// 
+    /// O método deve examinar as propriedades deserializadas recebidas no mapa "graph" e
+    /// construir uma instância do tipo aproriado.
+    /// 
+    /// O utilitário "mapper" pode ser utilizado na cópia das propriedades para a instância
+    /// do item.
     /// </summary>
-    public virtual Type CreateListType(string property)
+    /// <param name="property">o nome da propriedade afetada.</param>
+    /// <param name="graph">As propriedades deserializadas.</param>
+    /// <param name="mapper">Utilitário para cópia das propriedades para a instância do item.</param>
+    /// <returns>
+    /// A instância do item;
+    /// Se nulo, a instância de GraphWriter tentará encontrar um tipo apropriado.
+    /// </returns>
+    public object CreateItem(string property, HashMap graph, Mapper mapper)
     {
-      return property == nameof(Value) ? typeof(FieldValueCollection) : null;
+      if (property != nameof(Value))
+        return null;
+
+      var keys = graph.Keys;
+      var fieldValueKeys = new[] { "Value", "Title", "Selected" };
+      var isFieldValue = keys.All(x => x.EqualsAnyIgnoreCase(fieldValueKeys));
+      if (isFieldValue)
+        return mapper.Create<FieldValue>(graph);
+
+      var entity = new Entity();
+      entity.Properties = new PropertyMap();
+      mapper.CopyProperties(graph, entity.Properties);
+
+      return entity;
     }
+
+    /// <summary>
+    /// Método de instanciação de uma lista.
+    /// 
+    /// A classe Toolset.Serialization.Graph.GraphWriter acessa este método para construir
+    /// instâncias de lista do tipo adequado durante a deserialização.
+    /// 
+    /// O método deve examinar a coleção dos itens deserializado e criar uma instância
+    /// de lista apropriada.
+    /// </summary>
+    /// <param name="property">o nome da propriedade afetada.</param>
+    /// <param name="items">A lista dos itens deserializados.</param>
+    /// <returns>
+    /// A instância da lista;
+    /// Se nulo, a instância de GraphWriter tentará encontrar um tipo de lista apropriado.
+    /// </returns>
+    public object CreateList(string property, ICollection items)
+    {
+      if (items.OfType<FieldValue>().Any())
+        return new FieldValueCollection(items.Cast<FieldValue>());
+
+      if (items.OfType<Entity>().Any())
+        return new EntityCollection(items.Cast<Entity>());
+
+      return null;
+    }
+
+    #endregion
   }
 }
 

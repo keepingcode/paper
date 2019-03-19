@@ -11,29 +11,6 @@ using Toolset.Reflection;
 
 namespace Toolset.Serialization.Graph
 {
-  public class GraphWriter<T> : GraphWriter
-    where T : class, new()
-  {
-    public GraphWriter()
-      : base(typeof(T))
-    {
-      // nada a fazer aqui. use o outro construtor.
-    }
-
-    public GraphWriter(SerializationSettings settings)
-      : base(typeof(T), settings)
-    {
-      // nada a fazer aqui. use o outro construtor.
-    }
-
-    public GraphWriter(IEnumerable<Type> knownTypes, SerializationSettings settings)
-      : base(typeof(T), knownTypes, settings)
-    {
-    }
-
-    public new ICollection<T> Graphs => (ICollection<T>)base.Graphs;
-  }
-
   public class GraphWriter : Writer
   {
     private readonly IList graphs;
@@ -87,10 +64,15 @@ namespace Toolset.Serialization.Graph
 
         case NodeType.ObjectEnd:
           {
-            var scope = scopes.Pop();
+            var current = scopes.Pop();
+            if (scopes.Count > 0)
+            {
+              var parent = scopes.Peek();
+              parent.SetValue(current.Host ?? current.Bag);
+            }
             if (scopes.Count == 0)
             {
-              graphs.Add(scope.Host);
+              graphs.Add(current.Host);
             }
             break;
           }
@@ -184,14 +166,18 @@ namespace Toolset.Serialization.Graph
       {
         if (Bag != null)
         {
-          Bag.Add(value);
+          Bag.Items.Add(value);
           return;
         }
 
-        if ((value is Bag) && (Host is IDictionary map))
+        var bag = value as Bag;
+        if (bag != null)
         {
-          var bag = (Bag)value;
+          value = bag.Items;
+        }
 
+        if ((bag != null) && (Host is IDictionary map))
+        {
           var type = TypeOf.DictionaryValue(map);
           if (type == typeof(object))
           {
@@ -227,31 +213,54 @@ namespace Toolset.Serialization.Graph
         }
 
         var propName = ResolvePropertyName(Host, realName);
+        var factory = Host as IGraphFactory;
 
-        if (value is Bag)
+        if (bag != null)
         {
-          var bag = (Bag)value;
-          if (bag.BagType != null)
+          if (bag.Items.Count == 0)
+            return;
+
+          if (factory != null)
           {
-            var list = (IList)Activator.CreateInstance(bag.BagType);
-            foreach (var item in bag)
+            for (var i = 0; i < bag.Items.Count; i++)
             {
-              list.Add(item);
+              if (bag.Items[i] is HashMap item)
+              {
+                bag.Items[i] = factory.CreateItem(propName, item, new Mapper()) ?? item;
+              }
             }
-            value = list;
+            value = factory.CreateList(propName, bag.Items) ?? bag;
           }
         }
 
+        if (value is HashMap graph && factory != null)
+        {
+          value = factory.CreateItem(propName, graph, new Mapper()) ?? value;
+        }
+
         Host._Set(propName, value);
+      }
+
+      public Bag NewBag()
+      {
+        var property = properties.LastOrDefault();
+        var propertyType = Host._GetPropertyType(property);
+        var elementType = TypeOf.CollectionElement(propertyType);
+        if (elementType == null || elementType == typeof(object) || elementType.IsInterface)
+        {
+          elementType = typeof(HashMap);
+        }
+        return new Bag
+        {
+          ElementType = elementType
+        };
       }
 
       public object NewValue()
       {
         if (Bag != null)
         {
-          var value = Activator.CreateInstance(Bag.ElementType);
-          Bag.Add(value);
-          return value;
+          return Activator.CreateInstance(Bag.ElementType);
         }
         else if (Host is IDictionary map)
         {
@@ -266,7 +275,9 @@ namespace Toolset.Serialization.Graph
             ).FirstOrDefault();
 
             if (type == null)
-              throw new NotSupportedException("Tipo de mapeamento não suportado: " + Host.GetType().FullName);
+            {
+              type = typeof(HashMap);
+            }
           }
           var instance = Activator.CreateInstance(type);
           var property = properties.LastOrDefault();
@@ -276,28 +287,16 @@ namespace Toolset.Serialization.Graph
         else
         {
           var property = properties.LastOrDefault();
-          var propName = ResolvePropertyName(Host, property);
-          return Host._SetNew(propName);
+          var propertyName = ResolvePropertyName(Host, property);
+          var propertyInfo = Host._GetPropertyInfo(propertyName);
+          var propertyType = propertyInfo.PropertyType;
+          if (propertyType == typeof(object))
+          {
+            propertyType = typeof(HashMap);
+          }
+          var instance = Activator.CreateInstance(propertyType);
+          return instance;
         }
-      }
-
-      public Bag NewBag()
-      {
-        var property = properties.LastOrDefault();
-
-        var factory = Host as IListTypeFactory;
-        var propertyType = factory?.CreateListType(property.ChangeCase(TextCase.PascalCase));
-        if (propertyType == null)
-        {
-          propertyType = Host._GetPropertyType(property);
-        }
-
-        var elementType = TypeOf.CollectionElement(propertyType);
-        return new Bag
-        {
-          BagType = propertyType,
-          ElementType = elementType
-        };
       }
 
       private string ResolvePropertyName(object host, string propertyName)
@@ -309,18 +308,14 @@ namespace Toolset.Serialization.Graph
           where attribute.Name.EqualsIgnoreCase(alias)
           select property.Name
         ).FirstOrDefault() ?? alias;
-        return propName;
+        return propName.ChangeCase(TextCase.PascalCase);
       }
     }
 
-    private class Bag : ArrayList
+    private class Bag
     {
-      public Type BagType { get; set; }
+      public List<object> Items { get; } = new List<object>();
       public Type ElementType { get; set; }
-    }
-
-    private class Map : HashMap
-    {
     }
   }
 }

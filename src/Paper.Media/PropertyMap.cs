@@ -53,7 +53,7 @@ namespace Paper.Media
         else if (value is IEnumerable list)
         {
           var type = TypeOf.CollectionElement(value.GetType());
-          if (type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+          if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)))
           {
             value = UnwrapKeyValuePairs(list, select, except);
           }

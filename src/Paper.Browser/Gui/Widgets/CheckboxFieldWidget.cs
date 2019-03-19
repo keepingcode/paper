@@ -41,8 +41,19 @@ namespace Paper.Browser.Gui.Widgets
 
     public bool HasChanges
     {
-      get => (Value == null) != (sourceValue == null) || !Value.Equals(sourceValue);
+      get
+      {
+        if (Value == sourceValue)
+          return false;
+
+        if ((Value == null) != (sourceValue == null))
+          return true;
+
+        return !Value.Equals(sourceValue);
+      }
     }
+
+    public Entity Entity { get; set; }
 
     public Field Field
     {

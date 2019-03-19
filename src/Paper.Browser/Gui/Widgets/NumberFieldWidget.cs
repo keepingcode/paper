@@ -40,6 +40,8 @@ namespace Paper.Browser.Gui.Widgets
 
     public bool HasChanges => txValue.Text != sourceValue;
 
+    public Entity Entity { get; set; }
+
     public Field Field
     {
       get => _field;

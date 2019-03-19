@@ -1,18 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Toolset.Collections;
 
-namespace Toolset.Serialization
+namespace Toolset.Serialization.Graph
 {
-  public interface IListTypeFactory
+  public interface IGraphFactory
   {
-    /// <summary>
-    /// Método de fábricação da lista de opções para uso durante a deserialização
-    /// via Toolset.Serialization.
-    /// 
-    /// A propriedade é usada pela classe Toolset.Serialization.Graph.GraphWriter
-    /// durante a deserialização de opções.
-    /// </summary>
-    Type CreateListType(string property);
+    object CreateItem(string property, HashMap graph, Mapper mapper);
+    object CreateList(string property, ICollection items);
   }
 }

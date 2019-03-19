@@ -22,7 +22,7 @@ namespace Paper.Browser.Lib
       this.Entity = entity;
       this.EntityAction = entityAction;
       this.Selection = selection;
-      this.Host = CreateForm(entityAction);
+      this.Host = CreateForm(entity, entityAction);
     }
 
     public Window Window { get; }
@@ -159,7 +159,7 @@ namespace Paper.Browser.Lib
       return hasChanges;
     }
 
-    private ActionForm CreateForm(EntityAction action)
+    private ActionForm CreateForm(Entity entity, EntityAction action)
     {
       var form = new ActionForm();
 
@@ -179,6 +179,7 @@ namespace Paper.Browser.Lib
         if (hasSelfProvider && hasSelection)
         {
           widget = new HiddenFieldWidget();
+          widget.Entity = entity;
           widget.Field = field;
           widget.Value = Selection;
         }
@@ -189,6 +190,7 @@ namespace Paper.Browser.Lib
           var typeName = $"Paper.Browser.Gui.Widgets.{prefix}FieldWidget";
           var type = Type.GetType(typeName) ?? typeof(TextFieldWidget);
           widget = (IFieldWidget)Activator.CreateInstance(type);
+          widget.Entity = entity;
           widget.Field = field;
         }
 

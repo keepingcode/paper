@@ -40,6 +40,8 @@ namespace Paper.Browser.Gui.Widgets
 
     public IContainer Components => components ?? (components = new Container());
 
+    public Entity Entity { get; set; }
+
     public Field Field
     {
       get => _field;
