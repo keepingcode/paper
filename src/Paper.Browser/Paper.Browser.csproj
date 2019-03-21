@@ -102,6 +102,7 @@
     <Compile Include="Gui\Widgets\SelectRecordFieldWidget.Designer.cs">
       <DependentUpon>SelectRecordFieldWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gui\Widgets\tem.cs" />
     <Compile Include="Gui\Widgets\TextFieldWidget.cs">
       <SubType>UserControl</SubType>
     </Compile>

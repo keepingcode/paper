@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Text.RegularExpressions;
 using Paper.Media.Design;
 using Paper.Media.Serialization;
 using Toolset;
+using Toolset.Reflection;
 using static Paper.Media.Payload;
 
 namespace Paper.Media
@@ -42,6 +44,25 @@ namespace Paper.Media
       if (property.EqualsAnyIgnoreCase(nameof(payload.Record)))
       {
         payload.WithRecord().SetProperty(key, value);
+        return;
+      }
+
+      if (property.EqualsAnyIgnoreCase(nameof(payload.Records)))
+      {
+        var list = (IEnumerable)value;
+        foreach (var item in list)
+        {
+          var map = item as PropertyMap;
+          if (map == null)
+          {
+            foreach (var propertyName in item._GetPropertyNames())
+            {
+              var propertyValue = item._Get(propertyName);
+              map.SetProperty(propertyName, propertyValue);
+            }
+          }
+          payload.WithRecords().Add(map);
+        }
         return;
       }
 

@@ -61,11 +61,13 @@ namespace Paper.Browser.Gui.Widgets
     {
       get
       {
-        if (txValue.Text == "")
+        var enText = FromPtToEn(txValue.Text);
+
+        if (enText == "")
         {
           return null;
         }
-        else if (TryCast(txValue.Text, out object number))
+        else if (TryCast(enText, out object number))
         {
           return number;
         }
@@ -79,20 +81,35 @@ namespace Paper.Browser.Gui.Widgets
         if (Field == null)
           throw new InvalidOperationException("O campo \"Field\" deve ser indicado antes da indicação do valor do campo.");
 
+        string enText;
         if (value == null)
         {
-          txValue.Text = "";
+          enText = "";
         }
         else if (TryCast(value, out object number))
         {
-          txValue.Text = number.ToString();
+          enText = Change.To<string>(number);
         }
         else
         {
-          txValue.Text = "";
+          enText = "";
         }
+
+        txValue.Text = FromEnToPt(enText);
         sourceValue = txValue.Text;
       }
+    }
+
+    private string FromEnToPt(string enText)
+    {
+      var ptText = Regex.Replace(enText, @"\.|,", m => m.Value == "." ? "," : ".");
+      return ptText;
+    }
+
+    private string FromPtToEn(string ptText)
+    {
+      var enText = Regex.Replace(ptText, @"\.|,", m => m.Value == "." ? "," : ".");
+      return enText;
     }
 
     public Extent GridExtent

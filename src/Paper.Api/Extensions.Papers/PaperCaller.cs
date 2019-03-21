@@ -203,7 +203,9 @@ namespace Paper.Api.Extensions.Papers
         {
           var records = form.Children();
           var itemType = TypeOf.CollectionElement(parameter.ParameterType);
-          var items = records.Select(record => CreateCompatibleValue(context, record.Properties, itemType));
+          var items = records.Select(record => 
+            CreateCompatibleValue(context, record.Properties, itemType)
+          ).ToArray();
           var compatibleValue = CreateCompatibleValue(context, items, parameter.ParameterType);
           methodArgs.Add(compatibleValue);
         }

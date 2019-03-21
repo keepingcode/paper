@@ -161,6 +161,7 @@
       this.Controls.Add(this.LayoutPane);
       this.KeyPreview = true;
       this.Name = "WindowForm";
+      this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
       this.Text = "Janela";
       this.LayoutPane.ResumeLayout(false);
       this.LayoutPane.PerformLayout();

@@ -291,6 +291,7 @@ namespace Paper.Api.Extensions.Papers
             .SetPlaceholder("Selecione os registros afetados")
             .SetType(FieldTypeNames.SelectRecord)
             .SetDataType(DataTypeNames.Record)
+            .SetMultiline(true)
             .SetProvider(provider => provider
               .AddRel(RelNames.Self)
               .SetKeys(keys)

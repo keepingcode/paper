@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Paper.Media;
+using Paper.Media.Serialization;
 using Toolset;
 using Toolset.Net;
 
@@ -63,6 +65,15 @@ namespace Paper.Browser.Lib
     {
       try
       {
+#if DEBUG
+        if (upData is Entity upEntity)
+        {
+          Debug.WriteLine("---REQUEST---");
+          Debug.WriteLine(upEntity.ToJson());
+          Debug.WriteLine("---END---");
+        }
+#endif
+
         var ret = await http.RequestAsync(uri, method, upData, upType, upCharset, downType, downCharset);
 
         var isRedirect = (ret.Status.CodeClass == HttpStatusClass.Redirection) && (maxRedirect > 0);
@@ -99,6 +110,15 @@ namespace Paper.Browser.Lib
               }
           }
         }
+
+#if DEBUG
+        if (ret.Value?.Data is Entity downEntity)
+        {
+          Debug.WriteLine("---RESPONSE---");
+          Debug.WriteLine(downEntity.ToJson());
+          Debug.WriteLine("---END---");
+        }
+#endif
 
         if (ret.Value?.Data == null)
         {

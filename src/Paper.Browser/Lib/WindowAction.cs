@@ -42,6 +42,18 @@ namespace Paper.Browser.Lib
       {
         form.SubmitButton.Enabled = form.ExitButton.Enabled = false;
 
+        var hasErrors = CheckForErrors();
+        if (hasErrors)
+        {
+          MessageBox.Show(
+            form,
+            "Não é possível prosseguir porque existem erros no formulário.",
+            form.Text,
+            MessageBoxButtons.OK
+          );
+          return Ret.Fail("Não é possível prosseguir porque existem erros no formulário.");
+        }
+
         var ret = await SendFormAsync();
         if (ret.Ok)
         {
@@ -147,6 +159,15 @@ namespace Paper.Browser.Lib
       }
     }
 
+    private bool CheckForErrors()
+    {
+      var form = (ActionForm)this.Host;
+      var widgets = form.WidgetGrid.Controls.OfType<IFieldWidget>();
+
+      var hasErrors = widgets.SelectMany(x => x.GetErrors()).Any();
+      return hasErrors;
+    }
+
     private bool CheckForChanges()
     {
       if (complete)
@@ -178,11 +199,13 @@ namespace Paper.Browser.Lib
         var hasSelfProvider = (field.Provider?.Rel.Has(RelNames.Self) == true);
         if (hasSelfProvider && hasSelection)
         {
-          widget = new HiddenFieldWidget();
+          var selectedItems = Selection.Select(x => x.Properties);
+
+          widget = new SelectRecordFieldWidget { ReadOnly = true };
           widget.Window = Window;
           widget.Entity = entity;
           widget.Field = field;
-          widget.Value = Selection;
+          widget.Value = selectedItems;
         }
         else
         {

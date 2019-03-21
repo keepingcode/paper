@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Browser.Gui;
@@ -23,6 +24,8 @@ namespace Paper.Browser
     [STAThread]
     static void Main()
     {
+      AppDomain.CurrentDomain.UnhandledException += (o, e) => (e.ExceptionObject as Exception)?.Trace();
+      Application.ThreadException += (o, e) => e.Exception?.Trace();
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
 

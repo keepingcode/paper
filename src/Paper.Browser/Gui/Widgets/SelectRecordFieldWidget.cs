@@ -16,12 +16,12 @@ using Paper.Browser.Lib.Pages;
 
 namespace Paper.Browser.Gui.Widgets
 {
-  public partial class SelectRecordFieldWidget : UserControl, IFieldWidget
+  public partial class SelectRecordFieldWidget : UserControl, IFieldWidget, tem
   {
     public event EventHandler FieldChanged;
     public event EventHandler ValueChanged;
 
-    private EntityCollection entities = new EntityCollection();
+    private List<PropertyMap> items = new List<PropertyMap>();
 
     private bool defaultIsEmpty;
 
@@ -82,19 +82,19 @@ namespace Paper.Browser.Gui.Widgets
 
     public object Value
     {
-      get => Multiple ? (object)entities : (object)entities.FirstOrDefault();
+      get => Multiple ? (object)items : (object)items.FirstOrDefault();
       set
       {
-        entities.Clear();
+        items.Clear();
         if (value is IEnumerable list)
         {
-          entities.AddMany(list.OfType<Entity>());
+          items.AddRange(list.OfType<PropertyMap>().Select(CreateRecord));
         }
-        else if (value is Entity entity)
+        else if (value is PropertyMap item)
         {
-          entities.Add(entity);
+          items.Add(CreateRecord(item));
         }
-        defaultIsEmpty = entities.Count == 0;
+        defaultIsEmpty = items.Count == 0;
         HasChanges = false;
         ValueChanged?.Invoke(this, EventArgs.Empty);
       }
@@ -110,9 +110,15 @@ namespace Paper.Browser.Gui.Widgets
       }
     }
 
+    public bool ReadOnly
+    {
+      get => btChoose.Visible;
+      set => btChoose.Visible = !value;
+    }
+
     public IEnumerable<string> GetErrors()
     {
-      if (Required && entities.Count == 0)
+      if (Required && items.Count == 0)
         yield return "Campo requerido";
     }
 
@@ -125,16 +131,42 @@ namespace Paper.Browser.Gui.Widgets
       var result = window.Host.ShowDialog(this);
       if (result == DialogResult.OK)
       {
-        entities.Clear();
-        entities.AddMany(window.GetSelection());
-        HasChanges = !(defaultIsEmpty && entities.Count == 0);
-        ValueChanged?.Invoke(this, EventArgs.Empty);
+        SetSelection(window.GetSelection());
       }
+    }
+
+    private void SetSelection(ICollection<Entity> selection)
+    {
+      var selectedItems =
+        from entity in selection
+        select CreateRecord(entity.Properties);
+
+      items.Clear();
+      items.AddRange(selectedItems);
+      HasChanges = !(defaultIsEmpty && items.Count == 0);
+      ValueChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private PropertyMap CreateRecord(PropertyMap source)
+    {
+      var target = new PropertyMap();
+
+      var hasFilter = (Keys?.Any() == true);
+      if (hasFilter)
+      {
+        target.AddMany(source.Where(x => x.Key.EqualsAnyIgnoreCase(Keys)));
+      }
+      else
+      {
+        target.AddMany(source);
+      }
+
+      return target;
     }
 
     private void FeedbackSelection()
     {
-      switch (entities.Count)
+      switch (items.Count)
       {
         case 0:
           txValue.Text = "Nenhum item selecionado";
@@ -143,7 +175,7 @@ namespace Paper.Browser.Gui.Widgets
           txValue.Text = "1 item selecionado";
           break;
         default:
-          txValue.Text = $"{entities.Count} itens selecionados";
+          txValue.Text = $"{items.Count} itens selecionados";
           break;
       }
     }

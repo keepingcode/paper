@@ -88,8 +88,10 @@
       // 
       // SubmitButton
       // 
+      this.SubmitButton.AutoSize = true;
       this.SubmitButton.DialogResult = System.Windows.Forms.DialogResult.OK;
       this.SubmitButton.Location = new System.Drawing.Point(261, 10);
+      this.SubmitButton.MinimumSize = new System.Drawing.Size(75, 23);
       this.SubmitButton.Name = "SubmitButton";
       this.SubmitButton.Size = new System.Drawing.Size(75, 23);
       this.SubmitButton.TabIndex = 2;
@@ -115,6 +117,7 @@
       this.Text = "Edição";
       this.tableLayoutPanel1.ResumeLayout(false);
       this.flowLayoutPanel1.ResumeLayout(false);
+      this.flowLayoutPanel1.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 

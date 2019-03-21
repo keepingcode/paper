@@ -58,7 +58,7 @@ namespace Paper.Media
     /// Caixa de seleção.
     /// A propriedade Value contém as opções da caixa do tipo FieldValueCollection.
     /// </summary>
-    public const string Select2 = "__select";
+    public const string Select = "__select";
 
     /// <summary>
     /// Caixa de seleção de registros.

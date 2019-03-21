@@ -7,6 +7,7 @@ using Toolset.Serialization;
 using Toolset.Serialization.Graph;
 using System.Collections;
 using Toolset.Collections;
+using Toolset.Reflection;
 
 namespace Paper.Media
 {
@@ -15,10 +16,17 @@ namespace Paper.Media
   [KnownType(typeof(CaseVariantString))]
   public class Field : IMediaObject, IGraphFactory
   {
+    public static readonly string[] FieldValuePropertyNames;
+
     private string _type;
     private string _dataType;
     private string _title;
     private bool? _readOnly;
+
+    static Field()
+    {
+      FieldValuePropertyNames = typeof(FieldValue)._GetPropertyNames().ToArray();
+    }
 
     /// <summary>
     /// Nome do campo.
@@ -236,17 +244,20 @@ namespace Paper.Media
       if (property != nameof(Value))
         return null;
 
-      var keys = graph.Keys;
-      var fieldValueKeys = new[] { "Value", "Title", "Selected" };
-      var isFieldValue = keys.All(x => x.EqualsAnyIgnoreCase(fieldValueKeys));
-      if (isFieldValue)
-        return mapper.Create<FieldValue>(graph);
+      bool isSelect = false;
+      if (Type == FieldTypeNames.Select)
+      {
+        isSelect = true;
+      }
+      else if (Type == null)
+      {
+        isSelect = graph.Keys.Any()
+                && graph.Keys.All(x => x.EqualsAnyIgnoreCase(FieldValuePropertyNames));
+      }
 
-      var entity = new Entity();
-      entity.Properties = new PropertyMap();
-      mapper.CopyProperties(graph, entity.Properties);
-
-      return entity;
+      return isSelect
+        ? (object)mapper.Create<FieldValue>(graph)
+        : (object)mapper.Create<PropertyMap>(graph);
     }
 
     /// <summary>
@@ -269,8 +280,8 @@ namespace Paper.Media
       if (items.OfType<FieldValue>().Any())
         return new FieldValueCollection(items.Cast<FieldValue>());
 
-      if (items.OfType<Entity>().Any())
-        return new EntityCollection(items.Cast<Entity>());
+      if (items.OfType<PropertyMap>().Any())
+        return items.Cast<PropertyMap>().ToArray();
 
       return null;
     }

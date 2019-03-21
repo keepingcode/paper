@@ -115,6 +115,14 @@ namespace Paper.Api.Extensions.Papers
         yield return Links.Self<TaskPaper>(task.Id);
       }
 
+      public Ret VouMostrarIssoPraCininha(TaskForm taskForm, Task[] tasks)
+      {
+        return Ret.OK();
+      }
+
+
+
+
       public Ret Edit(TaskForm form, Task[] tasks)
       {
         var currentTasks = DB.Tasks.Where(task => tasks.Any(x => x.Id == task.Id));
