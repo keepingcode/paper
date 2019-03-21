@@ -179,6 +179,7 @@ namespace Paper.Browser.Lib
         if (hasSelfProvider && hasSelection)
         {
           widget = new HiddenFieldWidget();
+          widget.Window = Window;
           widget.Entity = entity;
           widget.Field = field;
           widget.Value = Selection;
@@ -190,6 +191,7 @@ namespace Paper.Browser.Lib
           var typeName = $"Paper.Browser.Gui.Widgets.{prefix}FieldWidget";
           var type = Type.GetType(typeName) ?? typeof(TextFieldWidget);
           widget = (IFieldWidget)Activator.CreateInstance(type);
+          widget.Window = Window;
           widget.Entity = entity;
           widget.Field = field;
         }

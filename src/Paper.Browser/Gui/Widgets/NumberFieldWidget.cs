@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Paper.Media;
 using System.Text.RegularExpressions;
 using Toolset;
+using Paper.Browser.Lib;
 
 namespace Paper.Browser.Gui.Widgets
 {
@@ -31,6 +32,8 @@ namespace Paper.Browser.Gui.Widgets
       this.EnhanceFieldWidget();
       txValue.TextChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public Window Window { get; set; }
 
     public UserControl Host => this;
 

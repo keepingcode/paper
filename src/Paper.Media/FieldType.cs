@@ -55,14 +55,15 @@ namespace Paper.Media
 
     /// <summary>
     /// Caixa de seleção.
-    /// 
-    /// A caixa pode ser comportar de duas formas:
-    /// -   Como uma caixa simples de lista.
-    ///     Neste caso a propriedade Value contém as opções da caixa do tipo FieldValueCollection.
-    /// -   Como uma caixa de seleção de itens em uma subconsulta.
-    ///     Neste caso a propriedade Provider contém as regras de consulta dos itens selecionáveis.
+    /// A propriedade Value contém as opções da caixa do tipo FieldValueCollection.
     /// </summary>
-    Select,
+    Select2,
+
+    /// <summary>
+    /// Caixa de seleção de registros.
+    /// A propriedade Provider contém as regras de consulta dos itens selecionáveis.
+    /// </summary>
+    SelectRecord,
 
     #endregion
   }

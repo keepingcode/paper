@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,9 @@ namespace Paper.Browser.Gui.Layouts
       window.LayoutPane.AutoSize = false;
       window.ContentPane.Dock = DockStyle.Fill;
       window.ContentPane.AutoSize = false;
-      window.Expand();
+
+      var offset = (window.Mode == Lib.Mode.SelectBox) ? new Size(-150, -150) : Size.Empty;
+      window.Expand(offset);
     }
   }
 }

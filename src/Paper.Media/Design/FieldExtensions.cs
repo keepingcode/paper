@@ -482,7 +482,7 @@ namespace Paper.Media.Design
         };
         
       field.Value = new FieldValueCollection(options);
-      field.Type = FieldTypeNames.Select;
+      field.Type = FieldTypeNames.Select2;
     }
 
     private static void SetDefaultValue(Field field, object member, Type type)

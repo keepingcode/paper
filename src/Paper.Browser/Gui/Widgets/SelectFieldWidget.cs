@@ -12,6 +12,7 @@ using Toolset;
 using System.Collections;
 using Toolset.Collections;
 using static System.Windows.Forms.ListBox;
+using Paper.Browser.Lib;
 
 namespace Paper.Browser.Gui.Widgets
 {
@@ -33,6 +34,8 @@ namespace Paper.Browser.Gui.Widgets
       cbValue.SelectedIndexChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
       lbValue.SelectedIndexChanged += (o, e) => ValueChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public Window Window { get; set; }
 
     public UserControl Host => this;
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Browser.Gui.Layouts;
 using Paper.Browser.Gui.Widgets;
+using Paper.Browser.Lib;
 using Toolset.Reflection;
 
 namespace Paper.Browser.Gui
@@ -20,19 +21,10 @@ namespace Paper.Browser.Gui
     public WindowForm()
     {
       InitializeComponent();
-
       this.WindowLayout = new FixedWindowLayout();
-
-      // this.ActionBar.ItemAdded += (o, e) => ToolBarChanged(this.ActionBar);
-      // this.ActionBar.ItemRemoved += (o, e) => ToolBarChanged(this.ActionBar);
-      // this.ToolBar.ItemAdded += (o, e) => ToolBarChanged(this.ToolBar);
-      // this.ToolBar.ItemRemoved += (o, e) => ToolBarChanged(this.ToolBar);
-      // 
-      // ToolBarChanged(this.ActionBar);
-      // ToolBarChanged(this.ToolBar);
-      // 
-      // this.StatusBar.Visible = false;
     }
+
+    public Mode Mode { get; set; }
 
     public IWindowLayout WindowLayout
     {
@@ -121,6 +113,18 @@ namespace Paper.Browser.Gui
 
     private void mnClose_Click(object sender, EventArgs e)
     {
+      Close();
+    }
+
+    private void OkButton_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.OK;
+      Close();
+    }
+
+    private void ExitButton_Click(object sender, EventArgs e)
+    {
+      DialogResult = DialogResult.Cancel;
       Close();
     }
   }

@@ -37,6 +37,11 @@ namespace Paper.Browser.Gui
 
     public static void Expand(this Form form)
     {
+      Expand(form, Size.Empty);
+    }
+
+    public static void Expand(this Form form, Size offset)
+    {
       try
       {
         form.Call(() =>
@@ -46,6 +51,7 @@ namespace Paper.Browser.Gui
 
           var bounds = new Rectangle(area.Location, area.Size);
           bounds.Inflate(-10, -10 - 40);
+          bounds.Inflate(offset);
           bounds.Offset(0, 40);
 
           form.Bounds = bounds;

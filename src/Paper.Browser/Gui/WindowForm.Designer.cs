@@ -29,15 +29,18 @@
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WindowForm));
       this.timer = new System.Windows.Forms.Timer(this.components);
       this.LayoutPane = new System.Windows.Forms.TableLayoutPanel();
       this.ToolBar = new System.Windows.Forms.ToolStrip();
+      this.SelectionCountLabel = new System.Windows.Forms.ToolStripLabel();
+      this.OkButton = new System.Windows.Forms.ToolStripButton();
+      this.ExitButton = new System.Windows.Forms.ToolStripButton();
       this.ActionBar = new System.Windows.Forms.ToolStrip();
       this.StatusBar = new System.Windows.Forms.StatusStrip();
       this.StatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
       this.ProgressBar = new System.Windows.Forms.ToolStripProgressBar();
       this.ContentPane = new System.Windows.Forms.Panel();
-      this.SelectionCountLabel = new System.Windows.Forms.ToolStripLabel();
       this.LayoutPane.SuspendLayout();
       this.ToolBar.SuspendLayout();
       this.StatusBar.SuspendLayout();
@@ -55,9 +58,10 @@
       this.LayoutPane.Controls.Add(this.ContentPane, 0, 1);
       this.LayoutPane.Location = new System.Drawing.Point(0, 0);
       this.LayoutPane.Name = "LayoutPane";
-      this.LayoutPane.RowCount = 3;
+      this.LayoutPane.RowCount = 4;
       this.LayoutPane.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.LayoutPane.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.LayoutPane.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.LayoutPane.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
       this.LayoutPane.Size = new System.Drawing.Size(378, 249);
       this.LayoutPane.TabIndex = 1;
@@ -66,12 +70,42 @@
       // 
       this.LayoutPane.SetColumnSpan(this.ToolBar, 2);
       this.ToolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SelectionCountLabel});
+            this.SelectionCountLabel,
+            this.OkButton,
+            this.ExitButton});
       this.ToolBar.Location = new System.Drawing.Point(0, 0);
       this.ToolBar.Name = "ToolBar";
       this.ToolBar.Size = new System.Drawing.Size(378, 20);
       this.ToolBar.TabIndex = 0;
       this.ToolBar.Text = "toolStrip1";
+      // 
+      // SelectionCountLabel
+      // 
+      this.SelectionCountLabel.Name = "SelectionCountLabel";
+      this.SelectionCountLabel.Size = new System.Drawing.Size(0, 17);
+      // 
+      // OkButton
+      // 
+      this.OkButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.OkButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+      this.OkButton.Image = ((System.Drawing.Image)(resources.GetObject("OkButton.Image")));
+      this.OkButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.OkButton.Name = "OkButton";
+      this.OkButton.Size = new System.Drawing.Size(154, 17);
+      this.OkButton.Text = "&Usar os itens selecionados";
+      this.OkButton.Visible = false;
+      this.OkButton.Click += new System.EventHandler(this.OkButton_Click);
+      // 
+      // ExitButton
+      // 
+      this.ExitButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.ExitButton.Image = ((System.Drawing.Image)(resources.GetObject("ExitButton.Image")));
+      this.ExitButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.ExitButton.Name = "ExitButton";
+      this.ExitButton.Size = new System.Drawing.Size(57, 17);
+      this.ExitButton.Text = "&Cancelar";
+      this.ExitButton.Visible = false;
+      this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
       // 
       // ActionBar
       // 
@@ -89,7 +123,7 @@
       this.StatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel,
             this.ProgressBar});
-      this.StatusBar.Location = new System.Drawing.Point(0, 229);
+      this.StatusBar.Location = new System.Drawing.Point(0, 209);
       this.StatusBar.Name = "StatusBar";
       this.StatusBar.Size = new System.Drawing.Size(378, 20);
       this.StatusBar.TabIndex = 2;
@@ -116,11 +150,6 @@
       this.ContentPane.Name = "ContentPane";
       this.ContentPane.Size = new System.Drawing.Size(302, 100);
       this.ContentPane.TabIndex = 3;
-      // 
-      // SelectionCountLabel
-      // 
-      this.SelectionCountLabel.Name = "SelectionCountLabel";
-      this.SelectionCountLabel.Size = new System.Drawing.Size(0, 17);
       // 
       // WindowForm
       // 
@@ -154,5 +183,7 @@
     public System.Windows.Forms.TableLayoutPanel LayoutPane;
     private System.Windows.Forms.ToolStripStatusLabel StatusLabel;
     public System.Windows.Forms.ToolStripLabel SelectionCountLabel;
+    public System.Windows.Forms.ToolStripButton OkButton;
+    public System.Windows.Forms.ToolStripButton ExitButton;
   }
 }

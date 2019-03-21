@@ -63,6 +63,7 @@
       this.btChoose.TabIndex = 4;
       this.btChoose.Text = "•••";
       this.btChoose.UseVisualStyleBackColor = true;
+      this.btChoose.Click += new System.EventHandler(this.btDialog_Click);
       // 
       // SelectRecordFieldWidget
       // 

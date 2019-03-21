@@ -109,6 +109,7 @@
       <DependentUpon>TextFieldWidget.cs</DependentUpon>
     </Compile>
     <Compile Include="Gui\Widgets\WidgetExtensions.cs" />
+    <Compile Include="Lib\Mode.cs" />
     <Compile Include="Lib\WindowAction.cs" />
     <Compile Include="Lib\Pages\IPage.cs" />
     <Compile Include="Lib\Pages\ISelectablePage.cs" />

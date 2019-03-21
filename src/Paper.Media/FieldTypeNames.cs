@@ -56,14 +56,15 @@ namespace Paper.Media
 
     /// <summary>
     /// Caixa de seleção.
-    /// 
-    /// A caixa pode ser comportar de duas formas:
-    /// -   Como uma caixa simples de lista.
-    ///     Neste caso a propriedade Value contém as opções da caixa do tipo FieldValueCollection.
-    /// -   Como uma caixa de seleção de itens em uma subconsulta.
-    ///     Neste caso a propriedade Provider contém as regras de consulta dos itens selecionáveis.
+    /// A propriedade Value contém as opções da caixa do tipo FieldValueCollection.
     /// </summary>
-    public const string Select = "__select";
+    public const string Select2 = "__select";
+
+    /// <summary>
+    /// Caixa de seleção de registros.
+    /// A propriedade Provider contém as regras de consulta dos itens selecionáveis.
+    /// </summary>
+    public const string SelectRecord = "__select-record";
 
     #endregion
 
@@ -110,7 +111,7 @@ namespace Paper.Media
           return File;
 
         case DataTypeNames.Record:
-          return Select;
+          return SelectRecord;
 
         case DataTypeNames.String:
         default:

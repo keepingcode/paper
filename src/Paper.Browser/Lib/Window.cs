@@ -19,6 +19,8 @@ namespace Paper.Browser.Lib
 {
   public class Window
   {
+    public event EventHandler SelectionChanged;
+
     private readonly HashMap<WindowAction> actions = new HashMap<WindowAction>();
 
     public Window(string name, Desktop desktop)
@@ -29,9 +31,20 @@ namespace Paper.Browser.Lib
       this.Host = new WindowForm();
       this.Host.FormClosing += async (o, e) => e.Cancel = !await CloseAsync();
       this.Host.KeyUp += Host_KeyUp;
-      this.Host.Show(desktop.Host);
 
       desktop.Windows.Add(this);
+      FeedbackContent();
+      FeedbackSelectionChanged();
+    }
+
+    public Mode Mode
+    {
+      get => Host.Mode;
+      set
+      {
+        Host.Mode = value;
+        FeedbackContent();
+      }
     }
 
     public string Name { get; }
@@ -42,17 +55,24 @@ namespace Paper.Browser.Lib
 
     public WindowForm Host { get; }
 
+    public Entity Entity { get; private set; }
+
+    public IPage Page { get; private set; }
+
+    public ICollection<Entity> GetSelection()
+    {
+      return (Page as ISelectablePage)?.GetSelection();
+    }
+
     public void SetContent(Entity entity)
     {
       try
       {
         this.Host.SuspendLayout();
-
         this.Href = entity.GetSelfLink()?.Href;
         this.Host.Text = entity.Title ?? this.Href ?? "Janela";
-
-        var page = SetPage(entity);
-        SetActions(entity, page);
+        this.Entity = entity;
+        this.Page = SetPage(entity);
       }
       catch (Exception ex)
       {
@@ -61,12 +81,12 @@ namespace Paper.Browser.Lib
       finally
       {
         this.Host.ResumeLayout();
+        FeedbackContent();
       }
     }
 
     private IPage SetPage(Entity entity)
     {
-      //var currentPage = Host.ContentPane.Controls.Cast<Control>().FirstOrDefault() as IPage;
       var currentPage = Host.ContentPane.Controls.OfType<ISelectablePage>().FirstOrDefault();
       if (currentPage != null)
       {
@@ -104,58 +124,12 @@ namespace Paper.Browser.Lib
       return page;
     }
 
-    private void SetActions(Entity entity, IPage page)
+    public void PerformAction(Entity entity, IPage page, EntityAction entityAction, bool bindToSelection = false)
     {
-      var actions = entity.Actions;
-      if (actions == null)
-        return;
+      var selection = bindToSelection
+        ? (page as ISelectablePage)?.GetSelection().OfType<Entity>().ToArray()
+        : null;
 
-      var actionButtons = (
-        from item in Host.ToolBar.Items.OfType<ToolStripButton>()
-        where item.Alignment == ToolStripItemAlignment.Left
-        select item
-      ).ToArray();
-      actionButtons.ForEach(x => Host.ToolBar.Items.Remove(x));
-
-      Host.ActionBar.Items.Clear();
-
-      var selectionBound = false;
-
-      foreach (var action in actions)
-      {
-        var fields = action.Fields ?? Enumerable.Empty<Field>();
-
-        var selectionField = fields.FirstOrDefault(x => x.Provider?.Rel.Has(RelNames.Self) == true);
-        var bindToSelection = (selectionField != null);
-        if (bindToSelection)
-        {
-          selectionBound = true;
-
-          var selectionButton = new ToolStripButton();
-          selectionButton.Tag = action;
-          selectionButton.Text = action.Title;
-          selectionButton.Click += (o, e) => PerformAction(entity, page, action);
-          selectionButton.Visible = false;
-          Host.ToolBar.Items.Add(selectionButton);
-        }
-
-        var button = new ToolStripButton();
-        button.Tag = action;
-        button.Text = action.Title;
-        button.Click += (o, e) => PerformAction(entity, page, action);
-        button.Padding = new Padding(10, button.Padding.Top, 10, button.Padding.Bottom);
-        Host.ActionBar.Items.Add(button);
-      }
-
-      if (page is ISelectablePage selectable)
-      {
-        selectable.SelectionEnabled = selectionBound;
-      }
-    }
-
-    public void PerformAction(Entity entity, IPage page, EntityAction entityAction)
-    {
-      var selection = (page as ISelectablePage)?.GetSelection().OfType<Entity>().ToArray();
       var action = new WindowAction(this, entity, entityAction, selection);
 
       this.Host.ToolBar.Enabled = this.Host.ActionBar.Enabled = false;
@@ -216,30 +190,158 @@ namespace Paper.Browser.Lib
       return await Task.FromResult(true);
     }
 
-    private void CurrentPage_SelectionChanged(object sender, EventArgs e)
+    private void FeedbackContent()
     {
-      if (sender is ISelectablePage page)
+      try
       {
-        var selectionCount = page.GetSelection().Count;
+        var fixedItems = new ToolStripItem[] {
+          Host.SelectionCountLabel,
+          Host.OkButton,
+          Host.ExitButton
+        };
 
-        var actionButtons =
-          from item in Host.ToolBar.Items.OfType<ToolStripButton>()
-          where item.Alignment == ToolStripItemAlignment.Left
-          select item;
-        actionButtons.ForEach(x => x.Visible = (selectionCount > 0));
+        Host.ActionBar.Items.Clear();
+        var items = Host.ToolBar.Items
+          .Cast<ToolStripItem>()
+          .Except(fixedItems)
+          .ToArray();
+        items.ForEach(item => Host.ToolBar.Items.Remove(item));
 
-        switch (selectionCount)
+        if (this.Mode == Mode.SelectBox)
         {
-          case 0:
-            Host.SelectionCountLabel.Text = "";
+          Host.ToolBar.Visible = true;
+          Host.ActionBar.Visible = false;
+          
+          Host.OkButton.Visible = true;
+          Host.ExitButton.Visible = true;
+
+          FeedbackSelectBoxActions();
+        }
+        else
+        {
+          Host.ToolBar.Visible = true;
+          Host.ActionBar.Visible = true;
+
+          Host.OkButton.Visible = false;
+          Host.ExitButton.Visible = false;
+
+          FeedbackNavigationActions();
+        }
+
+        FeedbackSelectionChanged();
+      }
+      catch (Exception ex)
+      {
+        // TODO: O que fazer com essa exceção?
+        ex.Trace();
+      }
+    }
+
+    private void FeedbackSelectBoxActions()
+    {
+
+      if (Page is ISelectablePage selectable)
+      {
+        selectable.SelectionEnabled = true;
+      }
+    }
+
+    private void FeedbackNavigationActions()
+    {
+      var actions = Entity?.Actions;
+      if (actions == null)
+        return;
+
+      var selectionBound = false;
+
+      foreach (var action in actions)
+      {
+        var fields = action.Fields ?? Enumerable.Empty<Field>();
+
+        var selectionField = fields.FirstOrDefault(x => x.Provider?.Rel.Has(RelNames.Self) == true);
+        var bindToSelection = (selectionField != null);
+        if (bindToSelection)
+        {
+          selectionBound = true;
+
+          var selectionButton = new ToolStripButton();
+          selectionButton.Tag = action;
+          selectionButton.Text = action.Title;
+          selectionButton.Click += (o, e) => PerformAction(Entity, Page, action, bindToSelection);
+          selectionButton.Visible = false;
+          Host.ToolBar.Items.Add(selectionButton);
+        }
+        //else
+        {
+          var button = new ToolStripButton();
+          button.Tag = action;
+          button.Text = action.Title;
+          button.Click += (o, e) => PerformAction(Entity, Page, action);
+          button.Padding = new Padding(10, button.Padding.Top, 10, button.Padding.Bottom);
+          Host.ActionBar.Items.Add(button);
+        }
+      }
+
+      if (Page is ISelectablePage selectable)
+      {
+        selectable.SelectionEnabled = selectionBound;
+      }
+    }
+
+    private void FeedbackSelectionChanged()
+    {
+      var page = this.Page as ISelectablePage;
+      if (page == null)
+        return;
+
+      var selectionCount = page.GetSelection().Count;
+
+      var actionButtons =
+        from item in Host.ToolBar.Items.OfType<ToolStripButton>()
+        where item.Tag is EntityAction
+        select item;
+      actionButtons.ForEach(x => x.Visible = (selectionCount > 0));
+
+      switch (selectionCount)
+      {
+        case 0:
+          {
+            Host.SelectionCountLabel.Text = (Mode == Mode.SelectBox)
+              ? "Marque os itens desejados"
+              : "";
             break;
-          case 1:
+          }
+        case 1:
+          {
             Host.SelectionCountLabel.Text = "1 selecionado";
             break;
-          default:
+          }
+        default:
+          {
             Host.SelectionCountLabel.Text = $"{selectionCount} selecionados";
             break;
-        }
+          }
+      }
+    }
+
+    private void CurrentPage_SelectionChanged(object sender, EventArgs e)
+    {
+      try
+      {
+        FeedbackSelectionChanged();
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
+      }
+
+      try
+      {
+        SelectionChanged?.Invoke(this, EventArgs.Empty);
+      }
+      catch (Exception ex)
+      {
+        ex.Trace();
       }
     }
 
@@ -247,7 +349,7 @@ namespace Paper.Browser.Lib
     {
       if (e.Modifiers == Keys.None && e.KeyCode == Keys.F5)
       {
-        ReloadAsync().NoAwait();
+        ReloadAsync().RunAsync();
       }
     }
   }

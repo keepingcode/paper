@@ -23,7 +23,9 @@ namespace Paper.Browser.Lib
         if (string.IsNullOrWhiteSpace(url))
           return;
 
-        this.CreateWindow().RequestAsync(url).NoAwait();
+        var window = this.CreateWindow();
+        window.RequestAsync(url).RunAsync();
+        window.Host.Show(this.Host);
       };
     }
 

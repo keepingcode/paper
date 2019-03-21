@@ -289,7 +289,7 @@ namespace Paper.Api.Extensions.Papers
           action.AddField("Records", opt => opt
             .SetTitle("Registros Afetados")
             .SetPlaceholder("Selecione os registros afetados")
-            .SetType(FieldTypeNames.Select)
+            .SetType(FieldTypeNames.SelectRecord)
             .SetDataType(DataTypeNames.Record)
             .SetProvider(provider => provider
               .AddRel(RelNames.Self)

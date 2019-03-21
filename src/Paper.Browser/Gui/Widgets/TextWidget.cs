@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Paper.Media;
 using Paper.Media.Design;
 using Paper.Browser.Helpers;
+using Paper.Browser.Lib;
 
 namespace Paper.Browser.Gui.Widgets
 {
@@ -25,6 +26,8 @@ namespace Paper.Browser.Gui.Widgets
       this.Enhance();
       this.GridExtent = new Extent(6, 1);
     }
+
+    public Window Window { get; set; }
 
     public UserControl Host => this;
 

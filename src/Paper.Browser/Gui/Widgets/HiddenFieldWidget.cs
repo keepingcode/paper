@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Paper.Media;
+using Paper.Browser.Lib;
 
 namespace Paper.Browser.Gui.Widgets
 {
@@ -23,6 +24,8 @@ namespace Paper.Browser.Gui.Widgets
     {
       InitializeComponent();
     }
+
+    public Window Window { get; set; }
 
     public UserControl Host => this;
 
